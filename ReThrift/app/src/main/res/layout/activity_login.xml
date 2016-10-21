@@ -43,7 +43,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/create_acct_btn"/>
+            android:text="@string/create_acct_btn"
+            android:onClick="createAcct"/>
+
         <Button
             android:id="@+id/login_btn"
             style="?android:attr/borderlessButtonStyle"
