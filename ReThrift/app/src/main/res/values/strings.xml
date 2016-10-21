@@ -3,6 +3,11 @@
 
     <string name="username_hint">Username</string>
     <string name="password_hint">Password</string>
+    <string name="verify_password_hint">Verify password</string>
+    <string name="firstname_hint">First name</string>
+    <string name="lastname_hint">Last name</string>
+    <string name="email_hint">Email</string>
+    <string name="phone_hint">Phone number</string>
 
     <string name="login_btn">Login</string>
     <string name="create_acct_btn">Create Account</string>

@@ -1,7 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+    <EditText
+        android:id="@+id/firstname_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:inputType="textPersonName|textCapWords"
+        android:imeOptions="actionDone"
+        android:hint="@string/firstname_hint"/>
+
+    <EditText
+        android:id="@+id/lastname_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:inputType="textPersonName|textCapWords"
+        android:imeOptions="actionDone"
+        android:hint="@string/lastname_hint"/>
+
+    <EditText
+        android:id="@+id/email_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:inputType="textWebEmailAddress"
+        android:imeOptions="actionDone"
+        android:hint="@string/email_hint"/>
+
+    <EditText
+        android:id="@+id/phone_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:inputType="text|phone"
+        android:imeOptions="actionDone"
+        android:hint="@string/phone_hint"/>
+
+    <!--TODO: maxLength -->
+    <EditText
+        android:id="@+id/username_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        android:hint="@string/username_hint"/>
+
+    <!--TODO: maxLength -->
+    <EditText
+        android:id="@+id/password_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:inputType="textPassword"
+        android:imeOptions="actionDone"
+        android:hint="@string/password_hint"/>
+
+    <!--TODO: maxLength -->
+    <EditText
+        android:id="@+id/verify_password_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:inputType="textPassword"
+        android:imeOptions="actionDone"
+        android:hint="@string/verify_password_hint"/>
+
+    <Button
+        android:id="@+id/create_acct_btn"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_acct_btn"/>
 
 </LinearLayout>
