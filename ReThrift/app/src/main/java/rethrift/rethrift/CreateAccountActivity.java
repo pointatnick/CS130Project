@@ -1,6 +1,12 @@
 package rethrift.rethrift;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -10,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class CreateAccountActivity extends AppCompatActivity {
@@ -21,42 +26,63 @@ public class CreateAccountActivity extends AppCompatActivity {
     setContentView(R.layout.activity_create_account);
   }
 
+  // send user account info
   public void createAcct(View view) {
-    // send the user account info
+    Log.d("POST", "Creating JSON POST request");
 
-    // http://localhost:3000/users/post
-    try {
-      URL url = new URL("http://localhost:3000/users");
-      HttpURLConnection cxn = (HttpURLConnection) url.openConnection();
-      cxn.setDoOutput(true);
-      cxn.setRequestMethod("POST");
-      cxn.setRequestProperty("Content-Type", "application/json");
+    String stringUrl = "http://localhost:3000/users";
+    // check that they have a connection
+    // TODO: test on device
+    ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
+    if (networkInfo != null && networkInfo.isConnected()) {
+      new CreateAccountTask().execute(stringUrl);
+    } else {
+      new AlertDialog.Builder(this)
+              .setTitle("Error")
+              .setMessage("No network connection available.")
+              .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                }
+              })
+              .setIcon(android.R.drawable.ic_dialog_alert)
+              .show();
+    }
+  }
 
-      String input = "{\"qty\":100,\"name\":\"iPad 4\"}";
+  private class CreateAccountTask extends AsyncTask<String, Void, String> {
+    @Override
+    protected String doInBackground(String... urls) {
+      try {
+        URL url = new URL(urls[0]);
+        HttpURLConnection cxn = (HttpURLConnection) url.openConnection();
+        cxn.setDoOutput(true);
+        cxn.setRequestMethod("POST");
+        cxn.setRequestProperty("Content-Type", "application/json");
 
-      OutputStream os = cxn.getOutputStream();
-      os.write(input.getBytes());
-      os.flush();
+        String input = "{\"qty\":100,\"name\":\"iPad 4\"}";
 
-      if (cxn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-        throw new RuntimeException("Failed -- HTTP error code: " + cxn.getResponseCode());
+        OutputStream os = cxn.getOutputStream();
+        os.write(input.getBytes());
+        os.flush();
+
+        if (cxn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+          throw new RuntimeException("Failed -- HTTP error code: " + cxn.getResponseCode());
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(cxn.getInputStream()));
+
+        String output;
+        System.out.println("Output from server .... \n");
+        while ((output = br.readLine()) != null) {
+          System.out.println(output);
+        }
+        cxn.disconnect();
+        return "Successfully created account!";
+      } catch (IOException e) {
+        return "Unable to create account. Please try again later.";
       }
-
-      BufferedReader br = new BufferedReader(new InputStreamReader(cxn.getInputStream()));
-
-      String output;
-      System.out.println("Output from server .... \n");
-      while ((output = br.readLine()) != null) {
-        System.out.println(output);
-      }
-
-      cxn.disconnect();
-      Log.d("POST", "Successfully sent JSON post request");
-
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
 }
