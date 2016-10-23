@@ -14,7 +14,7 @@ import android.view.View;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -32,7 +32,6 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     String stringUrl = "http://localhost:3000/users";
     // check that they have a connection
-    // TODO: test on device
     ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
     if (networkInfo != null && networkInfo.isConnected()) {
@@ -55,17 +54,25 @@ public class CreateAccountActivity extends AppCompatActivity {
     @Override
     protected String doInBackground(String... urls) {
       try {
+        // TODO: figure out why connection isn't working
         URL url = new URL(urls[0]);
+        System.setProperty("http.proxyHost", "localhost.com");
+        System.setProperty("http.proxyPort", "3000");
         HttpURLConnection cxn = (HttpURLConnection) url.openConnection();
         cxn.setDoOutput(true);
         cxn.setRequestMethod("POST");
         cxn.setRequestProperty("Content-Type", "application/json");
 
+        // TODO: replace with JSONObject
         String input = "{\"qty\":100,\"name\":\"iPad 4\"}";
 
-        OutputStream os = cxn.getOutputStream();
-        os.write(input.getBytes());
-        os.flush();
+        Log.d("POST", "Writing JSON POST request");
+        OutputStreamWriter os = new OutputStreamWriter(cxn.getOutputStream());
+        Log.d("POST", "Got output stream");
+        os.write(input);
+        Log.d("POST", "Writing bytes to output stream");
+        os.close();
+        Log.d("POST", "Finished writing JSON POST request");
 
         if (cxn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
           throw new RuntimeException("Failed -- HTTP error code: " + cxn.getResponseCode());
@@ -78,6 +85,8 @@ public class CreateAccountActivity extends AppCompatActivity {
         while ((output = br.readLine()) != null) {
           System.out.println(output);
         }
+
+        Log.d("POST", "Disconnecting...");
         cxn.disconnect();
         return "Successfully created account!";
       } catch (IOException e) {
