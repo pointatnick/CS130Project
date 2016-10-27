@@ -10,6 +10,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,16 +24,29 @@ import java.net.URL;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
+  private EditText firstName, lastName, email, phoneNo, username, password, verifyPassword;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create_account);
+
+    // bind EditText fields
+    firstName = (EditText) findViewById(R.id.firstname_field);
+    lastName = (EditText) findViewById(R.id.lastname_field);
+    email = (EditText) findViewById(R.id.email_field);
+    phoneNo = (EditText) findViewById(R.id.phone_field);
+    username = (EditText) findViewById(R.id.username_field);
+    password = (EditText) findViewById(R.id.password_field);
+    verifyPassword = (EditText) findViewById(R.id.verify_password_field);
   }
 
   // send user account info
   public void createAcct(View view) {
-    Log.d("POST", "Creating JSON POST request");
 
+    // TODO: add function that checks all fields
+
+    // TODO: change to Heroku address
     String stringUrl = "http://192.168.0.22:3000/users";
     // check that they have a connection
     ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -67,10 +84,6 @@ public class CreateAccountActivity extends AppCompatActivity {
     private String createAccountUrl(String myurl) throws IOException {
       OutputStream os = null;
 
-      // Only display the first 500 characters of the retrieved
-      // web page content.
-      int len = 500;
-
       try {
         URL url = new URL(myurl);
         Log.d("URL", "" + url);
@@ -81,20 +94,31 @@ public class CreateAccountActivity extends AppCompatActivity {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
 
-        // TODO: convert to JSON object
-        String input = "{\"qty\":100,\"name\":\"iPad 4\"}";
-
         // Starts the query
         conn.connect();
         int response = conn.getResponseCode();
         Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
         os = conn.getOutputStream();
 
-        // Convert the InputStream into a string
-        writeIt(os, input);
-        return "successfully created account";
+        JSONObject userAcctJson = new JSONObject();
+        try {
+          userAcctJson.put("first name", firstName.getText().toString())
+                      .put("last name", lastName.getText().toString())
+                      .put("email", email.getText().toString())
+                      .put("phone number", phoneNo.getText().toString())
+                      .put("username", username.getText().toString())
+                      .put("password", password.getText().toString());
 
-        // Makes sure that the InputStream is closed after the app is finished using it.
+          Log.d("JSONOBJECT", userAcctJson.toString(2));
+          // Write JSONObject to output stream
+          writeIt(os, userAcctJson.toString(2));
+
+          return "successfully created account";
+        } catch (JSONException e) {
+          e.printStackTrace();
+          return "couldn't create account";
+        }
+        // Makes sure that the OutputStream is closed after the app is finished using it.
       } finally {
         if (os != null) {
           os.close();

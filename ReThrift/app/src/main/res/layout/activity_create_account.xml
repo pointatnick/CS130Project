@@ -19,7 +19,7 @@
         android:hint="@string/firstname_hint"/>
 
     <EditText
-        android:id="@+id/lastname_hint"
+        android:id="@+id/lastname_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
