@@ -55,49 +55,6 @@ public class CreateAccountActivity extends AppCompatActivity {
     @Override
     protected String doInBackground(String... urls) {
       try {
-        // TODO: figure out why connection isn't working
-
-        /*
-        URL url = new URL(urls[0]);
-        Log.d("URL", urls[0]);
-        System.setProperty("http.proxyHost", "localhost.com");
-        System.setProperty("http.proxyPort", "3000");
-        HttpURLConnection cxn = (HttpURLConnection) url.openConnection();
-        cxn.setDoOutput(true);
-
-
-        cxn.setRequestMethod("POST");
-        cxn.setRequestProperty("Content-Type", "application/json");
-
-        // TODO: replace with JSONObject
-        String input = "{\"qty\":100,\"name\":\"iPad 4\"}";
-
-
-        Log.d("POST", "Writing JSON POST request");
-        OutputStreamWriter os = new OutputStreamWriter(cxn.getOutputStream());
-        Log.d("POST", "Got output stream");
-        os.write(input);
-        Log.d("POST", "Writing bytes to output stream");
-        os.close();
-        Log.d("POST", "Finished writing JSON POST request");
-
-        if (cxn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-          throw new RuntimeException("Failed -- HTTP error code: " + cxn.getResponseCode());
-        }
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(cxn.getInputStream()));
-
-        String output;
-        System.out.println("Output from server .... \n");
-        while ((output = br.readLine()) != null) {
-          System.out.println(output);
-        }
-
-        Log.d("POST", "Disconnecting...");
-
-        cxn.disconnect();
-        */
-
         return createAccountUrl(urls[0]);
       } catch (IOException e) {
         return "Unable to create account. Please try again later.";
