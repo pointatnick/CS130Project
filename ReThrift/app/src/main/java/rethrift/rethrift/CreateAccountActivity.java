@@ -74,8 +74,14 @@ public class CreateAccountActivity extends AppCompatActivity {
       try {
         return createAccountUrl(urls[0]);
       } catch (IOException e) {
+        e.printStackTrace();
         return "Unable to create account. Please try again later.";
       }
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+      Log.d("CREATE ACCOUNT", result);
     }
 
     // Given a URL, establishes an HttpUrlConnection and retrieves
@@ -96,8 +102,6 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         // Starts the query
         conn.connect();
-        int response = conn.getResponseCode();
-        Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
         os = conn.getOutputStream();
 
         JSONObject userAcctJson = new JSONObject();
@@ -112,6 +116,9 @@ public class CreateAccountActivity extends AppCompatActivity {
           Log.d("JSONOBJECT", userAcctJson.toString(2));
           // Write JSONObject to output stream
           writeIt(os, userAcctJson.toString(2));
+
+          int response = conn.getResponseCode();
+          Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
 
           return "successfully created account";
         } catch (JSONException e) {
@@ -130,6 +137,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     private void writeIt(OutputStream stream, String msg) throws IOException {
       Writer writer = new OutputStreamWriter(stream, "UTF-8");
       writer.write(msg);
+      writer.flush();
       writer.close();
     }
 
@@ -143,6 +151,5 @@ public class CreateAccountActivity extends AppCompatActivity {
       reader.read(buffer);
       return new String(buffer);
     }
-    */
-  }
+    */}
 }
