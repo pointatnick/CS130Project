@@ -24,7 +24,7 @@ import java.net.URL;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-  private EditText firstName, lastName, email, phoneNo, username, password, verifyPassword;
+  private EditText firstName, lastName, email, phoneNum, username, password, verifyPassword;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     firstName = (EditText) findViewById(R.id.firstname_field);
     lastName = (EditText) findViewById(R.id.lastname_field);
     email = (EditText) findViewById(R.id.email_field);
-    phoneNo = (EditText) findViewById(R.id.phone_field);
+    phoneNum = (EditText) findViewById(R.id.phone_field);
     username = (EditText) findViewById(R.id.username_field);
     password = (EditText) findViewById(R.id.password_field);
     verifyPassword = (EditText) findViewById(R.id.verify_password_field);
@@ -46,7 +46,6 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     // TODO: add function that checks all fields
 
-    // TODO: change to Heroku address
     String stringUrl = "http://rethrift-1.herokuapp.com/users";
     // check that they have a connection
     ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -106,10 +105,10 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         JSONObject userAcctJson = new JSONObject();
         try {
-          userAcctJson.put("first name", firstName.getText().toString())
-                      .put("last name", lastName.getText().toString())
+          userAcctJson.put("firstname", firstName.getText().toString())
+                      .put("lastname", lastName.getText().toString())
                       .put("email", email.getText().toString())
-                      .put("phone number", phoneNo.getText().toString())
+                      .put("phonenumber", phoneNum.getText().toString())
                       .put("username", username.getText().toString())
                       .put("password", password.getText().toString());
 
