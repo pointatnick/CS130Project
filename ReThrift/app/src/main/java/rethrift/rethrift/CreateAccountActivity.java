@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.EditText;
 
 import org.json.JSONException;
@@ -30,7 +29,6 @@ public class CreateAccountActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.activity_create_account);
 
     // bind EditText fields
@@ -49,7 +47,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     // TODO: add function that checks all fields
 
     // TODO: change to Heroku address
-    String stringUrl = "http://192.168.0.22:3000/users";
+    String stringUrl = "http://rethrift-1.herokuapp.com/users";
     // check that they have a connection
     ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
