@@ -64,6 +64,7 @@ public class CreateAccountActivity extends AppCompatActivity {
               .setIcon(android.R.drawable.ic_dialog_alert)
               .show();
     }
+    // TODO: go to MainActivity
   }
 
 
