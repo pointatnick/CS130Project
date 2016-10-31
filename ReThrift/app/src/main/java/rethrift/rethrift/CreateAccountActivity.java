@@ -24,122 +24,122 @@ import java.net.URL;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-  private EditText firstName, lastName, email, phoneNo, username, password, verifyPassword;
+    private EditText firstName, lastName, email, phoneNo, username, password, verifyPassword;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_create_account);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_account);
 
-    // bind EditText fields
-    firstName = (EditText) findViewById(R.id.firstname_field);
-    lastName = (EditText) findViewById(R.id.lastname_field);
-    email = (EditText) findViewById(R.id.email_field);
-    phoneNo = (EditText) findViewById(R.id.phone_field);
-    username = (EditText) findViewById(R.id.username_field);
-    password = (EditText) findViewById(R.id.password_field);
-    verifyPassword = (EditText) findViewById(R.id.verify_password_field);
-  }
+        // bind EditText fields
+        firstName = (EditText) findViewById(R.id.firstname_field);
+        lastName = (EditText) findViewById(R.id.lastname_field);
+        email = (EditText) findViewById(R.id.email_field);
+        phoneNo = (EditText) findViewById(R.id.phone_field);
+        username = (EditText) findViewById(R.id.username_field);
+        password = (EditText) findViewById(R.id.password_field);
+        verifyPassword = (EditText) findViewById(R.id.verify_password_field);
+    }
 
-  // send user account info
-  public void createAcct(View view) {
+    // send user account info
+    public void createAcct(View view) {
 
-    // TODO: add function that checks all fields
+        // TODO: add function that checks all fields
 
-    // TODO: change to Heroku address
-    String stringUrl = "http://rethrift-1.herokuapp.com/users";
-    // check that they have a connection
-    ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
-    if (networkInfo != null && networkInfo.isConnected()) {
-      new CreateAccountTask().execute(stringUrl);
-    } else {
-      new AlertDialog.Builder(this)
-              .setTitle("Error")
-              .setMessage("No network connection available.")
-              .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                  dialog.dismiss();
+        // TODO: change to Heroku address
+        String stringUrl = "http://rethrift-1.herokuapp.com/users";
+        // check that they have a connection
+        ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            new CreateAccountTask().execute(stringUrl);
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("No network connection available.")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+    }
+
+
+    private class CreateAccountTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            try {
+                return createAccountUrl(urls[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "Unable to create account. Please try again later.";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("CREATE ACCOUNT", result);
+        }
+
+        // Given a URL, establishes an HttpUrlConnection and retrieves
+        // the web page content as a InputStream, which it returns as
+        // a string.
+        private String createAccountUrl(String myurl) throws IOException {
+            OutputStream os = null;
+
+            try {
+                URL url = new URL(myurl);
+                Log.d("URL", "" + url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+
+                // Starts the query
+                conn.connect();
+                os = conn.getOutputStream();
+
+                JSONObject userAcctJson = new JSONObject();
+                try {
+                    userAcctJson.put("first name", firstName.getText().toString())
+                            .put("last name", lastName.getText().toString())
+                            .put("email", email.getText().toString())
+                            .put("phone number", phoneNo.getText().toString())
+                            .put("username", username.getText().toString())
+                            .put("password", password.getText().toString());
+
+                    Log.d("JSONOBJECT", userAcctJson.toString(2));
+                    // Write JSONObject to output stream
+                    writeIt(os, userAcctJson.toString(2));
+
+                    int response = conn.getResponseCode();
+                    Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
+
+                    return "successfully created account";
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return "couldn't create account";
                 }
-              })
-              .setIcon(android.R.drawable.ic_dialog_alert)
-              .show();
-    }
-  }
-
-
-  private class CreateAccountTask extends AsyncTask<String, Void, String> {
-    @Override
-    protected String doInBackground(String... urls) {
-      try {
-        return createAccountUrl(urls[0]);
-      } catch (IOException e) {
-        e.printStackTrace();
-        return "Unable to create account. Please try again later.";
-      }
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-      Log.d("CREATE ACCOUNT", result);
-    }
-
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the web page content as a InputStream, which it returns as
-    // a string.
-    private String createAccountUrl(String myurl) throws IOException {
-      OutputStream os = null;
-
-      try {
-        URL url = new URL(myurl);
-        Log.d("URL", "" + url);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(10000 /* milliseconds */);
-        conn.setConnectTimeout(15000 /* milliseconds */);
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-
-        // Starts the query
-        conn.connect();
-        os = conn.getOutputStream();
-
-        JSONObject userAcctJson = new JSONObject();
-        try {
-          userAcctJson.put("first name", firstName.getText().toString())
-                      .put("last name", lastName.getText().toString())
-                      .put("email", email.getText().toString())
-                      .put("phone number", phoneNo.getText().toString())
-                      .put("username", username.getText().toString())
-                      .put("password", password.getText().toString());
-
-          Log.d("JSONOBJECT", userAcctJson.toString(2));
-          // Write JSONObject to output stream
-          writeIt(os, userAcctJson.toString(2));
-
-          int response = conn.getResponseCode();
-          Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
-
-          return "successfully created account";
-        } catch (JSONException e) {
-          e.printStackTrace();
-          return "couldn't create account";
+                // Makes sure that the OutputStream is closed after the app is finished using it.
+            } finally {
+                if (os != null) {
+                    os.close();
+                }
+            }
         }
-        // Makes sure that the OutputStream is closed after the app is finished using it.
-      } finally {
-        if (os != null) {
-          os.close();
-        }
-      }
-    }
 
-    // Writes an OutputStream
-    private void writeIt(OutputStream stream, String msg) throws IOException {
-      Writer writer = new OutputStreamWriter(stream, "UTF-8");
-      writer.write(msg);
-      writer.flush();
-      writer.close();
-    }
+        // Writes an OutputStream
+        private void writeIt(OutputStream stream, String msg) throws IOException {
+            Writer writer = new OutputStreamWriter(stream, "UTF-8");
+            writer.write(msg);
+            writer.flush();
+            writer.close();
+        }
 
 
     /* saving for later
