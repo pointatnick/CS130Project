@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 
 
 /**
@@ -25,5 +24,9 @@ public class SalesboardActivity extends AppCompatActivity {
         Intent intent = new Intent(this, CreatePostActivity.class);
         startActivity(intent);
     }
+
+    // TODO: profile preview (left screen)
+
+    // TODO: search (right screen)
 
 }

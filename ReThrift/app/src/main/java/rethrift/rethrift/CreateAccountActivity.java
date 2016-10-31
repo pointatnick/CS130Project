@@ -2,6 +2,7 @@ package rethrift.rethrift;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -64,7 +65,11 @@ public class CreateAccountActivity extends AppCompatActivity {
               .setIcon(android.R.drawable.ic_dialog_alert)
               .show();
     }
-    // TODO: go to MainActivity
+
+    // go to MainActivity
+    Intent intent = new Intent(this, SalesboardActivity.class);
+    startActivity(intent);
+
   }
 
 
