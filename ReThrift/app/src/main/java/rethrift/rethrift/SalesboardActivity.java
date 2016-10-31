@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 
 
 /**
@@ -18,12 +17,16 @@ public class SalesboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.salesboard);
+        setContentView(R.layout.activity_salesboard);
     }
 
     public void createPost(View view){
         Intent intent = new Intent(this, CreatePostActivity.class);
         startActivity(intent);
     }
+
+    // TODO: profile preview (left screen)
+
+    // TODO: search (right screen)
 
 }

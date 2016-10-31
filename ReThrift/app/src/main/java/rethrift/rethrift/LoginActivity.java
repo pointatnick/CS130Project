@@ -18,4 +18,8 @@ public class LoginActivity extends AppCompatActivity {
     startActivity(intent);
   }
 
+  public void login(View view) {
+    // TODO: check fields, authenticate
+  }
+
 }
