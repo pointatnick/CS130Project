@@ -66,7 +66,7 @@ public class CreateAccountActivity extends AppCompatActivity {
               .show();
     }
 
-    // go to MainActivity
+    // go to SalesboardActivity
     Intent intent = new Intent(this, SalesboardActivity.class);
     startActivity(intent);
 
