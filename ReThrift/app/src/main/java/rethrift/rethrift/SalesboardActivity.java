@@ -2,20 +2,15 @@ package rethrift.rethrift;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
-
-import android.app.ListActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
-/**
- * Created by kexinyu on 11/02/2016.
- */
 
-public class SalesboardActivity extends ListActivity {
+public class SalesboardActivity extends AppCompatActivity {
 
     private ArrayList<String> postsArray;
     private ArrayAdapter adapter;
@@ -23,7 +18,6 @@ public class SalesboardActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_salesboard);
 
         postsArray = new ArrayList<String>();
@@ -36,7 +30,7 @@ public class SalesboardActivity extends ListActivity {
         adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, postsArray);
 
-        ListView listView = (ListView) findViewById(android.R.id.list);
+        ListView listView = (ListView) findViewById(R.id.cardlist);
         listView.setAdapter(adapter);
     }
 
