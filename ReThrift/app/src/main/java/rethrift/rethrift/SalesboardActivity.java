@@ -22,12 +22,16 @@ public class SalesboardActivity extends AppCompatActivity {
         addDrawerItems();
     }
 
+    // profile preview (left screen)
     public void addDrawerItems() {
-        String[] items = { "Name", "E-Mail", "Phone Number", "Profile"};
+        String[] items = { "Name", "Username", "Watchlist", "Profile"};
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         mDrawerList.setAdapter(mAdapter);
     }
 
+    // TODO: add button listeners
+
+    // sales board (center screen)
     public void createPost(View view){
         Intent intent = new Intent(this, CreatePostActivity.class);
         startActivity(intent);
