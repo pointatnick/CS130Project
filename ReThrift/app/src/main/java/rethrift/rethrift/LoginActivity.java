@@ -10,7 +10,7 @@ public class LoginActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_salesboard);
+    setContentView(R.layout.activity_login);
   }
 
   public void createAcct(View view){
