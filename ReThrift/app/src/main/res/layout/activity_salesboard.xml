@@ -1,38 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/salesboard"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="rethrift.rethrift.SalesboardActivity">
+    <!-- The main content view -->
+    <RelativeLayout
+        android:id="@+id/salesboard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
 
-        <ListView
-            android:id="@+id/cardlist"
+            <ListView
+                android:id="@+id/cardlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/transparent"
+                android:cacheColorHint="@android:color/transparent"
+                android:divider="#CCCCCC"
+                android:dividerHeight="5dp"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/create_post_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:background="@android:color/transparent"
-            android:cacheColorHint="@android:color/transparent"
-            android:divider="#CCCCCC"
-            android:dividerHeight="5dp">
-        </ListView>
-    </LinearLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:text="create_post"
+            android:onClick="createPost"/>
 
+    </RelativeLayout>
+    <!-- The navigation drawer -->
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#ffeeeeee"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"/>
 
-    <Button
-        android:id="@+id/create_post_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="create_post"
-        android:onClick="createPost"/>
-
-</RelativeLayout>
+</android.support.v4.widget.DrawerLayout>
