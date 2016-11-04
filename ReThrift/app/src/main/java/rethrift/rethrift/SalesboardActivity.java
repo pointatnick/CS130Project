@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import java.util.ArrayList;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 public class SalesboardActivity extends AppCompatActivity {
 
@@ -53,5 +55,12 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
     // TODO: search (right screen)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.option_menu, menu);
+
+        return true;
+    }
 
 }
