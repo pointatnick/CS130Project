@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="textPersonName|textCapWords"
+        android:inputType="textPersonName|textCapWords|textFilter"
+        android:maxLength="32"
         android:imeOptions="actionDone"
         android:hint="@string/firstname_hint"/>
 
@@ -23,7 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="textPersonName|textCapWords"
+        android:inputType="textPersonName|textCapWords|textFilter"
+        android:maxLength="32"
         android:imeOptions="actionDone"
         android:hint="@string/lastname_hint"/>
 
@@ -32,7 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="textWebEmailAddress"
+        android:inputType="textWebEmailAddress|textFilter"
+        android:maxLength="64"
         android:imeOptions="actionDone"
         android:hint="@string/email_hint"/>
 
@@ -41,7 +44,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="text|phone"
+        android:inputType="phone"
+        android:maxLength="12"
         android:imeOptions="actionDone"
         android:hint="@string/phone_hint"/>
 
@@ -51,7 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="text"
+        android:inputType="textFilter"
+        android:maxLength="32"
         android:imeOptions="actionDone"
         android:hint="@string/username_hint"/>
 
@@ -61,7 +66,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="textPassword"
+        android:inputType="textPassword|textFilter"
+        android:maxLength="32"
         android:imeOptions="actionDone"
         android:hint="@string/password_hint"/>
 
@@ -71,7 +77,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="textPassword"
+        android:inputType="textPassword|textFilter"
+        android:maxLength="32"
         android:imeOptions="actionDone"
         android:hint="@string/verify_password_hint"/>
 

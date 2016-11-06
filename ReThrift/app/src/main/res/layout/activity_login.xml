@@ -14,12 +14,18 @@
     tools:context="rethrift.rethrift.LoginActivity">
 
     <!--TODO: maxLength -->
+    <TextView
+        android:layout_height="48dp"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textAppearance="@android:style/TextAppearance.Large"/>
     <EditText
         android:id="@+id/username_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="text|textNoSuggestions"
+        android:inputType="textFilter"
         android:maxLength="32"
         android:imeOptions="actionDone"
         android:hint="@string/username_hint"/>
@@ -30,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="textNoSuggestions|textPassword"
+        android:inputType="textFilter|textPassword"
         android:maxLength="32"
         android:imeOptions="actionDone"
         android:hint="@string/password_hint"/>
