@@ -7,13 +7,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 
-
-/**
- * Created by MC on 10/29/2016.
- */
-
-
-
 public class CreatePostActivity extends AppCompatActivity {
     private EditText title, price, category;
 
