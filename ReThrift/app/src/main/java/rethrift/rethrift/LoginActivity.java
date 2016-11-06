@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onPostExecute(String result) {
-      Log.d("CREATE ACCOUNT", result);
+      Log.d("LOGIN", result);
     }
 
     // Given a URL, establishes an HttpUrlConnection and retrieves
@@ -114,7 +114,6 @@ public class LoginActivity extends AppCompatActivity {
 
           int response = conn.getResponseCode();
           Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
-
           return "successfully created account";
         } catch (JSONException e) {
           e.printStackTrace();
@@ -146,6 +145,7 @@ public class LoginActivity extends AppCompatActivity {
       reader.read(buffer);
       return new String(buffer);
     }
-    */}
+    */
+  }
 
 }

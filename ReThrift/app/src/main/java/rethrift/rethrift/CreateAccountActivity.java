@@ -44,19 +44,11 @@ public class CreateAccountActivity extends AppCompatActivity {
 
   // send user account info
   public void createAcct(View view) {
-
-    // TODO: add function that checks all fields
-
-    String stringUrl = "http://rethrift-1.herokuapp.com/users";
-    // check that they have a connection
-    ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
-    if (networkInfo != null && networkInfo.isConnected()) {
-      new CreateAccountTask().execute(stringUrl);
-    } else {
+    String res = checkFields();
+    if (res.equals("good")) {
       new AlertDialog.Builder(this)
               .setTitle("Error")
-              .setMessage("No network connection available.")
+              .setMessage(res)
               .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   dialog.dismiss();
@@ -64,14 +56,127 @@ public class CreateAccountActivity extends AppCompatActivity {
               })
               .setIcon(android.R.drawable.ic_dialog_alert)
               .show();
+    } else {
+      String stringUrl = "http://rethrift-1.herokuapp.com/users";
+
+      // check that they have a connection
+      ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+      NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
+      if (networkInfo != null && networkInfo.isConnected()) {
+        new CreateAccountTask().execute(stringUrl);
+      } else {
+        new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage("No network connection available.")
+                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                  }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+      }
+
+      // go to SalesboardActivity
+      Intent intent = new Intent(this, SalesboardActivity.class);
+      startActivity(intent);
     }
-
-    // go to SalesboardActivity
-    Intent intent = new Intent(this, SalesboardActivity.class);
-    startActivity(intent);
-
   }
 
+  // check user fields
+  public String checkFields() {
+    String stringUrl = "http://rethrift-1.herokuapp.com/users";
+    String res = "good";
+    // TODO: check email
+    // TODO: check phone number
+    // TODO: check username
+    new CheckUsernameTask().execute(stringUrl);
+    // TODO: check pw
+    // TODO: check verify pw
+    return res;
+  }
+
+
+  private class CheckUsernameTask extends AsyncTask<String, Void, String> {
+    @Override
+    protected String doInBackground(String... urls) {
+      try {
+        return checkUsername(urls[0]);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return "Unable to create account. Please try again later.";
+      }
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+      Log.d("CHECK USERNAME", result);
+    }
+
+    // Given a URL, establishes an HttpUrlConnection and retrieves
+    // the web page content as a InputStream, which it returns as
+    // a string.
+    private String checkUsername(String myurl) throws IOException {
+      OutputStream os = null;
+
+      try {
+        URL url = new URL(myurl);
+        Log.d("URL", "" + url);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setReadTimeout(10000 /* milliseconds */);
+        conn.setConnectTimeout(15000 /* milliseconds */);
+        conn.setDoOutput(true);
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-Type", "application/json");
+
+        // Starts the query
+        conn.connect();
+        os = conn.getOutputStream();
+
+        JSONObject userAcctJson = new JSONObject();
+        try {
+          userAcctJson.put("username", username.getText().toString());
+
+          Log.d("JSONOBJECT", userAcctJson.toString(2));
+          // Write JSONObject to output stream
+          writeIt(os, userAcctJson.toString(2));
+
+          int response = conn.getResponseCode();
+          Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
+
+          return "successfully created account";
+        } catch (JSONException e) {
+          e.printStackTrace();
+          return "couldn't create account";
+        }
+        // Makes sure that the OutputStream is closed after the app is finished using it.
+      } finally {
+        if (os != null) {
+          os.close();
+        }
+      }
+    }
+
+    // Writes an OutputStream
+    private void writeIt(OutputStream stream, String msg) throws IOException {
+      Writer writer = new OutputStreamWriter(stream, "UTF-8");
+      writer.write(msg);
+      writer.flush();
+      writer.close();
+    }
+
+
+    /* saving for later
+    // Reads an InputStream and converts it to a String.
+    private String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
+      Reader reader = null;
+      reader = new InputStreamReader(stream, "UTF-8");
+      char[] buffer = new char[len];
+      reader.read(buffer);
+      return new String(buffer);
+    }
+    */
+  }
 
   private class CreateAccountTask extends AsyncTask<String, Void, String> {
     @Override
@@ -156,5 +261,6 @@ public class CreateAccountActivity extends AppCompatActivity {
       reader.read(buffer);
       return new String(buffer);
     }
-    */}
+    */
+  }
 }
