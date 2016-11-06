@@ -93,6 +93,9 @@ public class CreateAccountActivity extends AppCompatActivity {
     new CheckUsernameTask().execute(stringUrl);
     // TODO: check pw
     // TODO: check verify pw
+    /* else if (!verifyPassword.getText().toString().equals(password.getText().toString())) {
+      res = "Please verify your password.";
+    }*/
     return res;
   }
 
