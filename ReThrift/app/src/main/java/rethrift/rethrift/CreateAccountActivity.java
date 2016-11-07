@@ -45,7 +45,7 @@ public class CreateAccountActivity extends AppCompatActivity {
   // send user account info
   public void createAcct(View view) {
     String res = checkFields();
-    if (res.equals("good")) {
+    if (!res.equals("good")) {
       new AlertDialog.Builder(this)
               .setTitle("Error")
               .setMessage(res)
