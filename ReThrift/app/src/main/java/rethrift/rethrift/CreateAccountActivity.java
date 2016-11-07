@@ -90,7 +90,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     // TODO: check email
     // TODO: check phone number
     // TODO: check username
-    new CheckUsernameTask().execute(stringUrl);
+    // new CheckUsernameTask().execute(stringUrl);
     // TODO: check pw
     // TODO: check verify pw
     /* else if (!verifyPassword.getText().toString().equals(password.getText().toString())) {
