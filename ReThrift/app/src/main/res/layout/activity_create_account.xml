@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:inputType="textWebEmailAddress|textFilter"
+        android:inputType="textWebEmailAddress"
         android:maxLength="24"
         android:imeOptions="actionDone"
         android:hint="@string/email_hint"/>

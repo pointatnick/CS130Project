@@ -109,8 +109,8 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
     // TODO: check username
-    Pattern userPattern = Pattern.compile("(\\w+\\d*){3,12}");
-    Matcher userMatcher = userPattern.matcher(password.getText().toString());
+    Pattern userPattern = Pattern.compile("(\\w+\\d*){˚3,12}");
+    Matcher userMatcher = userPattern.matcher(username.getText().toString());
     if (!userMatcher.matches()) {
       return "Please enter a valid username";
     }
