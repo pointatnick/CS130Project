@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">ReThrift</string>
 
+    <string name="username_create_hint">Username (3 to 12 characters)</string>
+    <string name="password_create_hint">Password (6 to 18 characters)</string>
     <string name="username_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="verify_password_hint">Verify password</string>

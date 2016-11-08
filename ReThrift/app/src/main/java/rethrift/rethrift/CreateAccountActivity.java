@@ -88,19 +88,32 @@ public class CreateAccountActivity extends AppCompatActivity {
   // check user fields
   public String checkFields() {
     String stringUrl = "http://rethrift-1.herokuapp.com/users/" + username.getText().toString();
+
+    // TODO: check name
+    if (firstName.getText().toString().equals("") || lastName.getText().toString().equals("")) {
+      return "Please enter your name";
+    }
+
     // TODO: check email
     Pattern emailPattern = Pattern.compile(".+@.+\\.[a-z]+");
     Matcher emailMatcher = emailPattern.matcher(email.getText().toString());
     if (!emailMatcher.matches()) {
       return "Please enter a valid email";
     }
+
     // TODO: check phone number
     Pattern phonePattern = Pattern.compile("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$");
     Matcher phoneMatcher = phonePattern.matcher(phone.getText().toString());
     if (!phoneMatcher.matches()) {
       return "Please enter a valid phone number";
     }
+
     // TODO: check username
+    Pattern userPattern = Pattern.compile("(\\w+\\d*){3,12}");
+    Matcher userMatcher = userPattern.matcher(password.getText().toString());
+    if (!userMatcher.matches()) {
+      return "Please enter a valid username";
+    }
     /*try {
       String result = new CheckUsernameTask().execute(stringUrl).get();
       if (!result.equals("good")) {
@@ -111,16 +124,19 @@ public class CreateAccountActivity extends AppCompatActivity {
     } catch (ExecutionException e) {
       e.printStackTrace();
     }*/
+
     // TODO: check pw
-    Pattern pwPattern = Pattern.compile("[.\\S]{8,32}");
+    Pattern pwPattern = Pattern.compile("[.\\S]{6,18}");
     Matcher pwMatcher = pwPattern.matcher(password.getText().toString());
     if (!pwMatcher.matches()) {
-      return "Please enter a valid email";
+      return "Please enter a valid password";
     }
+
     // TODO: check verify pw
     if (!verifyPassword.getText().toString().equals(password.getText().toString())) {
-      return "Please verify your password.";
+      return "Please verify your password";
     }
+
     return "good";
   }
 

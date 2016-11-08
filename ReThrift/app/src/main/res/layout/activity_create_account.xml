@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:inputType="textPersonName|textCapWords|textFilter"
-        android:maxLength="32"
+        android:maxLength="18"
         android:imeOptions="actionDone"
         android:hint="@string/firstname_hint"/>
 
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:inputType="textPersonName|textCapWords|textFilter"
-        android:maxLength="32"
+        android:maxLength="18"
         android:imeOptions="actionDone"
         android:hint="@string/lastname_hint"/>
 
@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:inputType="textWebEmailAddress|textFilter"
-        android:maxLength="64"
+        android:maxLength="24"
         android:imeOptions="actionDone"
         android:hint="@string/email_hint"/>
 
@@ -56,9 +56,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:inputType="textFilter"
-        android:maxLength="32"
+        android:maxLength="12"
         android:imeOptions="actionDone"
-        android:hint="@string/username_hint"/>
+        android:hint="@string/username_create_hint"/>
 
     <!--TODO: maxLength -->
     <EditText
@@ -67,9 +67,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:inputType="textPassword"
-        android:maxLength="32"
+        android:maxLength="18"
         android:imeOptions="actionDone"
-        android:hint="@string/password_hint"/>
+        android:hint="@string/password_create_hint"/>
 
     <!--TODO: maxLength -->
     <EditText
@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:inputType="textPassword"
-        android:maxLength="32"
+        android:maxLength="18"
         android:imeOptions="actionDone"
         android:hint="@string/verify_password_hint"/>
 
