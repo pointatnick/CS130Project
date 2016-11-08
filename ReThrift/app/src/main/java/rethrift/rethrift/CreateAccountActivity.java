@@ -57,7 +57,7 @@ public class CreateAccountActivity extends AppCompatActivity {
               .setIcon(android.R.drawable.ic_dialog_alert)
               .show();
     } else {
-      String stringUrl = "http://rethrift-1.herokuapp.com/users";
+      String stringUrl = "http://rethrift-1.herokuapp.com/users/create";
 
       // check that they have a connection
       ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -222,7 +222,7 @@ public class CreateAccountActivity extends AppCompatActivity {
           userAcctJson.put("firstname", firstName.getText().toString())
                       .put("lastname", lastName.getText().toString())
                       .put("email", email.getText().toString())
-                      .put("phonenumber", phoneNum.getText().toString())
+                      .put("phone", phoneNum.getText().toString())
                       .put("username", username.getText().toString())
                       .put("password", password.getText().toString());
 
