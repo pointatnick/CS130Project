@@ -17,11 +17,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,8 +68,14 @@ public class CreateAccountActivity extends AppCompatActivity {
       // check that they have a connection
       ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
       NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
+
       if (networkInfo != null && networkInfo.isConnected()) {
+        // create account
         new CreateAccountTask().execute(stringUrl);
+
+        // go to SalesboardActivity
+        Intent intent = new Intent(this, SalesboardActivity.class);
+        startActivity(intent);
       } else {
         new AlertDialog.Builder(this)
                 .setTitle("Error")
@@ -78,10 +88,6 @@ public class CreateAccountActivity extends AppCompatActivity {
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
       }
-
-      // go to SalesboardActivity
-      Intent intent = new Intent(this, SalesboardActivity.class);
-      startActivity(intent);
     }
   }
 
@@ -89,19 +95,19 @@ public class CreateAccountActivity extends AppCompatActivity {
   public String checkFields() {
     String stringUrl = "http://rethrift-1.herokuapp.com/users/" + username.getText().toString();
 
-    // TODO: check name
+    // check name
     if (firstName.getText().toString().equals("") || lastName.getText().toString().equals("")) {
       return "Please enter your name";
     }
 
-    // TODO: check email
+    // check email
     Pattern emailPattern = Pattern.compile(".+@.+\\.[a-z]+");
     Matcher emailMatcher = emailPattern.matcher(email.getText().toString());
     if (!emailMatcher.matches()) {
       return "Please enter a valid email";
     }
 
-    // TODO: check phone number
+    // check phone number
     Pattern phonePattern = Pattern.compile("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$");
     Matcher phoneMatcher = phonePattern.matcher(phone.getText().toString());
     if (!phoneMatcher.matches()) {
@@ -114,8 +120,9 @@ public class CreateAccountActivity extends AppCompatActivity {
     if (!userMatcher.matches()) {
       return "Please enter a valid username";
     }
-    /*try {
+    try {
       String result = new CheckUsernameTask().execute(stringUrl).get();
+      Log.d("RESULT OF CHECKUSERNAME", result);
       if (!result.equals("good")) {
         return result;
       }
@@ -123,21 +130,21 @@ public class CreateAccountActivity extends AppCompatActivity {
       e.printStackTrace();
     } catch (ExecutionException e) {
       e.printStackTrace();
-    }*/
+    }
 
-    // TODO: check pw
+    // check pw
     Pattern pwPattern = Pattern.compile("[.\\S]{6,18}");
     Matcher pwMatcher = pwPattern.matcher(password.getText().toString());
     if (!pwMatcher.matches()) {
       return "Please enter a valid password";
     }
 
-    // TODO: check verify pw
+    // check verify pw
     if (!verifyPassword.getText().toString().equals(password.getText().toString())) {
       return "Please verify your password";
     }
 
-    return "good";
+    return "goo";
   }
 
 
@@ -148,7 +155,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         return checkUsername(urls[0]);
       } catch (IOException e) {
         e.printStackTrace();
-        return "Unable to create account. Please try again later.";
+        return "Unable to check username. Please try again later.";
       }
     }
 
@@ -157,11 +164,9 @@ public class CreateAccountActivity extends AppCompatActivity {
       Log.d("CHECK USERNAME", result);
     }
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the web page content as a InputStream, which it returns as
-    // a string.
     private String checkUsername(String myurl) throws IOException {
-      OutputStream os = null;
+      InputStream is = null;
+      int len = 500;
 
       try {
         URL url = new URL(myurl);
@@ -171,55 +176,33 @@ public class CreateAccountActivity extends AppCompatActivity {
         conn.setConnectTimeout(15000 /* milliseconds */);
         conn.setDoOutput(true);
         conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoInput(true);
 
         // Starts the query
         conn.connect();
-        os = conn.getOutputStream();
+        is = conn.getInputStream();
 
-        JSONObject userAcctJson = new JSONObject();
-        try {
-          userAcctJson.put("username", username.getText().toString());
+        // Convert the InputStream into a string
+        String contentAsString = readIt(is, len);
+        Log.d("HTTP CONTENT", contentAsString);
+        return contentAsString;
 
-          Log.d("JSONOBJECT", userAcctJson.toString(2));
-          // Write JSONObject to output stream
-          writeIt(os, userAcctJson.toString(2));
-
-          int response = conn.getResponseCode();
-          Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
-
-          return "successfully created account";
-        } catch (JSONException e) {
-          e.printStackTrace();
-          return "couldn't create account";
-        }
-        // Makes sure that the OutputStream is closed after the app is finished using it.
+        // Makes sure that the InputStream is closed after the app is finished using it.
       } finally {
-        if (os != null) {
-          os.close();
+        if (is != null) {
+          is.close();
         }
       }
     }
 
-    // Writes an OutputStream
-    private void writeIt(OutputStream stream, String msg) throws IOException {
-      Writer writer = new OutputStreamWriter(stream, "UTF-8");
-      writer.write(msg);
-      writer.flush();
-      writer.close();
-    }
-
-
-    /* saving for later
     // Reads an InputStream and converts it to a String.
-    private String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
+    private String readIt(InputStream stream, int len) throws IOException {
       Reader reader = null;
       reader = new InputStreamReader(stream, "UTF-8");
       char[] buffer = new char[len];
       reader.read(buffer);
       return new String(buffer);
     }
-    */
   }
 
   private class CreateAccountTask extends AsyncTask<String, Void, String> {
@@ -238,9 +221,6 @@ public class CreateAccountActivity extends AppCompatActivity {
       Log.d("CREATE ACCOUNT", result);
     }
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the web page content as a InputStream, which it returns as
-    // a string.
     private String createAccountUrl(String myurl) throws IOException {
       OutputStream os = null;
 
@@ -294,17 +274,5 @@ public class CreateAccountActivity extends AppCompatActivity {
       writer.flush();
       writer.close();
     }
-
-
-    /* saving for later
-    // Reads an InputStream and converts it to a String.
-    private String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
-      Reader reader = null;
-      reader = new InputStreamReader(stream, "UTF-8");
-      char[] buffer = new char[len];
-      reader.read(buffer);
-      return new String(buffer);
-    }
-    */
   }
 }
