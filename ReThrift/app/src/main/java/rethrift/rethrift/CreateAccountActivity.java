@@ -22,10 +22,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-  private EditText firstName, lastName, email, phoneNum, username, password, verifyPassword;
+  private EditText firstName, lastName, email, phone, username, password, verifyPassword;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     firstName = (EditText) findViewById(R.id.firstname_field);
     lastName = (EditText) findViewById(R.id.lastname_field);
     email = (EditText) findViewById(R.id.email_field);
-    phoneNum = (EditText) findViewById(R.id.phone_field);
+    phone = (EditText) findViewById(R.id.phone_field);
     username = (EditText) findViewById(R.id.username_field);
     password = (EditText) findViewById(R.id.password_field);
     verifyPassword = (EditText) findViewById(R.id.verify_password_field);
@@ -85,18 +87,41 @@ public class CreateAccountActivity extends AppCompatActivity {
 
   // check user fields
   public String checkFields() {
-    String stringUrl = "http://rethrift-1.herokuapp.com/users";
-    String res = "good";
+    String stringUrl = "http://rethrift-1.herokuapp.com/users/" + username.getText().toString();
     // TODO: check email
+    Pattern emailPattern = Pattern.compile(".+@.+\\.[a-z]+");
+    Matcher emailMatcher = emailPattern.matcher(email.getText().toString());
+    if (!emailMatcher.matches()) {
+      return "Please enter a valid email";
+    }
     // TODO: check phone number
+    Pattern phonePattern = Pattern.compile("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$");
+    Matcher phoneMatcher = phonePattern.matcher(phone.getText().toString());
+    if (!phoneMatcher.matches()) {
+      return "Please enter a valid phone number";
+    }
     // TODO: check username
-    // new CheckUsernameTask().execute(stringUrl);
-    // TODO: check pw
-    // TODO: check verify pw
-    /* else if (!verifyPassword.getText().toString().equals(password.getText().toString())) {
-      res = "Please verify your password.";
+    /*try {
+      String result = new CheckUsernameTask().execute(stringUrl).get();
+      if (!result.equals("good")) {
+        return result;
+      }
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
     }*/
-    return res;
+    // TODO: check pw
+    Pattern pwPattern = Pattern.compile("[.\\S]{8,32}");
+    Matcher pwMatcher = pwPattern.matcher(password.getText().toString());
+    if (!pwMatcher.matches()) {
+      return "Please enter a valid email";
+    }
+    // TODO: check verify pw
+    if (!verifyPassword.getText().toString().equals(password.getText().toString())) {
+      return "Please verify your password.";
+    }
+    return "good";
   }
 
 
@@ -222,7 +247,7 @@ public class CreateAccountActivity extends AppCompatActivity {
           userAcctJson.put("firstname", firstName.getText().toString())
                       .put("lastname", lastName.getText().toString())
                       .put("email", email.getText().toString())
-                      .put("phone", phoneNum.getText().toString())
+                      .put("phone", phone.getText().toString())
                       .put("username", username.getText().toString())
                       .put("password", password.getText().toString());
 
