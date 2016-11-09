@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.PasswordTransformationMethod;
@@ -35,6 +36,7 @@ import java.util.regex.Pattern;
 public class CreateAccountActivity extends AppCompatActivity {
 
   private EditText firstName, lastName, email, phone, username, password, verifyPassword;
+  private TextInputLayout passwordLayout, verifyLayout;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,12 @@ public class CreateAccountActivity extends AppCompatActivity {
     verifyPassword = (EditText) findViewById(R.id.verify_password_field);
     verifyPassword.setTypeface(Typeface.DEFAULT);
     verifyPassword.setTransformationMethod(new PasswordTransformationMethod());
+
+    passwordLayout = (TextInputLayout) findViewById(R.id.password_layout);
+    passwordLayout.setTypeface(Typeface.DEFAULT);
+
+    verifyLayout = (TextInputLayout) findViewById(R.id.verify_layout);
+    verifyLayout.setTypeface(Typeface.DEFAULT);
   }
 
   // send user account info
