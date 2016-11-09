@@ -13,17 +13,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
@@ -146,4 +140,5 @@ public class LoginActivity extends AppCompatActivity {
       reader.read(buffer);
       return new String(buffer);
     }
+  }
 }
