@@ -124,6 +124,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Convert the InputStream into a string
         String userAcct = readIt(is, len);
+
+        // check password
         try {
           JSONObject userAcctJson = new JSONObject(userAcct);
           if (!userAcctJson.getString("password").equals(password.getText().toString())) {
