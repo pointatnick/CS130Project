@@ -56,16 +56,22 @@ public class LoginActivity extends AppCompatActivity {
       try {
         String res = new LoginTask().execute(stringUrl).get();
 
-        new AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage(res)
-                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                  }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+        if (!res.equals("good")) {
+          new AlertDialog.Builder(this)
+                  .setTitle("Error")
+                  .setMessage(res)
+                  .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                      dialog.dismiss();
+                    }
+                  })
+                  .setIcon(android.R.drawable.ic_dialog_alert)
+                  .show();
+        } else {
+          // go to MainActivity
+          Intent intent = new Intent(this, SalesboardActivity.class);
+          startActivity(intent);
+        }
       } catch (InterruptedException e) {
         e.printStackTrace();
       } catch (ExecutionException e) {
@@ -83,10 +89,6 @@ public class LoginActivity extends AppCompatActivity {
               .setIcon(android.R.drawable.ic_dialog_alert)
               .show();
     }
-
-    // go to MainActivity
-    Intent intent = new Intent(this, SalesboardActivity.class);
-    startActivity(intent);
   }
 
   // AsyncTask that checks if a username already exists.
@@ -126,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
         // Convert the InputStream into a string
         String userAcct = readIt(is, len);
         Log.d("HTTP CONTENT", userAcct);
-        return "Username already exists";
+        return "good";
       } catch (FileNotFoundException e) {
         return "Username does not exist";
       } finally {
