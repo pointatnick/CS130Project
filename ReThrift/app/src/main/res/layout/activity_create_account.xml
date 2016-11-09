@@ -49,7 +49,6 @@
         android:imeOptions="actionDone"
         android:hint="@string/phone_hint"/>
 
-    <!--TODO: maxLength -->
     <EditText
         android:id="@+id/username_field"
         android:layout_width="match_parent"
@@ -60,7 +59,6 @@
         android:imeOptions="actionDone"
         android:hint="@string/username_create_hint"/>
 
-    <!--TODO: maxLength -->
     <EditText
         android:id="@+id/password_field"
         android:layout_width="match_parent"
@@ -71,7 +69,6 @@
         android:imeOptions="actionDone"
         android:hint="@string/password_create_hint"/>
 
-    <!--TODO: maxLength -->
     <EditText
         android:id="@+id/verify_password_field"
         android:layout_width="match_parent"

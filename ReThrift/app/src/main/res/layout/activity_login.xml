@@ -13,28 +13,27 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="rethrift.rethrift.LoginActivity">
 
-    <!--TODO: maxLength -->
     <TextView
         android:layout_height="48dp"
         android:layout_width="match_parent"
         android:gravity="center"
         android:text="@string/app_name"
         android:textAppearance="@android:style/TextAppearance.Large"/>
+
     <EditText
         android:id="@+id/username_field"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_gravity="start"
         android:inputType="textFilter"
         android:maxLength="12"
         android:imeOptions="actionDone"
         android:hint="@string/username_hint"/>
 
-    <!--TODO: maxLength -->
     <EditText
         android:id="@+id/password_field"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_gravity="start"
         android:inputType="textPassword"
         android:maxLength="18"
