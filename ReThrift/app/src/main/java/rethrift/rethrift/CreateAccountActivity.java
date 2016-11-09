@@ -16,6 +16,7 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -93,8 +94,6 @@ public class CreateAccountActivity extends AppCompatActivity {
 
   // check user fields
   public String checkFields() {
-    String stringUrl = "http://rethrift-1.herokuapp.com/users/" + username.getText().toString();
-
     // check name
     if (firstName.getText().toString().equals("") || lastName.getText().toString().equals("")) {
       return "Please enter your name";
@@ -121,6 +120,7 @@ public class CreateAccountActivity extends AppCompatActivity {
       return "Please enter a valid username";
     }
     try {
+      String stringUrl = "http://rethrift-1.herokuapp.com/users/" + username.getText().toString();
       String result = new CheckUsernameTask().execute(stringUrl).get();
       Log.d("RESULT OF CHECKUSERNAME", result);
       if (!result.equals("good")) {
@@ -174,7 +174,6 @@ public class CreateAccountActivity extends AppCompatActivity {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setReadTimeout(10000 /* milliseconds */);
         conn.setConnectTimeout(15000 /* milliseconds */);
-        conn.setDoOutput(true);
         conn.setRequestMethod("GET");
         conn.setDoInput(true);
 
@@ -183,12 +182,14 @@ public class CreateAccountActivity extends AppCompatActivity {
         is = conn.getInputStream();
 
         // Convert the InputStream into a string
-        String contentAsString = readIt(is, len);
-        Log.d("HTTP CONTENT", contentAsString);
-        return contentAsString;
+        String userAcct = readIt(is, len);
+        Log.d("HTTP CONTENT", userAcct);
+        return "Username already exists";
 
-        // Makes sure that the InputStream is closed after the app is finished using it.
+      } catch (FileNotFoundException e) {
+        return "good";
       } finally {
+        // Makes sure that the InputStream is closed after the app is finished using it.
         if (is != null) {
           is.close();
         }
