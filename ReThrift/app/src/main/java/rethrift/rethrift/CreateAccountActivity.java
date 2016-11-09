@@ -253,9 +253,6 @@ public class CreateAccountActivity extends AppCompatActivity {
           // Write JSONObject to output stream
           writeIt(os, userAcctJson.toString(2));
 
-          int response = conn.getResponseCode();
-          Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
-
           return "successfully created account";
         } catch (JSONException e) {
           e.printStackTrace();

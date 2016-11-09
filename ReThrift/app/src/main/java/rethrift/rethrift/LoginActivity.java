@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         return loginUser(strings[0]);
       } catch (IOException e) {
         e.printStackTrace();
-        return "Unable to create account. Please try again later.";
+        return "Unable to login. Please try again later.";
       }
     }
 
@@ -83,9 +83,6 @@ public class LoginActivity extends AppCompatActivity {
       Log.d("LOGIN", result);
     }
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the web page content as a InputStream, which it returns as
-    // a string.
     private String loginUser(String myurl) throws IOException {
       OutputStream os = null;
 
@@ -112,8 +109,6 @@ public class LoginActivity extends AppCompatActivity {
           // Write JSONObject to output stream
           writeIt(os, userAcctJson.toString(2));
 
-          int response = conn.getResponseCode();
-          Log.d("DEBUG HTTP EXAMPLE", "The response is: " + response);
           return "successfully created account";
         } catch (JSONException e) {
           e.printStackTrace();
@@ -134,18 +129,6 @@ public class LoginActivity extends AppCompatActivity {
       writer.flush();
       writer.close();
     }
-
-
-    /* saving for later
-    // Reads an InputStream and converts it to a String.
-    private String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
-      Reader reader = null;
-      reader = new InputStreamReader(stream, "UTF-8");
-      char[] buffer = new char[len];
-      reader.read(buffer);
-      return new String(buffer);
-    }
-    */
   }
 
 }
