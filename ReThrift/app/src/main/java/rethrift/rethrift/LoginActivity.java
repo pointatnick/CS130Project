@@ -126,7 +126,6 @@ public class LoginActivity extends AppCompatActivity {
         String userAcct = readIt(is, len);
         try {
           JSONObject userAcctJson = new JSONObject(userAcct);
-          Log.d("PASSWORD", userAcctJson.getString("password"));
           if (!userAcctJson.getString("password").equals(password.getText().toString())) {
             return "Invalid password";
           }
