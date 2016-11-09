@@ -3,12 +3,14 @@ package rethrift.rethrift;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -36,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
 
     username = (EditText) findViewById(R.id.username_field);
     password = (EditText) findViewById(R.id.password_field);
+    password.setTypeface(Typeface.DEFAULT);
+    password.setTransformationMethod(new PasswordTransformationMethod());
   }
 
   public void createAcct(View view){

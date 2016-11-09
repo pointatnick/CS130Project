@@ -18,7 +18,8 @@
         android:layout_width="match_parent"
         android:gravity="center"
         android:text="@string/app_name"
-        android:textAppearance="@android:style/TextAppearance.Large"/>
+        android:textSize="20sp"
+        android:textAppearance="@android:style/TextAppearance.Medium"/>
 
     <EditText
         android:id="@+id/username_field"
@@ -28,7 +29,8 @@
         android:inputType="textFilter"
         android:maxLength="12"
         android:imeOptions="actionDone"
-        android:hint="@string/username_hint"/>
+        android:hint="@string/username_hint"
+        android:textSize="16sp"/>
 
     <EditText
         android:id="@+id/password_field"
@@ -38,12 +40,14 @@
         android:inputType="textPassword"
         android:maxLength="18"
         android:imeOptions="actionDone"
-        android:hint="@string/password_hint"/>
+        android:hint="@string/password_hint"
+        android:textSize="16sp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <Button
             android:id="@+id/create_acct_btn"
             style="?android:attr/borderlessButtonStyle"

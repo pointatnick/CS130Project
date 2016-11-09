@@ -3,12 +3,14 @@ package rethrift.rethrift;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -45,8 +47,14 @@ public class CreateAccountActivity extends AppCompatActivity {
     email = (EditText) findViewById(R.id.email_field);
     phone = (EditText) findViewById(R.id.phone_field);
     username = (EditText) findViewById(R.id.username_field);
+
     password = (EditText) findViewById(R.id.password_field);
+    password.setTypeface(Typeface.DEFAULT);
+    password.setTransformationMethod(new PasswordTransformationMethod());
+
     verifyPassword = (EditText) findViewById(R.id.verify_password_field);
+    verifyPassword.setTypeface(Typeface.DEFAULT);
+    verifyPassword.setTransformationMethod(new PasswordTransformationMethod());
   }
 
   // send user account info
