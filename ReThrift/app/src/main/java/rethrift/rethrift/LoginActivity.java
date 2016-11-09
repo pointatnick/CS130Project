@@ -16,12 +16,17 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -48,7 +53,24 @@ public class LoginActivity extends AppCompatActivity {
     NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
     if (networkInfo != null && networkInfo.isConnected()) {
       // authenticate
-      new LoginTask().execute(stringUrl, username.getText().toString(), password.getText().toString());
+      try {
+        String res = new LoginTask().execute(stringUrl).get();
+
+        new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage(res)
+                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                  }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
     } else {
       new AlertDialog.Builder(this)
               .setTitle("Error")
@@ -67,24 +89,26 @@ public class LoginActivity extends AppCompatActivity {
     startActivity(intent);
   }
 
+  // AsyncTask that checks if a username already exists.
   private class LoginTask extends AsyncTask<String, Void, String> {
     @Override
-    protected String doInBackground(String... strings) {
+    protected String doInBackground(String... urls) {
       try {
-        return loginUser(strings[0]);
+        return checkLogin(urls[0]);
       } catch (IOException e) {
         e.printStackTrace();
-        return "Unable to login. Please try again later.";
+        return "Unable to check username. Please try again later.";
       }
     }
 
     @Override
     protected void onPostExecute(String result) {
-      Log.d("LOGIN", result);
+      Log.d("CHECK USERNAME", result);
     }
 
-    private String loginUser(String myurl) throws IOException {
-      OutputStream os = null;
+    private String checkLogin(String myurl) throws IOException {
+      InputStream is = null;
+      int len = 500;
 
       try {
         URL url = new URL(myurl);
@@ -92,43 +116,32 @@ public class LoginActivity extends AppCompatActivity {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setReadTimeout(10000 /* milliseconds */);
         conn.setConnectTimeout(15000 /* milliseconds */);
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestMethod("GET");
+        conn.setDoInput(true);
 
         // Starts the query
         conn.connect();
-        os = conn.getOutputStream();
+        is = conn.getInputStream();
 
-        JSONObject userAcctJson = new JSONObject();
-        try {
-          userAcctJson.put("username", username.getText().toString())
-                      .put("password", password.getText().toString());
-
-          Log.d("JSONOBJECT", userAcctJson.toString(2));
-          // Write JSONObject to output stream
-          writeIt(os, userAcctJson.toString(2));
-
-          return "successfully created account";
-        } catch (JSONException e) {
-          e.printStackTrace();
-          return "couldn't create account";
-        }
-        // Makes sure that the OutputStream is closed after the app is finished using it.
+        // Convert the InputStream into a string
+        String userAcct = readIt(is, len);
+        Log.d("HTTP CONTENT", userAcct);
+        return "Username already exists";
+      } catch (FileNotFoundException e) {
+        return "Username does not exist";
       } finally {
-        if (os != null) {
-          os.close();
+        // Makes sure that the InputStream is closed after the app is finished using it.
+        if (is != null) {
+          is.close();
         }
       }
     }
 
-    // Writes an OutputStream
-    private void writeIt(OutputStream stream, String msg) throws IOException {
-      Writer writer = new OutputStreamWriter(stream, "UTF-8");
-      writer.write(msg);
-      writer.flush();
-      writer.close();
+    // Reads an InputStream and converts it to a String.
+    private String readIt(InputStream stream, int len) throws IOException {
+      Reader reader = new InputStreamReader(stream, "UTF-8");
+      char[] buffer = new char[len];
+      reader.read(buffer);
+      return new String(buffer);
     }
-  }
-
 }

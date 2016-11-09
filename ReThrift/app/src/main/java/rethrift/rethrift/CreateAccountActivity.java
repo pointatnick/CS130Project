@@ -186,7 +186,6 @@ public class CreateAccountActivity extends AppCompatActivity {
         String userAcct = readIt(is, len);
         Log.d("HTTP CONTENT", userAcct);
         return "Username already exists";
-
       } catch (FileNotFoundException e) {
         return "good";
       } finally {
