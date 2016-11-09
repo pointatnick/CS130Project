@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   public void login(View view) {
-    String stringUrl = "http://rethrift-1.herokuapp.com/login";
+    String stringUrl = "http://rethrift-1.herokuapp.com/users/" + username.getText().toString();
     // check that they have a connection
     ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
@@ -122,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
         // Convert the InputStream into a string
         String userAcct = readIt(is, len);
         Log.d("HTTP CONTENT", userAcct);
+        // TODO: check password
         return "good";
       } catch (FileNotFoundException e) {
         return "Username does not exist";
