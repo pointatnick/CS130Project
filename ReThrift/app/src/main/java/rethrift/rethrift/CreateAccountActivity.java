@@ -148,6 +148,7 @@ public class CreateAccountActivity extends AppCompatActivity {
   }
 
 
+  // AsyncTask that checks if a username already exists.
   private class CheckUsernameTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... urls) {
@@ -198,14 +199,14 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     // Reads an InputStream and converts it to a String.
     private String readIt(InputStream stream, int len) throws IOException {
-      Reader reader = null;
-      reader = new InputStreamReader(stream, "UTF-8");
+      Reader reader = new InputStreamReader(stream, "UTF-8");
       char[] buffer = new char[len];
       reader.read(buffer);
       return new String(buffer);
     }
   }
 
+  // AsyncTask which creates the account in the background
   private class CreateAccountTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... urls) {
