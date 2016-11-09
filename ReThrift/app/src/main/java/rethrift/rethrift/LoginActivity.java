@@ -13,6 +13,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,8 +124,15 @@ public class LoginActivity extends AppCompatActivity {
 
         // Convert the InputStream into a string
         String userAcct = readIt(is, len);
-        Log.d("HTTP CONTENT", userAcct);
-        // TODO: check password
+        try {
+          JSONObject userAcctJson = new JSONObject(userAcct);
+          Log.d("PASSWORD", userAcctJson.getString("password"));
+          if (!userAcctJson.getString("password").equals(password.getText().toString())) {
+            return "Invalid password";
+          }
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
         return "good";
       } catch (FileNotFoundException e) {
         return "Username does not exist";
