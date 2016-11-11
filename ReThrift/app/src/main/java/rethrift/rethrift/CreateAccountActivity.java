@@ -80,19 +80,36 @@ public class CreateAccountActivity extends AppCompatActivity {
               .setIcon(android.R.drawable.ic_dialog_alert)
               .show();
     } else {
-      String stringUrl = "http://rethrift-1.herokuapp.com/users/create";
-
       // check that they have a connection
       ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
       NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
 
       if (networkInfo != null && networkInfo.isConnected()) {
-        // create account
-        new CreateAccountTask().execute(stringUrl);
+        try {
+          String stringUrl = "http://rethrift-1.herokuapp.com/users/create";
+          String createRes = new CreateAccountTask().execute(stringUrl).get();
 
-        // go to SalesboardActivity
-        Intent intent = new Intent(this, SalesboardActivity.class);
-        startActivity(intent);
+          if (createRes.equals("good")) {
+            // go to SalesboardActivity
+            Intent intent = new Intent(this, SalesboardActivity.class);
+            startActivity(intent);
+          } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage(createRes)
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                      public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                      }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+          }
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        } catch (ExecutionException e) {
+          e.printStackTrace();
+        }
       } else {
         new AlertDialog.Builder(this)
                 .setTitle("Error")
@@ -268,10 +285,10 @@ public class CreateAccountActivity extends AppCompatActivity {
           // Write JSONObject to output stream
           writeIt(os, userAcctJson.toString(2));
 
-          return "successfully created account";
+          return "good";
         } catch (JSONException e) {
           e.printStackTrace();
-          return "couldn't create account";
+          return "Unable to create account. Please try again later.";
         }
         // Makes sure that the OutputStream is closed after the app is finished using it.
       } finally {
