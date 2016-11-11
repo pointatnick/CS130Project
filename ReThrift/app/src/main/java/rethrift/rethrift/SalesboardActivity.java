@@ -16,8 +16,6 @@ import java.util.List;
 
 public class SalesboardActivity extends AppCompatActivity {
 
-    private ArrayList<String> postsArray;
-    private ArrayAdapter postsAdapter;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
 
@@ -63,7 +61,7 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
     private List<Post> createList(int size) {
-        List<Post> result = new ArrayList<Post>();
+        List<Post> result = new ArrayList<>();
         for (int i=1; i <= size; i++) {
             Post ci = new Post("Title goes here", "$10", "5678 Alley Drive");
             result.add(ci);

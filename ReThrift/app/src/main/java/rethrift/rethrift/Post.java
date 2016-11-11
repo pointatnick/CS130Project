@@ -6,8 +6,6 @@ public class Post {
     private String m_price;
     private String m_location;
 
-    public Post() {}
-
     public Post(String title, String price, String location) {
         m_title = title;
         m_price = price;
