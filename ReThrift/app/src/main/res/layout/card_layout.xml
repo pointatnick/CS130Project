@@ -5,57 +5,63 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    card_view:cardCornerRadius="4dp"
-    android:layout_margin="5dp">
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="2dp"
+    android:layout_margin="8dp"
+    android:background="@color/cardview_light_background">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/title"
+        <ImageView
+            android:id="@+id/card_image"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@android:color/white"
-            android:text="Title"
-            android:gravity="center_vertical"
-            android:textColor="@android:color/black"
-            android:textSize="14dp"/>
-
-        <TextView
-            android:id="@+id/txtName"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:gravity="center_vertical"
-            android:textSize="10dp"
-            android:layout_below="@id/title"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"/>
+            android:src="@drawable/profile"/>
 
-        <TextView
-            android:id="@+id/txtSurname"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/card_info"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Surname"
-            android:gravity="center_vertical"
-            android:textSize="10dp"
-            android:layout_below="@id/txtName"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"/>
+            android:orientation="vertical"
+            android:layout_below="@id/card_image"
+            android:layout_marginTop="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp">
 
-        <TextView
-            android:id="@+id/txtEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email"
-            android:textSize="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="150dp"
-            android:layout_alignBaseline="@id/txtName"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Title"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp"/>
+
+                <TextView
+                    android:id="@+id/price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$5"
+                    android:textColor="#4CAF50"
+                    android:textSize="24sp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1234 Park Lane"
+                android:textSize="14sp"/>
+
+        </LinearLayout>
     </RelativeLayout>
-
 </android.support.v7.widget.CardView>
