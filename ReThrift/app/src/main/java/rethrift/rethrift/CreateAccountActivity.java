@@ -19,6 +19,8 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -213,7 +215,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         // Starts the query
         conn.connect();
-        is = conn.getInputStream();
+        is = new BufferedInputStream(conn.getInputStream());
 
         // Convert the InputStream into a string
         String userAcct = readIt(is, len);
@@ -267,10 +269,11 @@ public class CreateAccountActivity extends AppCompatActivity {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
+        conn.setChunkedStreamingMode(0);
 
         // Starts the query
         conn.connect();
-        os = conn.getOutputStream();
+        os = new BufferedOutputStream(conn.getOutputStream());
 
         JSONObject userAcctJson = new JSONObject();
         try {
@@ -284,7 +287,6 @@ public class CreateAccountActivity extends AppCompatActivity {
           Log.d("JSONOBJECT", userAcctJson.toString(2));
           // Write JSONObject to output stream
           writeIt(os, userAcctJson.toString(2));
-
           return "good";
         } catch (JSONException e) {
           e.printStackTrace();
@@ -304,6 +306,7 @@ public class CreateAccountActivity extends AppCompatActivity {
       writer.write(msg);
       writer.flush();
       writer.close();
+      Log.d("WRITE TO OUTPUT", "finished writing");
     }
   }
 }
