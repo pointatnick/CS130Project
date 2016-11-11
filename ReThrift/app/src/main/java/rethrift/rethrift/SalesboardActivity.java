@@ -3,12 +3,16 @@ package rethrift.rethrift;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import java.util.ArrayList;
-import android.view.Menu;
-import android.view.MenuInflater;
+import java.util.List;
 
 public class SalesboardActivity extends AppCompatActivity {
 
@@ -21,19 +25,14 @@ public class SalesboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
+        RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
+        recList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
 
-        // mock array for cards
-        postsArray = new ArrayList<String>();
-        postsArray.add("Selling Queen Size Bed Frame, $50, Furniture");
-        postsArray.add("Silver iPhone 5s, $200, Electronics");
-        postsArray.add("Selling Like New white sectional couch, $350, Furniture");
-
-        postsAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, postsArray);
-
-        ListView listView = (ListView) findViewById(R.id.cardlist);
-        listView.setAdapter(postsAdapter);
-
+        PostAdapter ca = new PostAdapter(createList(10));
+        recList.setAdapter(ca);
 
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         addDrawerItems();
@@ -61,6 +60,15 @@ public class SalesboardActivity extends AppCompatActivity {
         inflater.inflate(R.menu.option_menu, menu);
 
         return true;
+    }
+
+    private List<Post> createList(int size) {
+        List<Post> result = new ArrayList<Post>();
+        for (int i=1; i <= size; i++) {
+            Post ci = new Post("Title goes here", "$10", "5678 Alley Drive");
+            result.add(ci);
+        }
+        return result;
     }
 
 }

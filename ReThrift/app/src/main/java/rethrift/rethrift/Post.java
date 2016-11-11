@@ -1,21 +1,17 @@
 package rethrift.rethrift;
 
-/**
- * Created by kexinyu on 11/2/16.
- */
-
 public class Post {
 
     private String m_title;
     private String m_price;
-    private String m_category;
+    private String m_location;
 
     public Post() {}
 
-    public Post(String title, String price, String category){
+    public Post(String title, String price, String location) {
         m_title = title;
         m_price = price;
-        m_category = category;
+        m_location = location;
     }
 
     public String getTitle() {
@@ -26,7 +22,7 @@ public class Post {
         return m_price;
     }
 
-    public String getCategory() {
-        return m_category;
+    public String getLocation() {
+        return m_location;
     }
 }
