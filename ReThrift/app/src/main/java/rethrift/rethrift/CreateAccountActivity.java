@@ -8,19 +8,17 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-  private EditText firstName, lastName, email, phone, username, password, verifyPassword;
+  private TextInputEditText firstName, lastName, email, phone, username, password, verifyPassword;
   private TextInputLayout passwordLayout, verifyLayout;
 
   @Override
@@ -46,17 +44,17 @@ public class CreateAccountActivity extends AppCompatActivity {
     setContentView(R.layout.activity_create_account);
 
     // bind EditText fields
-    firstName = (EditText) findViewById(R.id.firstname_field);
-    lastName = (EditText) findViewById(R.id.lastname_field);
-    email = (EditText) findViewById(R.id.email_field);
-    phone = (EditText) findViewById(R.id.phone_field);
-    username = (EditText) findViewById(R.id.username_field);
+    firstName = (TextInputEditText) findViewById(R.id.firstname_field);
+    lastName = (TextInputEditText) findViewById(R.id.lastname_field);
+    email = (TextInputEditText) findViewById(R.id.email_field);
+    phone = (TextInputEditText) findViewById(R.id.phone_field);
+    username = (TextInputEditText) findViewById(R.id.username_field);
 
-    password = (EditText) findViewById(R.id.password_field);
+    password = (TextInputEditText) findViewById(R.id.password_field);
     password.setTypeface(Typeface.DEFAULT);
     password.setTransformationMethod(new PasswordTransformationMethod());
 
-    verifyPassword = (EditText) findViewById(R.id.verify_password_field);
+    verifyPassword = (TextInputEditText) findViewById(R.id.verify_password_field);
     verifyPassword.setTypeface(Typeface.DEFAULT);
     verifyPassword.setTransformationMethod(new PasswordTransformationMethod());
 
@@ -215,11 +213,12 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         // Starts the query
         conn.connect();
-        is = new BufferedInputStream(conn.getInputStream());
+        is = conn.getInputStream();
 
         // Convert the InputStream into a string
         String userAcct = readIt(is, len);
         Log.d("HTTP CONTENT", userAcct);
+        conn.disconnect();
         return "Username already exists";
       } catch (FileNotFoundException e) {
         return "good";
@@ -269,11 +268,10 @@ public class CreateAccountActivity extends AppCompatActivity {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
-        conn.setChunkedStreamingMode(0);
 
         // Starts the query
         conn.connect();
-        os = new BufferedOutputStream(conn.getOutputStream());
+        os = conn.getOutputStream();
 
         JSONObject userAcctJson = new JSONObject();
         try {
@@ -287,6 +285,8 @@ public class CreateAccountActivity extends AppCompatActivity {
           Log.d("JSONOBJECT", userAcctJson.toString(2));
           // Write JSONObject to output stream
           writeIt(os, userAcctJson.toString(2));
+          int response = conn.getResponseCode();
+          conn.disconnect();
           return "good";
         } catch (JSONException e) {
           e.printStackTrace();
@@ -306,7 +306,6 @@ public class CreateAccountActivity extends AppCompatActivity {
       writer.write(msg);
       writer.flush();
       writer.close();
-      Log.d("WRITE TO OUTPUT", "finished writing");
     }
   }
 }
