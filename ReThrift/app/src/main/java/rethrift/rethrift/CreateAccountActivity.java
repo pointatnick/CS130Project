@@ -160,7 +160,7 @@ public class CreateAccountActivity extends AppCompatActivity {
       return "Please verify your password";
     }
 
-    return "goo";
+    return "good";
   }
 
 
