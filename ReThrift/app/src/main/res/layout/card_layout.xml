@@ -24,43 +24,44 @@
             android:id="@+id/card_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_below="@id/card_image"
             android:layout_marginTop="24dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:gravity="center_vertical">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
                 android:gravity="center_vertical">
 
                 <TextView
                     android:id="@+id/title"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="Title"
                     android:textColor="@android:color/black"
                     android:textSize="24sp"/>
 
                 <TextView
-                    android:id="@+id/price"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/location"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="$5"
-                    android:textColor="#4CAF50"
-                    android:textSize="24sp"/>
+                    android:text="1234 Park Lane"
+                    android:textSize="14sp"/>
             </LinearLayout>
 
             <TextView
-                android:id="@+id/location"
-                android:layout_width="match_parent"
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1234 Park Lane"
-                android:textSize="14sp"/>
+                android:text="$5"
+                android:textColor="#4CAF50"
+                android:textSize="24sp"/>
 
         </LinearLayout>
     </RelativeLayout>
