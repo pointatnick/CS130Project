@@ -36,6 +36,11 @@ public class SalesboardActivity extends AppCompatActivity {
         addDrawerItems();
     }
 
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
     // profile preview (left screen)
     public void addDrawerItems() {
         String[] items = { "Name", "Username", "Watchlist", "Profile"};
