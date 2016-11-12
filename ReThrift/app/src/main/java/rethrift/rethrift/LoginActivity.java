@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 public class LoginActivity extends AppCompatActivity {
 
   private EditText username, password;
-  private String user;
+  private String user, name;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
           // go to MainActivity
           Intent intent = new Intent(this, SalesboardActivity.class);
           intent.putExtra("USERNAME", user);
+          intent.putExtra("FIRSTNAME", name);
           startActivity(intent);
         }
       } catch (InterruptedException e) {
@@ -95,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
     }
   }
 
-  // AsyncTask that checks if a username already exists.
+  // AsyncTask that checks if the password is correct and logs in the user
   private class LoginTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... urls) {
@@ -137,6 +138,8 @@ public class LoginActivity extends AppCompatActivity {
           JSONObject userAcctJson = new JSONObject(userAcct);
           if (!userAcctJson.getString("password").equals(password.getText().toString())) {
             return "Invalid password";
+          } else {
+            name = userAcctJson.getString("firstname");
           }
         } catch (JSONException e) {
           e.printStackTrace();

@@ -72,6 +72,7 @@ public class CreatePostActivity extends AppCompatActivity {
         }
     }
 
+    // TODO: look at this again later
     private class CurrencyTextWatcher implements TextWatcher {
         private String current = "";
 

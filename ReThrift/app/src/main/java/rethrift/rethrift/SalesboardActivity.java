@@ -17,7 +17,7 @@ import java.util.List;
 public class SalesboardActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
-    private String user;
+    private String user, name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -35,6 +35,7 @@ public class SalesboardActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = extras.getString("USERNAME");
+            name = extras.getString("FIRSTNAME");
         }
 
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -48,7 +49,7 @@ public class SalesboardActivity extends AppCompatActivity {
 
     // profile preview (left screen)
     public void addDrawerItems() {
-        String[] items = { "Name", user, "Watchlist", "Profile"};
+        String[] items = { name, user, "Profile", "Watchlist", "My Posts"};
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         mDrawerList.setAdapter(mAdapter);
     }
@@ -79,5 +80,4 @@ public class SalesboardActivity extends AppCompatActivity {
         }
         return result;
     }
-
 }
