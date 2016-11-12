@@ -12,7 +12,7 @@
     <string name="phone_hint">Phone number</string>
     <string name="title_hint">Title</string>
     <string name="price_hint">Price</string>
-    <string name="location_hint">Location</string>
+    <string name="location_hint">Pickup location</string>
     <string-array name="category_array">
         <item>Category 1</item>
         <item>Category 2</item>
