@@ -10,7 +10,17 @@
     <string name="lastname_hint">Last name</string>
     <string name="email_hint">Email</string>
     <string name="phone_hint">Phone number</string>
+    <string name="title_hint">Title</string>
+    <string name="price_hint">Price</string>
+    <string name="location_hint">Location</string>
+    <string-array name="category_array">
+        <item>Category 1</item>
+        <item>Category 2</item>
+        <item>Category 3</item>
+    </string-array>
+    <string name="description_hint">Description</string>
 
     <string name="login_btn">Login</string>
     <string name="create_acct_btn">Create Account</string>
+    <string name="create_post_btn">Create Post</string>
 </resources>
