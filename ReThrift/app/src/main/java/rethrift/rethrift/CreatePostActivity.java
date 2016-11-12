@@ -8,13 +8,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 
 import java.text.NumberFormat;
 
 public class CreatePostActivity extends AppCompatActivity {
-    private TextInputEditText title, price;
-    private EditText description;
+    private TextInputEditText title, price, description;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -24,7 +22,7 @@ public class CreatePostActivity extends AppCompatActivity {
         title = (TextInputEditText) findViewById(R.id.title_field);
         price = (TextInputEditText) findViewById(R.id.price_field);
         price.addTextChangedListener(new CurrencyTextWatcher());
-        description = (EditText) findViewById(R.id.description_field);
+        description = (TextInputEditText) findViewById(R.id.description_field);
         description.setHorizontallyScrolling(false);
         description.setMaxLines(Integer.MAX_VALUE);
     }
