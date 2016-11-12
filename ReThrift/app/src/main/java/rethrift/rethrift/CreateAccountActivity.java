@@ -93,6 +93,7 @@ public class CreateAccountActivity extends AppCompatActivity {
             // go to SalesboardActivity
             Intent intent = new Intent(this, SalesboardActivity.class);
             intent.putExtra("USERNAME", username.getText().toString());
+            intent.putExtra("FIRSTNAME", firstName.getText().toString());
             startActivity(intent);
           } else {
             new AlertDialog.Builder(this)
