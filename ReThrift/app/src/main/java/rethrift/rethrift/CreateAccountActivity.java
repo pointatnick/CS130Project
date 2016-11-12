@@ -92,6 +92,7 @@ public class CreateAccountActivity extends AppCompatActivity {
           if (createRes.equals("good")) {
             // go to SalesboardActivity
             Intent intent = new Intent(this, SalesboardActivity.class);
+            intent.putExtra("USERNAME", username.getText().toString());
             startActivity(intent);
           } else {
             new AlertDialog.Builder(this)

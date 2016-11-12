@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 public class LoginActivity extends AppCompatActivity {
 
   private EditText username, password;
+  private String user;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,8 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   public void login(View view) {
-    String stringUrl = "http://rethrift-1.herokuapp.com/users/" + username.getText().toString();
+    user = username.getText().toString();
+    String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user;
     // check that they have a connection
     ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
@@ -71,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
           // go to MainActivity
           Intent intent = new Intent(this, SalesboardActivity.class);
+          intent.putExtra("USERNAME", user);
           startActivity(intent);
         }
       } catch (InterruptedException e) {
