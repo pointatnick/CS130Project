@@ -41,12 +41,14 @@ public class SalesboardActivity extends AppCompatActivity {
 
         RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
         recList.setHasFixedSize(true);
+        RecyclerView card_list = (RecyclerView) findViewById(R.id.card_list);
+        card_list.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
+        card_list.setLayoutManager(llm);
 
-        PostAdapter ca = new PostAdapter(createList(10));
-        recList.setAdapter(ca);
+        PostAdapter ca = new PostAdapter(createList());
+        card_list.setAdapter(ca);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -70,8 +72,6 @@ public class SalesboardActivity extends AppCompatActivity {
         mDrawerList.setAdapter(mAdapter);
     }
 
-    // TODO: add button listeners
-
     // sales board (center screen)
     public void createPost(View view){
         Intent intent = new Intent(this, CreatePostActivity.class);
@@ -80,12 +80,12 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
 
-    private List<Post> createList(int size) {
+    private List<Post> createList() {
         List<Post> result = new ArrayList<>();
-        for (int i=1; i <= size; i++) {
-            Post ci = new Post("Title goes here", "$10", "5678 Alley Drive");
-            result.add(ci);
-        }
+        Post ci = new Post("Title goes here", "$10", "5678 Alley Drive", "Test description", "Test category");
+        Post di = new Post("Another title", "$5", "1234 Park Lane", "This is a test", "Some test");
+        result.add(ci);
+        result.add(di);
         return result;
     }
 

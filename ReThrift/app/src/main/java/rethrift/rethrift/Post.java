@@ -2,25 +2,37 @@ package rethrift.rethrift;
 
 public class Post {
 
-    private String m_title;
-    private String m_price;
-    private String m_location;
+    private String title;
+    private String price;
+    private String location;
+    private String description;
+    private String category;
 
-    public Post(String title, String price, String location) {
-        m_title = title;
-        m_price = price;
-        m_location = location;
+    public Post(String title, String price, String location, String description, String category) {
+        this.title = title;
+        this.price = price;
+        this.location = location;
+        this.description = description;
+        this.category = category;
     }
 
     public String getTitle() {
-        return m_title;
+        return title;
     }
 
     public String getPrice() {
-        return m_price;
+        return price;
     }
 
     public String getLocation() {
-        return m_location;
+        return location;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getCategory() {
+        return category;
     }
 }
