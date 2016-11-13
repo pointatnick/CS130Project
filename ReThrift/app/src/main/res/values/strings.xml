@@ -19,9 +19,11 @@
         <item>Category 3</item>
     </string-array>
     <string name="description_hint">Description</string>
+    <string name="search_hint">Type...</string>
 
     <string name="login_btn">Login</string>
     <string name="create_acct_btn">Create Account</string>
     <string name="create_post_btn">Create Post</string>
-    <string name="search_hint">Type...</string>
+    <string name="watchlist_btn">Add to Watchlist</string>
+    <string name="contact_btn">Contact Seller</string>
 </resources>
