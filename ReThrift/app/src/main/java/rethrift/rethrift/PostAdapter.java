@@ -51,6 +51,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       price = (TextView) view.findViewById(R.id.price);
       location = (TextView) view.findViewById(R.id.location);
       this.context = context;
+      view.setOnClickListener(this);
     }
 
     // Handles the row being being clicked
