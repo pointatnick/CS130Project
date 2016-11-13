@@ -20,6 +20,7 @@
     </string-array>
     <string name="description_hint">Description</string>
     <string name="search_hint">Type...</string>
+    <string name="seller_header">Seller</string>
 
     <string name="login_btn">Login</string>
     <string name="create_acct_btn">Create Account</string>

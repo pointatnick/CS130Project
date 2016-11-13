@@ -73,11 +73,11 @@ public class SalesboardActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
+    // TODO: replace with AsyncTask that grabs 10 most recent posts
     private List<Post> createList() {
         List<Post> result = new ArrayList<>();
-        Post ci = new Post("Title goes here", "$10", "5678 Alley Drive", "Test description", "Test category");
-        Post di = new Post("Another title", "$5", "1234 Park Lane", "This is a test", "Some test");
+        Post ci = new Post("Title goes here", "$10", "5678 Alley Drive", "Test description", "Test category", "First Last", "firstlast");
+        Post di = new Post("Another title", "$5", "1234 Park Lane", "This is a test", "Some test", "Last First", "lastfirst");
         result.add(ci);
         result.add(di);
         return result;
