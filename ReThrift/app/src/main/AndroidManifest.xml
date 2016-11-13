@@ -21,7 +21,16 @@
         <activity
             android:name=".CreateAccountActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".SalesboardActivity"/>
+        <!-- singletop allows search query to be returned to current activity -->
+        <activity android:name=".SalesboardActivity" android:launchMode="singleTop" >
+        <intent-filter>
+            <!-- used for search -->
+            <action android:name="android.intent.action.SEARCH" />
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
         <activity android:name=".CreatePostActivity"/>
         <activity android:name=".ViewPostActivity"/>
     </application>

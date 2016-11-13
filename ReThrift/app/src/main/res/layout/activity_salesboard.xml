@@ -30,7 +30,7 @@
             android:onClick="createPost"/>
 
     </android.support.design.widget.CoordinatorLayout>
-    <!-- The navigation drawer -->
+    <!-- The left navigation drawer -->
     <ListView
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
@@ -40,5 +40,21 @@
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"/>
+
+    <!-- The right navigation drawer: search -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="#ffeeeeee">
+        <android.support.v7.widget.SearchView
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </android.support.v7.widget.SearchView>
+    </LinearLayout>
+
+
 
 </android.support.v4.widget.DrawerLayout>
