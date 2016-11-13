@@ -29,7 +29,7 @@ public class SalesboardActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         card_list.setLayoutManager(llm);
 
-        PostAdapter ca = new PostAdapter(createList(10));
+        PostAdapter ca = new PostAdapter(createList());
         card_list.setAdapter(ca);
 
         Bundle extras = getIntent().getExtras();
@@ -70,12 +70,12 @@ public class SalesboardActivity extends AppCompatActivity {
         return true;
     }
 
-    private List<Post> createList(int size) {
+    private List<Post> createList() {
         List<Post> result = new ArrayList<>();
-        for (int i=1; i <= size; i++) {
-            Post ci = new Post("Title goes here", "$10", "5678 Alley Drive", "Test description", "Test category");
-            result.add(ci);
-        }
+        Post ci = new Post("Title goes here", "$10", "5678 Alley Drive", "Test description", "Test category");
+        Post di = new Post("Another title", "$5", "1234 Park Lane", "This is a test", "Some test");
+        result.add(ci);
+        result.add(di);
         return result;
     }
 }
