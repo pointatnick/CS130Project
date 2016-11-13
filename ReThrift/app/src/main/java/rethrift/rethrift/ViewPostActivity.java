@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 public class ViewPostActivity extends AppCompatActivity {
-  private TextView tvTitle;
+  private TextView tvTitle, tvPrice, tvLocation, tvCategory, tvDescription;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
