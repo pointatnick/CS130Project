@@ -23,5 +23,5 @@
     <string name="login_btn">Login</string>
     <string name="create_acct_btn">Create Account</string>
     <string name="create_post_btn">Create Post</string>
-    <string name="search_hint">Input please...</string>
+    <string name="search_hint">Type...</string>
 </resources>

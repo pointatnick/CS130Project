@@ -28,8 +28,17 @@ public class SalesboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
+
+        // for search
         //getIntent and pass to handler
-        //handleIntent(getIntent());
+        handleIntent(getIntent());
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) findViewById(R.id.search_bar);
+        //sets up a submit button
+        searchView.setSubmitButtonEnabled(true);
+        //assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
         RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
         recList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -81,19 +90,6 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
     //for search
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.option_menu, menu);
-        MenuItem menuItem = menu.findItem(R.id.search);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        //sets up a submit button
-        searchView.setSubmitButtonEnabled(true);
-        //assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        return true;
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
@@ -114,6 +110,6 @@ public class SalesboardActivity extends AppCompatActivity {
         //TO-DO: pass to Kexin's adapter? The results of this search
         //       is shown on the Salesboard view.
         //?? So open up Salesboard and pass result to show on the view?
-    }*/
+    }
 
 }
