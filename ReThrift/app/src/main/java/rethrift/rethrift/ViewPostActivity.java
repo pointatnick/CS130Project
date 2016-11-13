@@ -17,6 +17,10 @@ public class ViewPostActivity extends AppCompatActivity {
     Bundle extras = getIntent().getExtras();
     if (extras != null) {
       tvTitle.setText(extras.getString("TITLE"));
+      tvPrice.setText(extras.getString("PRICE"));
+      tvLocation.setText(extras.getString("LOCATION"));
+      tvCategory.setText(extras.getString("CATEGORY"));
+      tvDescription.setText(extras.getString("DESCRIPTION"));
     }
   }
 
