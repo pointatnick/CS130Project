@@ -4,14 +4,10 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -30,7 +26,7 @@ public class SalesboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_salesboard);
 
         // for search
-        //getIntent and pass to handler
+        // getIntent and pass to handler
         handleIntent(getIntent());
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) findViewById(R.id.search_bar);
@@ -39,8 +35,6 @@ public class SalesboardActivity extends AppCompatActivity {
         //assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
-        recList.setHasFixedSize(true);
         RecyclerView card_list = (RecyclerView) findViewById(R.id.card_list);
         card_list.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
