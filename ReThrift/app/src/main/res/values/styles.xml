@@ -14,7 +14,6 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-
     <declare-styleable name="CircleImageView">
         <attr name="civ_border_width" format="dimension" />
         <attr name="civ_border_color" format="color" />

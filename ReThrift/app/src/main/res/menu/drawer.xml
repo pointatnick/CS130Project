@@ -2,17 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/name"
-            android:checked="false"
-            android:icon="@drawable/ic_account_circle_black_24dp"
-            android:title="Kook" />
-
-        <item
-            android:id="@+id/user"
-            android:checked="false"
-            android:icon="@drawable/ic_account_circle_black_24dp"
-            android:title="User" />
 
         <item
             android:id="@+id/profile"
@@ -21,16 +10,17 @@
             android:title="Profile" />
 
         <item
-            android:id="@+id/watch_list"
-            android:checked="false"
-            android:icon="@drawable/ic_add_shopping_cart_black_24dp"
-            android:title="Watchlist" />
-
-        <item
             android:id="@+id/my_posts"
             android:checked="false"
-            android:icon="@drawable/ic_favorite_black_24dp"
+            android:icon="@drawable/ic_add_shopping_cart_black_24dp"
             android:title="My Posts" />
+
+        <item
+            android:id="@+id/watch_list"
+            android:checked="false"
+            android:icon="@drawable/ic_favorite_black_24dp"
+            android:title="Watchlist" />
+
 
 
     </group>
