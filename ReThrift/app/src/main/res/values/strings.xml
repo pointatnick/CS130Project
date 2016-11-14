@@ -14,9 +14,11 @@
     <string name="price_hint">Price</string>
     <string name="location_hint">Pickup location</string>
     <string-array name="category_array">
-        <item>Category 1</item>
-        <item>Category 2</item>
-        <item>Category 3</item>
+        <item>Fun</item>
+        <item>School</item>
+        <item>Furniture</item>
+        <item>Clothing</item>
+        <item>Other</item>
     </string-array>
     <string name="description_hint">Description</string>
     <string name="search_hint">Type...</string>
