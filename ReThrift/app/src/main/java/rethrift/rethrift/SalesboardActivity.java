@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -159,7 +160,19 @@ public class SalesboardActivity extends AppCompatActivity {
                 Log.d("RESULT", postArray);
 
                 try {
-                    JSONObject postArrayJson = new JSONObject(postArray);
+                    JSONArray postArrayJson = new JSONArray(postArray);
+                    for (int i = 0; i < postArrayJson.length(); i++) {
+                        JSONObject postJson = postArrayJson.getJSONObject(i);
+                        new Post(postJson.getString("title"),
+                                 postJson.getString("price"),
+                                 postJson.getString("location"),
+                                 postJson.getString("description"),
+                                 postJson.getString("category"),
+                                 postJson.getString("name"),
+                                 postJson.getString("username"));
+
+                        {"state":"FRESH","image":null,"createdAt":"2016-11-14T04:40:11.379Z","updatedAt":"2016-11-14T04:40:11.654Z","UserId":2}
+                    }
                 } catch (JSONException e) {
                     return "Error retrieving posts.";
                 }
