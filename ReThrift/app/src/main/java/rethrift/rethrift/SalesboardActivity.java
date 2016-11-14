@@ -2,11 +2,13 @@ package rethrift.rethrift;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class SalesboardActivity extends AppCompatActivity {
     private ListView mDrawerList;
@@ -62,25 +65,50 @@ public class SalesboardActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         card_list.setLayoutManager(llm);
 
-        PostAdapter ca = new PostAdapter(createList());
-        card_list.setAdapter(ca);
+        // retrieve posts
+        try {
+            String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
+            PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
+            card_list.setAdapter(ca);
+        } catch (InterruptedException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Unable to load Salesboard")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } catch (ExecutionException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Unable to load Salesboard")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+        //PostAdapter ca = new PostAdapter(createList());
+        //card_list.setAdapter(ca);
 
+        // Initialize Navigation View
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = extras.getString("USERNAME");
             name = extras.getString("FIRSTNAME");
         }
-        //Initializing Navigation View
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        //mDrawerList = (ListView) findViewById(R.id.navigation_view);
-        //addDrawerItems();
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             // This method will trigger on item Click of navigation menu
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-
 
                 //Checking if the item is in checked state or not, if not make it in checked state
                 if(menuItem.isChecked()) menuItem.setChecked(false);
@@ -91,9 +119,6 @@ public class SalesboardActivity extends AppCompatActivity {
 
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()){
-
-
-
                     // For rest of the options we just show a toast on click
                     case R.id.profile:
                         Toast.makeText(getApplicationContext(),"profile Selected",Toast.LENGTH_SHORT).show();
@@ -108,10 +133,10 @@ public class SalesboardActivity extends AppCompatActivity {
                     default:
                         Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();
                         return true;
-
                 }
             }
         });
+
         // Initializing Drawer Layout and ActionBarToggle
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout, R.string.openDrawer, R.string.closeDrawer){
@@ -125,7 +150,6 @@ public class SalesboardActivity extends AppCompatActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
-
                 super.onDrawerOpened(drawerView);
             }
         };
@@ -164,13 +188,6 @@ public class SalesboardActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
-    // profile preview (left screen)
-   /* public void addDrawerItems() {
-        String[] items = { name, user, "Profile", "Watchlist", "My Posts"};
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
-        mDrawerList.setAdapter(mAdapter);
-    }*/
-
     // sales board (center screen)
     public void createPost(View view){
         Intent intent = new Intent(this, CreatePostActivity.class);
@@ -206,31 +223,24 @@ public class SalesboardActivity extends AppCompatActivity {
         List<Post> result = new ArrayList<>();
         Post ci = new Post("Title goes here", "$10", "FRESH", "5678 Alley Drive", "Test description", "Test category", "First Last", "firstlast");
         Post di = new Post("Another title", "$5", "PENDING SALE", "1234 Park Lane", "This is a test", "Some test", "Last First", "lastfirst");
-        String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
-        new GetPostsTask().execute(stringUrl);
         result.add(ci);
         result.add(di);
         return result;
     }
 
     // AsyncTask that checks if the password is correct and logs in the user
-    private class GetPostsTask extends AsyncTask<String, Void, String> {
+    private class GetPostsTask extends AsyncTask<String, Void, List<Post>> {
         @Override
-        protected String doInBackground(String... urls) {
+        protected List<Post> doInBackground(String... urls) {
             try {
                 return getPosts(urls[0]);
             } catch (IOException e) {
                 e.printStackTrace();
-                return "Unable to load posts. Please try again later.";
+                return null;
             }
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            Log.d("CHECK USERNAME", result);
-        }
-
-        private String getPosts(String myurl) throws IOException {
+        private List<Post> getPosts(String myurl) throws IOException {
             InputStream is = null;
             int len = 5000;
 
@@ -268,12 +278,15 @@ public class SalesboardActivity extends AppCompatActivity {
                                  "name",
                                  postJson.getString("username"));
                     }
+                    // TODO: change to return List<Post>
+                    return null;
                 } catch (JSONException e) {
-                    return "Error retrieving posts.";
+                    e.printStackTrace();
+                    return null;
                 }
-                return "good";
             } catch (FileNotFoundException e) {
-                return "Error retrieving posts.";
+                e.printStackTrace();
+                return null;
             } finally {
                 // Makes sure that the InputStream is closed after the app is finished using it.
                 if (is != null) {
