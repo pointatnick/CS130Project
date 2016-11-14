@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.support.v7.app.ActionBarDrawerToggle;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +38,8 @@ public class SalesboardActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private String user, name;
+    private NavigationView navigationView;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -62,9 +70,100 @@ public class SalesboardActivity extends AppCompatActivity {
             user = extras.getString("USERNAME");
             name = extras.getString("FIRSTNAME");
         }
+        //Initializing Navigation View
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        //mDrawerList = (ListView) findViewById(R.id.navigation_view);
+        //addDrawerItems();
+        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        addDrawerItems();
+            // This method will trigger on item Click of navigation menu
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+
+                //Checking if the item is in checked state or not, if not make it in checked state
+                if(menuItem.isChecked()) menuItem.setChecked(false);
+                else menuItem.setChecked(true);
+
+                //Closing drawer on item click
+                drawerLayout.closeDrawers();
+
+                //Check to see which item was being clicked and perform appropriate action
+                switch (menuItem.getItemId()){
+
+
+
+                    // For rest of the options we just show a toast on click
+
+                    case R.id.name:
+                        Toast.makeText(getApplicationContext(),"name Selected",Toast.LENGTH_SHORT).show();
+                        return true;
+                    case R.id.user:
+                        Toast.makeText(getApplicationContext(),"user Selected",Toast.LENGTH_SHORT).show();
+                        return true;
+                    case R.id.profile:
+                        Toast.makeText(getApplicationContext(),"profile Selected",Toast.LENGTH_SHORT).show();
+                        return true;
+                    case R.id.watch_list:
+                        Toast.makeText(getApplicationContext(),"watchlist Selected",Toast.LENGTH_SHORT).show();
+                        return true;
+                    case R.id.my_posts:
+                        Toast.makeText(getApplicationContext(),"myposts Selected",Toast.LENGTH_SHORT).show();
+                        return true;
+
+                    default:
+                        Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();
+                        return true;
+
+                }
+            }
+        });
+        // Initializing Drawer Layout and ActionBarToggle
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout, R.string.openDrawer, R.string.closeDrawer){
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+
+                super.onDrawerOpened(drawerView);
+            }
+        };
+        //Setting the actionbarToggle to drawer layout
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+        //calling sync state is necessay or else your hamburger icon wont show up
+        actionBarDrawerToggle.syncState();
+
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -73,11 +172,11 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
     // profile preview (left screen)
-    public void addDrawerItems() {
+   /* public void addDrawerItems() {
         String[] items = { name, user, "Profile", "Watchlist", "My Posts"};
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         mDrawerList.setAdapter(mAdapter);
-    }
+    }*/
 
     // sales board (center screen)
     public void createPost(View view){
