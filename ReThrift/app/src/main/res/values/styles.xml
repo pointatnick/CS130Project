@@ -6,9 +6,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorPrimary">@color/PrimaryColor</item>
-        <item name="android:colorPrimaryDark">@color/PrimaryDarkColor</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
         <!-- Customize your theme here. -->
     </style>
 
@@ -16,7 +13,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
 
     <declare-styleable name="CircleImageView">
         <attr name="civ_border_width" format="dimension" />
