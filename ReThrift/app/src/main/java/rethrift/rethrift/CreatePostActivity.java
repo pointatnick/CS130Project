@@ -14,6 +14,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +30,7 @@ import java.text.NumberFormat;
 
 public class CreatePostActivity extends AppCompatActivity {
     private TextInputEditText title, price, description;
+    private Spinner category;
     private String user;
 
     @Override
@@ -36,8 +39,10 @@ public class CreatePostActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_create_post);
         title = (TextInputEditText) findViewById(R.id.title_field);
+
         price = (TextInputEditText) findViewById(R.id.price_field);
         price.addTextChangedListener(new CurrencyTextWatcher());
+
         description = (TextInputEditText) findViewById(R.id.description_field);
         description.setHorizontallyScrolling(false);
         description.setMaxLines(Integer.MAX_VALUE);
@@ -46,6 +51,15 @@ public class CreatePostActivity extends AppCompatActivity {
         if (extras != null) {
             user = extras.getString("USERNAME");
         }
+
+        category = (Spinner) findViewById(R.id.category_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.category_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        category.setAdapter(adapter);
     }
 
     public void addPost(View view){
@@ -139,7 +153,11 @@ public class CreatePostActivity extends AppCompatActivity {
                 try {
                     userAcctJson.put("title", title.getText().toString())
                             .put("price", price.getText().toString())
-                            .put("description", description.getText().toString());
+                            .put("description", description.getText().toString())
+                            .put("category", category.getSelectedItem().toString())
+                            .put("state", "FRESH");
+                    // TODO: add image
+                    //.put("image", );
 
                     Log.d("JSONOBJECT", userAcctJson.toString(2));
                     // Write JSONObject to output stream
