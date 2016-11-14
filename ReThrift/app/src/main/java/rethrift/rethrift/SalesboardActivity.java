@@ -14,6 +14,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -152,12 +155,17 @@ public class SalesboardActivity extends AppCompatActivity {
                 is = conn.getInputStream();
 
                 // Convert the InputStream into a string
-                String userAcct = readIt(is, len);
-                Log.d("RESULT", userAcct);
+                String postArray = readIt(is, len);
+                Log.d("RESULT", postArray);
 
+                try {
+                    JSONObject postArrayJson = new JSONObject(postArray);
+                } catch (JSONException e) {
+                    return "Error retrieving posts.";
+                }
                 return "good";
             } catch (FileNotFoundException e) {
-                return "Username does not exist";
+                return "Error retrieving posts.";
             } finally {
                 // Makes sure that the InputStream is closed after the app is finished using it.
                 if (is != null) {
