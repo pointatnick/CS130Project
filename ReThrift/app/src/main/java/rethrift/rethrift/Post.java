@@ -2,11 +2,14 @@ package rethrift.rethrift;
 
 public class Post {
 
-    private String title, price, location, description, category, name, username;
+    private String title, price, state, location, description, category, name, username;
 
-    public Post(String title, String price, String location, String description, String category, String name, String username) {
+    public Post(String title, String price, String state,
+                String location, String description, String category,
+                String name, String username) {
         this.title = title;
         this.price = price;
+        this.state = state;
         this.location = location;
         this.description = description;
         this.category = category;
@@ -20,6 +23,10 @@ public class Post {
 
     public String getPrice() {
         return price;
+    }
+
+    public String getState() {
+        return state;
     }
 
     public String getLocation() {

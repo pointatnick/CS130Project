@@ -28,6 +28,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     Post ci = postList.get(i);
     postHolder.title.setText(ci.getTitle());
     postHolder.price.setText(ci.getPrice());
+    postHolder.state = ci.getState();
     postHolder.location.setText(ci.getLocation());
     postHolder.description = ci.getDescription();
     postHolder.category = ci.getCategory();
@@ -44,7 +45,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
 
   public static class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     protected TextView title, price, location;
-    protected String description, category, name, username;
+    protected String state, description, category, name, username;
     private Context context;
 
     public PostHolder(View view, Context context) {
@@ -62,6 +63,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       Intent intent = new Intent(context, ViewPostActivity.class);
       intent.putExtra("TITLE", title.getText().toString());
       intent.putExtra("PRICE", price.getText().toString());
+      intent.putExtra("STATE", state);
       intent.putExtra("LOCATION", location.getText().toString());
       intent.putExtra("DESCRIPTION", description);
       intent.putExtra("CATEGORY", category);

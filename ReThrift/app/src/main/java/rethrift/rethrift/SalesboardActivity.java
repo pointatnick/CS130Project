@@ -95,13 +95,6 @@ public class SalesboardActivity extends AppCompatActivity {
 
 
                     // For rest of the options we just show a toast on click
-
-                    case R.id.name:
-                        Toast.makeText(getApplicationContext(),"name Selected",Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.user:
-                        Toast.makeText(getApplicationContext(),"user Selected",Toast.LENGTH_SHORT).show();
-                        return true;
                     case R.id.profile:
                         Toast.makeText(getApplicationContext(),"profile Selected",Toast.LENGTH_SHORT).show();
                         return true;
@@ -211,8 +204,8 @@ public class SalesboardActivity extends AppCompatActivity {
     // TODO: replace with AsyncTask that grabs 10 most recent posts
     private List<Post> createList() {
         List<Post> result = new ArrayList<>();
-        Post ci = new Post("Title goes here", "$10", "5678 Alley Drive", "Test description", "Test category", "First Last", "firstlast");
-        Post di = new Post("Another title", "$5", "1234 Park Lane", "This is a test", "Some test", "Last First", "lastfirst");
+        Post ci = new Post("Title goes here", "$10", "FRESH", "5678 Alley Drive", "Test description", "Test category", "First Last", "firstlast");
+        Post di = new Post("Another title", "$5", "PENDING SALE", "1234 Park Lane", "This is a test", "Some test", "Last First", "lastfirst");
         String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
         new GetPostsTask().execute(stringUrl);
         result.add(ci);
@@ -262,15 +255,18 @@ public class SalesboardActivity extends AppCompatActivity {
                     JSONArray postArrayJson = new JSONArray(postArray);
                     for (int i = 0; i < postArrayJson.length(); i++) {
                         JSONObject postJson = postArrayJson.getJSONObject(i);
+                        int postId = postJson.getInt("id");
+                        int userId = postJson.getInt("UserId");
+                        //new FindUserTask.execute();
+                        //new FindLocationTask.execute();
                         new Post(postJson.getString("title"),
                                  postJson.getString("price"),
-                                 postJson.getString("location"),
+                                 postJson.getString("state"),
+                                 "location",
                                  postJson.getString("description"),
                                  postJson.getString("category"),
-                                 postJson.getString("name"),
+                                 "name",
                                  postJson.getString("username"));
-
-                        {"state":"FRESH","image":null,"createdAt":"2016-11-14T04:40:11.379Z","updatedAt":"2016-11-14T04:40:11.654Z","UserId":2}
                     }
                 } catch (JSONException e) {
                     return "Error retrieving posts.";
