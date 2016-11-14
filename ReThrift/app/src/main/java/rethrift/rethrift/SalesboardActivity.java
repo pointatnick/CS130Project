@@ -39,7 +39,7 @@ public class SalesboardActivity extends AppCompatActivity {
         //assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
+        RecyclerView recList = (RecyclerView) findViewById(R.id.card_list);
         recList.setHasFixedSize(true);
         RecyclerView card_list = (RecyclerView) findViewById(R.id.card_list);
         card_list.setHasFixedSize(true);
