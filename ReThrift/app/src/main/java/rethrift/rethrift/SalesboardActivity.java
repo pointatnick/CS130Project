@@ -1,10 +1,15 @@
 package rethrift.rethrift;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,21 +18,35 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.text.NumberFormat;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.net.URL;
+
+
 
 public class SalesboardActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private String user, name;
+    private Spinner category;
+
+    //for search input (mc)
+    private TextInputEditText filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -61,6 +80,16 @@ public class SalesboardActivity extends AppCompatActivity {
 
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         addDrawerItems();
+
+        // populating category spinner for search
+        category = (Spinner) findViewById(R.id.category_spinner2);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.category_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        category.setAdapter(adapter);
     }
 
     @Override
@@ -81,6 +110,9 @@ public class SalesboardActivity extends AppCompatActivity {
         intent.putExtra("USERNAME", user);
         startActivity(intent);
     }
+
+
+
 
     //for search
     @Override
