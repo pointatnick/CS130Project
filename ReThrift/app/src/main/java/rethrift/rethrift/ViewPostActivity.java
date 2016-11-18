@@ -7,7 +7,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class ViewPostActivity extends AppCompatActivity {
-  private TextView tvTitle, tvPrice, tvLocation, tvCategory, tvDescription, tvName, tvUsername;
+  private TextView tvTitle, tvPrice, tvState, tvLocation, tvCategory, tvDescription, tvName, tvUsername;
   private Button btnWatchlist, btnContact;
 
   @Override
@@ -17,6 +17,7 @@ public class ViewPostActivity extends AppCompatActivity {
 
     tvTitle = (TextView) findViewById(R.id.title);
     tvPrice = (TextView) findViewById(R.id.price);
+    tvState = (TextView) findViewById(R.id.state);
     tvLocation = (TextView) findViewById(R.id.location);
     tvCategory = (TextView) findViewById(R.id.category);
     tvDescription = (TextView) findViewById(R.id.description);
@@ -30,6 +31,7 @@ public class ViewPostActivity extends AppCompatActivity {
     if (extras != null) {
       tvTitle.setText(extras.getString("TITLE"));
       tvPrice.setText(extras.getString("PRICE"));
+      tvState.setText(extras.getString("STATE"));
       tvLocation.setText(extras.getString("LOCATION"));
       tvCategory.setText(extras.getString("CATEGORY"));
       tvDescription.setText(extras.getString("DESCRIPTION"));

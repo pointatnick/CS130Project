@@ -10,6 +10,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +21,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import android.widget.Spinner;
+
+import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.support.v7.app.ActionBarDrawerToggle;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -47,11 +61,25 @@ public class SalesboardActivity extends AppCompatActivity {
 
     //for search input (mc)
     private TextInputEditText filter;
+    private NavigationView navigationView;
+    private DrawerLayout drawerLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
+
+
+        // populating category spinner for search
+        category = (Spinner) findViewById(R.id.category_spinner2);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.category_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        category.setAdapter(adapter);
 
         // for search
         // getIntent and pass to handler
@@ -77,19 +105,92 @@ public class SalesboardActivity extends AppCompatActivity {
             user = extras.getString("USERNAME");
             name = extras.getString("FIRSTNAME");
         }
+        //Initializing Navigation View
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        //mDrawerList = (ListView) findViewById(R.id.navigation_view);
+        //addDrawerItems();
+        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        addDrawerItems();
+            // This method will trigger on item Click of navigation menu
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
 
-        // populating category spinner for search
-        category = (Spinner) findViewById(R.id.category_spinner2);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.category_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        category.setAdapter(adapter);
+
+                //Checking if the item is in checked state or not, if not make it in checked state
+                if(menuItem.isChecked()) menuItem.setChecked(false);
+                else menuItem.setChecked(true);
+
+                //Closing drawer on item click
+                drawerLayout.closeDrawers();
+
+                //Check to see which item was being clicked and perform appropriate action
+                switch (menuItem.getItemId()){
+
+
+
+                    // For rest of the options we just show a toast on click
+                    case R.id.profile:
+                        Toast.makeText(getApplicationContext(),"profile Selected",Toast.LENGTH_SHORT).show();
+                        return true;
+                    case R.id.watch_list:
+                        Toast.makeText(getApplicationContext(),"watchlist Selected",Toast.LENGTH_SHORT).show();
+                        return true;
+                    case R.id.my_posts:
+                        Toast.makeText(getApplicationContext(),"myposts Selected",Toast.LENGTH_SHORT).show();
+                        return true;
+
+                    default:
+                        Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();
+                        return true;
+
+                }
+            }
+        });
+        // Initializing Drawer Layout and ActionBarToggle
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout, R.string.openDrawer, R.string.closeDrawer){
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+
+                super.onDrawerOpened(drawerView);
+            }
+        };
+        //Setting the actionbarToggle to drawer layout
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+        //calling sync state is necessay or else your hamburger icon wont show up
+        actionBarDrawerToggle.syncState();
+
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -98,11 +199,11 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
     // profile preview (left screen)
-    public void addDrawerItems() {
+   /* public void addDrawerItems() {
         String[] items = { name, user, "Profile", "Watchlist", "My Posts"};
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         mDrawerList.setAdapter(mAdapter);
-    }
+    }*/
 
     // sales board (center screen)
     public void createPost(View view){
@@ -140,8 +241,8 @@ public class SalesboardActivity extends AppCompatActivity {
     // TODO: replace with AsyncTask that grabs 10 most recent posts
     private List<Post> createList() {
         List<Post> result = new ArrayList<>();
-        Post ci = new Post("Title goes here", "$10", "5678 Alley Drive", "Test description", "Test category", "First Last", "firstlast");
-        Post di = new Post("Another title", "$5", "1234 Park Lane", "This is a test", "Some test", "Last First", "lastfirst");
+        Post ci = new Post("Title goes here", "$10", "FRESH", "5678 Alley Drive", "Test description", "Test category", "First Last", "firstlast");
+        Post di = new Post("Another title", "$5", "PENDING SALE", "1234 Park Lane", "This is a test", "Some test", "Last First", "lastfirst");
         String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
         new GetPostsTask().execute(stringUrl);
         result.add(ci);
@@ -184,12 +285,32 @@ public class SalesboardActivity extends AppCompatActivity {
                 is = conn.getInputStream();
 
                 // Convert the InputStream into a string
-                String userAcct = readIt(is, len);
-                Log.d("RESULT", userAcct);
+                String postArray = readIt(is, len);
+                Log.d("RESULT", postArray);
 
+                try {
+                    JSONArray postArrayJson = new JSONArray(postArray);
+                    for (int i = 0; i < postArrayJson.length(); i++) {
+                        JSONObject postJson = postArrayJson.getJSONObject(i);
+                        int postId = postJson.getInt("id");
+                        int userId = postJson.getInt("UserId");
+                        //new FindUserTask.execute();
+                        //new FindLocationTask.execute();
+                        new Post(postJson.getString("title"),
+                                 postJson.getString("price"),
+                                 postJson.getString("state"),
+                                 "location",
+                                 postJson.getString("description"),
+                                 postJson.getString("category"),
+                                 "name",
+                                 postJson.getString("username"));
+                    }
+                } catch (JSONException e) {
+                    return "Error retrieving posts.";
+                }
                 return "good";
             } catch (FileNotFoundException e) {
-                return "Username does not exist";
+                return "Error retrieving posts.";
             } finally {
                 // Makes sure that the InputStream is closed after the app is finished using it.
                 if (is != null) {

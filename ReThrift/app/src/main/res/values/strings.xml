@@ -13,6 +13,9 @@
     <string name="title_hint">Title</string>
     <string name="price_hint">Price</string>
     <string name="location_hint">Pickup location</string>
+    <string name="closeDrawer">Navigation View</string>
+    <string name="openDrawer">Navigation View Closed</string>
+    <string name="action_settings">Settings</string>
     <string-array name="category_array">
         <item>Fun</item>
         <item>School</item>
