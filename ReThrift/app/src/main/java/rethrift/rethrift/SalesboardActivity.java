@@ -1,11 +1,17 @@
 package rethrift.rethrift;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.content.DialogInterface;
+import android.os.HandlerThread;
+import android.support.v7.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +23,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import android.widget.Spinner;
+
 import android.widget.Toast;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,28 +35,55 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.text.NumberFormat;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.net.URL;
+import android.util.Pair;
+
 
 public class SalesboardActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private String user, name;
+    private Spinner category;
+
+    //for search input (mc)
+    private TextInputEditText filter;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
+
+
+        // populating category spinner for search
+        category = (Spinner) findViewById(R.id.category_spinner2);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.category_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        category.setAdapter(adapter);
 
         // for search
         // getIntent and pass to handler
@@ -104,7 +140,7 @@ public class SalesboardActivity extends AppCompatActivity {
         }
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             // This method will trigger on item Click of navigation menu
             @Override
@@ -125,6 +161,8 @@ public class SalesboardActivity extends AppCompatActivity {
                         return true;
                     case R.id.watch_list:
                         Toast.makeText(getApplicationContext(),"watchlist Selected",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SalesboardActivity.this, WatchListActivity.class);
+                        startActivity(intent);
                         return true;
                     case R.id.my_posts:
                         Toast.makeText(getApplicationContext(),"myposts Selected",Toast.LENGTH_SHORT).show();
@@ -179,7 +217,6 @@ public class SalesboardActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -211,12 +248,114 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
     private void doMySearch(String query){
-        //TO-DO: pass to back-end here
-        //TO-DO: change return type to whatever back-end returns
-        //TO-DO: pass to Kexin's adapter? The results of this search
-        //       is shown on the Salesboard view.
-        //?? So open up Salesboard and pass result to show on the view?
+        //check connection existence
+        ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            //TO-DO: change this URL
+            String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/";
+            new CreateSearchFilterTask().execute(stringUrl, query);
+            // go back to SalesboardActivity? but change cards shown
+            finish();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("No network connection available.")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+
     }
+
+    //mc Friday
+    private class CreateSearchFilterTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            //params[0]: url string, params[1]=query
+            //TO-THINK: passing in a list of search queries
+            try {
+                return getSearchPosts(params[0], params[1]);
+            }
+            catch(IOException e){
+                e.printStackTrace();
+                return "Unable to filter search. Try again later.";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("CREATE FILTER", result);
+        }
+
+        private String getSearchPosts(String myURL, String query) throws IOException {
+            InputStream is = null;
+            int len = 5000;
+
+            try {
+                URL url = new URL(myURL);
+                Log.d("URL", "" + url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.connect();
+
+                //Add all search filters (only one for now)
+                List<Pair<String, String>> params = new ArrayList<>();
+                params.add(new Pair<>("username", query));
+                //to get values: params.get(i).first, params.get(i).second
+
+                //TO-THINK: use loop for supporting multiple search queries
+                //add request headers
+                conn.setRequestProperty(params.get(0).first, params.get(0).second);
+
+                Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseCode());
+                //get query results back
+                is = conn.getInputStream();
+                String queryPostsArray = readIt(is, len);
+                Log.d("RESULT", queryPostsArray);
+
+                try {
+                    JSONArray queryPostsArrayJson = new JSONArray(queryPostsArray);
+                    for (int i = 0; i < queryPostsArrayJson.length(); i++) {
+                        JSONObject postJson = queryPostsArrayJson.getJSONObject(i);
+                        int postId = postJson.getInt("id");
+                        int userId = postJson.getInt("UserId");
+                        new Post(postJson.getString("title"),
+                                postJson.getString("price"),
+                                postJson.getString("state"),
+                                "location",
+                                postJson.getString("description"),
+                                postJson.getString("category"),
+                                "name",
+                                postJson.getString("username"));
+                    }
+                } catch (JSONException e) {
+                    return "Error retrieving posts.";
+                }
+                return "good";
+            } catch (FileNotFoundException e){
+                return "Error retrieving posts.";
+            } finally {
+                if(is != null){
+                    is.close();
+                }
+            }
+        }
+
+        // Reads an InputStream and converts it to a String.
+        private String readIt(InputStream stream, int len) throws IOException {
+            Reader reader = new InputStreamReader(stream, "UTF-8");
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            return new String(buffer);
+        }
+    }
+
 
     // TODO: replace with AsyncTask that grabs 10 most recent posts
     private List<Post> createList() {
