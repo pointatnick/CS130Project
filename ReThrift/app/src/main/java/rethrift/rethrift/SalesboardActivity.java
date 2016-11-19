@@ -454,6 +454,7 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
 
+    // TODO: restructure AsyncTask
     // AsyncTask that grabs info about the user
     private class FindUserTask extends AsyncTask<String, Void, JSONObject> {
         @Override
