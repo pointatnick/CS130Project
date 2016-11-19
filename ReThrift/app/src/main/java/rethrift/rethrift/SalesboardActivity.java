@@ -490,22 +490,24 @@ public class SalesboardActivity extends AppCompatActivity {
             return new String(buffer);
         }
 
-        private List<Post> constructPosts(JSONArray userJsonArray, JSONArray postJsonArray) {
+        private List<Post> constructPosts(JSONArray postJsonArray, JSONArray userJsonArray) {
             try {
                 List<Post> posts = new ArrayList<>();
                 for (int i = 0; i < postJsonArray.length(); i++) {
                     JSONObject postJson = postJsonArray.getJSONObject(i);
+                    Log.d("POST", postJson.toString());
                     JSONObject userJson = userJsonArray.getJSONObject(i);
+                    Log.d("USER", userJson.toString());
                     posts.add(
                             new Post(postJson.getString("title"),
-                                    postJson.getString("price"),
-                                    postJson.getString("state"),
-                                    postJson.getDouble("latitude"),
-                                    postJson.getDouble("longitude"),
-                                    postJson.getString("description"),
-                                    postJson.getString("category"),
-                                    userJson.getString("name"),
-                                    userJson.getString("username")));
+                                     postJson.getString("price"),
+                                     postJson.getString("state"),
+                                     postJson.getDouble("latitude"),
+                                     postJson.getDouble("longitude"),
+                                     postJson.getString("description"),
+                                     postJson.getString("category"),
+                                     userJson.getString("firstname") + userJson.getString("lastname"),
+                                     userJson.getString("username")));
                 }
                 return posts;
             } catch (JSONException e) {
