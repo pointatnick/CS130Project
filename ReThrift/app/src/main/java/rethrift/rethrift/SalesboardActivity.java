@@ -1,61 +1,47 @@
 package rethrift.rethrift;
 
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.content.DialogInterface;
-import android.os.HandlerThread;
-import android.support.v7.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import android.widget.Spinner;
-
 import android.widget.Toast;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.support.v7.app.ActionBarDrawerToggle;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.Writer;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.text.NumberFormat;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.net.URL;
-import android.util.Pair;
 
 
 public class SalesboardActivity extends AppCompatActivity {
@@ -329,24 +315,15 @@ public class SalesboardActivity extends AppCompatActivity {
                         JSONObject postJson = queryPostsArrayJson.getJSONObject(i);
                         int postId = postJson.getInt("id");
                         int userId = postJson.getInt("UserId");
-                        try {
-                            JSONObject userJson = new FindUserTask().execute("http://rethrift-1.herokuapp.com/users/" + userId).get();
-                            JSONObject locationJson = new FindLocationTask().execute("http://rethrift-1.herokuapp.com/").get();
-                            postList.add(
-                                    new Post(postJson.getString("title"),
-                                    postJson.getString("price"),
-                                    postJson.getString("state"),
-                                    // TODO: complete location retrieval
-                                    locationJson.getString("location"),
-                                    postJson.getString("description"),
-                                    postJson.getString("category"),
-                                    userJson.getString("name"),
-                                    userJson.getString("username")));
-                        }catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }catch (ExecutionException e) {
-                            e.printStackTrace();
-                        }
+                        new Post(postJson.getString("title"),
+                                postJson.getString("price"),
+                                postJson.getString("state"),
+                                postJson.getDouble("latitude"),
+                                postJson.getDouble("longitude"),
+                                postJson.getString("description"),
+                                postJson.getString("category"),
+                                "name",
+                                postJson.getString("username"));
                     }
                     return postList;
                 } catch (JSONException e) {
@@ -372,6 +349,7 @@ public class SalesboardActivity extends AppCompatActivity {
 
 
     // TODO: replace with AsyncTask that grabs 10 most recent posts
+    /*
     private List<Post> createList() {
         List<Post> result = new ArrayList<>();
         Post ci = new Post("Title goes here", "$10", "FRESH", "5678 Alley Drive", "Test description", "Test category", "First Last", "firstlast");
@@ -380,6 +358,7 @@ public class SalesboardActivity extends AppCompatActivity {
         result.add(di);
         return result;
     }
+    */
 
 
     // AsyncTask that checks if the password is correct and logs in the user
@@ -422,15 +401,18 @@ public class SalesboardActivity extends AppCompatActivity {
                         JSONObject postJson = postArrayJson.getJSONObject(i);
                         int postId = postJson.getInt("id");
                         int userId = postJson.getInt("UserId");
+                        double latitude = postJson.getDouble("latitude");
+                        double longitude = postJson.getDouble("longitude");
                         try {
                             JSONObject userJson = new FindUserTask().execute("http://rethrift-1.herokuapp.com/users/" + userId).get();
-                            JSONObject locationJson = new FindLocationTask().execute("http://rethrift-1.herokuapp.com/").get();
+                            //JSONObject locationJson = new FindLocationTask().execute("http://rethrift-1.herokuapp.com/").get();
                             postList.add(
                                     new Post(postJson.getString("title"),
                                             postJson.getString("price"),
                                             postJson.getString("state"),
                                             // TODO: complete location retrieval
-                                            locationJson.getString("location"),
+                                            latitude,
+                                            longitude,
                                             postJson.getString("description"),
                                             postJson.getString("category"),
                                             userJson.getString("name"),
@@ -532,18 +514,19 @@ public class SalesboardActivity extends AppCompatActivity {
 
 
     // TODO: AsyncTask that grabs post location
+    /*
     private class FindLocationTask extends AsyncTask<String, Void, JSONObject> {
         @Override
         protected JSONObject doInBackground(String... urls) {
             try {
-                return findUser(urls[0]);
+                return findLocation(urls[0]);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
         }
 
-        private JSONObject findUser(String myurl) throws IOException {
+        private JSONObject findLocation(String myurl) throws IOException {
             InputStream is = null;
             int len = 5000;
 
@@ -551,8 +534,8 @@ public class SalesboardActivity extends AppCompatActivity {
                 URL url = new URL(myurl);
                 Log.d("URL", "" + url);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000 /* milliseconds */);
-                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
                 conn.setRequestMethod("GET");
                 conn.setDoInput(true);
 
@@ -568,7 +551,7 @@ public class SalesboardActivity extends AppCompatActivity {
                     JSONObject userInfoJson = new JSONObject(userInfoString);
                     JSONObject user = new JSONObject();
                     user.put("name", userInfoJson.getString("name"))
-                            .put("username", userInfoJson.getString("username"));
+                        .put("username", userInfoJson.getString("username"));
                     return user;
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -593,5 +576,5 @@ public class SalesboardActivity extends AppCompatActivity {
             return new String(buffer);
         }
     }
-
+    */
 }

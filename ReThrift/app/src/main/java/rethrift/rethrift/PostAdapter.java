@@ -29,7 +29,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     postHolder.title.setText(ci.getTitle());
     postHolder.price.setText(ci.getPrice());
     postHolder.state = ci.getState();
-    postHolder.location.setText(ci.getLocation());
+    postHolder.latitude = ci.getLatitude();
+    postHolder.longitude = ci.getLongitude();
     postHolder.description = ci.getDescription();
     postHolder.category = ci.getCategory();
     postHolder.name = ci.getName();
@@ -44,7 +45,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
   }
 
   public static class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-    protected TextView title, price, location;
+    protected TextView title, price;
+    protected double latitude, longitude;
     protected String state, description, category, name, username;
     private Context context;
 
@@ -52,7 +54,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       super(view);
       title =  (TextView) view.findViewById(R.id.title);
       price = (TextView) view.findViewById(R.id.price);
-      location = (TextView) view.findViewById(R.id.location);
       this.context = context;
       view.setOnClickListener(this);
     }
@@ -64,7 +65,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       intent.putExtra("TITLE", title.getText().toString());
       intent.putExtra("PRICE", price.getText().toString());
       intent.putExtra("STATE", state);
-      intent.putExtra("LOCATION", location.getText().toString());
+      intent.putExtra("LATITUDE", latitude);
+      intent.putExtra("LONGITUDE", longitude);
       intent.putExtra("DESCRIPTION", description);
       intent.putExtra("CATEGORY", category);
       intent.putExtra("NAME", name);
