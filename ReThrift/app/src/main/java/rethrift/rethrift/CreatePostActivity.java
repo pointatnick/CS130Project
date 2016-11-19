@@ -149,19 +149,22 @@ public class CreatePostActivity extends AppCompatActivity {
                 conn.connect();
                 os = conn.getOutputStream();
 
-                JSONObject userAcctJson = new JSONObject();
+                JSONObject postInfoJson = new JSONObject();
                 try {
-                    userAcctJson.put("title", title.getText().toString())
-                            .put("price", price.getText().toString())
-                            .put("description", description.getText().toString())
-                            .put("category", category.getSelectedItem().toString())
-                            .put("state", "FRESH");
+                    postInfoJson.put("title", title.getText().toString())
+                                .put("description", description.getText().toString())
+                                .put("price", price.getText().toString())
+                                .put("category", category.getSelectedItem().toString())
+                                .put("state", "FRESH");
                     // TODO: add image
-                    //.put("image", );
+                    //.put("image", )
+                    // TODO: add lat/long
+                    //.put("latitude", )
+                    //.put("longitude", )
 
-                    Log.d("JSONOBJECT", userAcctJson.toString(2));
+                    Log.d("JSONOBJECT", postInfoJson.toString(2));
                     // Write JSONObject to output stream
-                    writeIt(os, userAcctJson.toString(2));
+                    writeIt(os, postInfoJson.toString(2));
                     int response = conn.getResponseCode();
                     conn.disconnect();
                     return "good";
