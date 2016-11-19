@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -70,6 +71,19 @@ public class SalesboardActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         category.setAdapter(adapter);
+
+        //setting up a listener for spinner2 to send category selected as search filter
+        category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                Object item = parent.getItemAtPosition(pos);
+                doMySearch(item.toString());
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
 
         // for search
         // getIntent and pass to handler
@@ -258,9 +272,9 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
     //mc Friday
-    private class CreateSearchFilterTask extends AsyncTask<String, Void, String> {
+    private class CreateSearchFilterTask extends AsyncTask<String, Void, List<Post>> {
         @Override
-        protected String doInBackground(String... params) {
+        protected List<Post> doInBackground(String... params) {
             //params[0]: url string, params[1]=query
             //TO-THINK: passing in a list of search queries
             try {
@@ -268,27 +282,30 @@ public class SalesboardActivity extends AppCompatActivity {
             }
             catch(IOException e){
                 e.printStackTrace();
-                return "Unable to filter search. Try again later.";
+                return null;
             }
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            Log.d("CREATE FILTER", result);
-        }
-
-        private String getSearchPosts(String myURL, String query) throws IOException {
+        private List<Post> getSearchPosts(String myURL, String query) throws IOException {
             InputStream is = null;
             int len = 5000;
 
             try {
+
+                //TO-THINK: support for seach query with multiple filters
+                //List<Pair<String, String>> params = new ArrayList<>();
+                //params.add(new Pair<>("search", query));
+                //to get values: params.get(i).first, params.get(i).second
+
+                //TO-THINK: use loop for supporting multiple search queries
+
                 //store query as a JSON object
                 JSONObject jo = new JSONObject();
                 try {
                     jo.put("query", query);
                 } catch (JSONException e){
                     e.printStackTrace();
-                    return "Unable to create search filter.";
+                    return null;
                 }
                 myURL = myURL + URLEncoder.encode(jo.toString(), "utf-8");
                 URL url = new URL(myURL);
@@ -298,15 +315,6 @@ public class SalesboardActivity extends AppCompatActivity {
                 conn.connect();
 
 
-                //Add all search filters (only one for now)
-                //List<Pair<String, String>> params = new ArrayList<>();
-                //params.add(new Pair<>("search", query));
-                //to get values: params.get(i).first, params.get(i).second
-
-                //TO-THINK: use loop for supporting multiple search queries
-                //add request headers
-                //conn.setRequestProperty(params.get(0).first, params.get(0).second);
-
                 Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseCode());
                 //get query results back
                 is = conn.getInputStream();
@@ -315,6 +323,7 @@ public class SalesboardActivity extends AppCompatActivity {
 
                 try {
                     JSONArray queryPostsArrayJson = new JSONArray(queryPostsArray);
+                    List<Post> postList = new ArrayList<>();
                     for (int i = 0; i < queryPostsArrayJson.length(); i++) {
                         JSONObject postJson = queryPostsArrayJson.getJSONObject(i);
                         int postId = postJson.getInt("id");
@@ -329,12 +338,12 @@ public class SalesboardActivity extends AppCompatActivity {
                                 "name",
                                 postJson.getString("username"));
                     }
+                    return postList;
                 } catch (JSONException e) {
-                    return "Error retrieving posts.";
+                    return null;
                 }
-                return "good";
             } catch (FileNotFoundException e){
-                return "Error retrieving posts.";
+                return null;
             } finally {
                 if(is != null){
                     is.close();
