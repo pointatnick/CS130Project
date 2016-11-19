@@ -38,6 +38,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -239,10 +240,8 @@ public class SalesboardActivity extends AppCompatActivity {
         NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            //TO-DO: change this URL
-            String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/";
+            String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
             new CreateSearchFilterTask().execute(stringUrl, query);
-            // go back to SalesboardActivity? but change cards shown
             finish();
         } else {
             new AlertDialog.Builder(this)
@@ -284,20 +283,30 @@ public class SalesboardActivity extends AppCompatActivity {
             int len = 5000;
 
             try {
+                //store query as a JSON object
+                JSONObject jo = new JSONObject();
+                try {
+                    jo.put("query", query);
+                } catch (JSONException e){
+                    e.printStackTrace();
+                    return "Unable to create search filter.";
+                }
+                myURL = myURL + URLEncoder.encode(jo.toString(), "utf-8");
                 URL url = new URL(myURL);
                 Log.d("URL", "" + url);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.connect();
 
+
                 //Add all search filters (only one for now)
-                List<Pair<String, String>> params = new ArrayList<>();
-                params.add(new Pair<>("username", query));
+                //List<Pair<String, String>> params = new ArrayList<>();
+                //params.add(new Pair<>("search", query));
                 //to get values: params.get(i).first, params.get(i).second
 
                 //TO-THINK: use loop for supporting multiple search queries
                 //add request headers
-                conn.setRequestProperty(params.get(0).first, params.get(0).second);
+                //conn.setRequestProperty(params.get(0).first, params.get(0).second);
 
                 Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseCode());
                 //get query results back
