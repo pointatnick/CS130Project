@@ -18,7 +18,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -371,14 +370,16 @@ public class SalesboardActivity extends AppCompatActivity {
         @Override
         protected List<Post> doInBackground(String... urls) {
             try {
-                return getPosts(urls[0]);
+                JSONArray postJsonArray = getPosts(urls[0]);
+                JSONArray userJsonArray = findUsers(postJsonArray);
+                return constructPosts(postJsonArray, userJsonArray);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
         }
 
-        private List<Post> getPosts(String myurl) throws IOException {
+        private JSONArray getPosts(String myurl) throws IOException {
             InputStream is = null;
             int len = 5000;
 
@@ -401,23 +402,21 @@ public class SalesboardActivity extends AppCompatActivity {
 
                 try {
                     JSONArray postArrayJson = new JSONArray(postArray);
-                    List<Post> postList = new ArrayList<>();
-                    for (int i = 0; i < postArrayJson.length(); i++) {
+                    //List<Post> postList = new ArrayList<>();
+                    /*for (int i = 0; i < postArrayJson.length(); i++) {
                         JSONObject postJson = postArrayJson.getJSONObject(i);
                         int postId = postJson.getInt("id");
                         int userId = postJson.getInt("UserId");
-                        double latitude = postJson.getDouble("latitude");
-                        double longitude = postJson.getDouble("longitude");
                         try {
-                            JSONObject userJson = new FindUserTask().execute("http://rethrift-1.herokuapp.com/users/" + userId).get();
+                            //JSONObject userJson = new FindUserTask().execute("http://rethrift-1.herokuapp.com/users/" + userId).get();
                             //JSONObject locationJson = new FindLocationTask().execute("http://rethrift-1.herokuapp.com/").get();
                             postList.add(
                                     new Post(postJson.getString("title"),
                                             postJson.getString("price"),
                                             postJson.getString("state"),
                                             // TODO: complete location retrieval
-                                            latitude,
-                                            longitude,
+                                            postJson.getDouble("latitude"),
+                                            postJson.getDouble("longitude"),
                                             postJson.getString("description"),
                                             postJson.getString("category"),
                                             userJson.getString("name"),
@@ -428,19 +427,58 @@ public class SalesboardActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                    return postList;
+                    return postList;*/
+                    return postArrayJson;
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return null;
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return null;
             } finally {
                 // Makes sure that the InputStream is closed after the app is finished using it.
                 if (is != null) {
                     is.close();
                 }
+            }
+        }
+
+        private JSONArray findUsers(JSONArray postJsonArray) throws IOException {
+            try {
+                String stringUrl = "http://rethrift-1.herokuapp.com/users/";
+                JSONArray userJsonArray = new JSONArray();
+                for (int i = 0; i < postJsonArray.length(); i++) {
+                    JSONObject postJson = postJsonArray.getJSONObject(i);
+                    int userId = postJson.getInt("UserId");
+                    InputStream is = null;
+                    int len = 5000;
+                    try {
+                        URL url = new URL(stringUrl + userId);
+                        Log.d("URL", "" + url);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setReadTimeout(10000 /* milliseconds */);
+                        conn.setConnectTimeout(15000 /* milliseconds */);
+                        conn.setRequestMethod("GET");
+                        conn.setDoInput(true);
+
+                        // Starts the query
+                        conn.connect();
+                        is = conn.getInputStream();
+
+                        // Convert the InputStream into a string
+                        String userInfo = readIt(is, len);
+                        Log.d("RESULT", userInfo);
+                        JSONObject userInfoJson = new JSONObject(userInfo);
+                        userJsonArray.put(userInfoJson);
+                    } finally {
+                        // Makes sure that the InputStream is closed after the app is finished using it.
+                        if (is != null) {
+                            is.close();
+                        }
+                    }
+                }
+                return userJsonArray;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
             }
         }
 
@@ -451,10 +489,36 @@ public class SalesboardActivity extends AppCompatActivity {
             reader.read(buffer);
             return new String(buffer);
         }
+
+        private List<Post> constructPosts(JSONArray userJsonArray, JSONArray postJsonArray) {
+            try {
+                List<Post> posts = new ArrayList<>();
+                for (int i = 0; i < postJsonArray.length(); i++) {
+                    JSONObject postJson = postJsonArray.getJSONObject(i);
+                    JSONObject userJson = userJsonArray.getJSONObject(i);
+                    posts.add(
+                            new Post(postJson.getString("title"),
+                                    postJson.getString("price"),
+                                    postJson.getString("state"),
+                                    postJson.getDouble("latitude"),
+                                    postJson.getDouble("longitude"),
+                                    postJson.getString("description"),
+                                    postJson.getString("category"),
+                                    userJson.getString("name"),
+                                    userJson.getString("username")));
+                }
+                return posts;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
     }
 
 
+
     // TODO: restructure AsyncTask
+    /*
     // AsyncTask that grabs info about the user
     private class FindUserTask extends AsyncTask<String, Void, JSONObject> {
         @Override
@@ -475,8 +539,8 @@ public class SalesboardActivity extends AppCompatActivity {
                 URL url = new URL(myurl);
                 Log.d("URL", "" + url);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000 /* milliseconds */);
-                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
                 conn.setRequestMethod("GET");
                 conn.setDoInput(true);
 
@@ -517,7 +581,7 @@ public class SalesboardActivity extends AppCompatActivity {
             return new String(buffer);
         }
     }
-
+    */
 
     // TODO: AsyncTask that grabs post location
     /*
