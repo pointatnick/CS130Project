@@ -132,7 +132,7 @@ public class CreatePostActivity extends AppCompatActivity {
             Log.d("CREATE ACCOUNT", result);
         }
 
-        private String createAccountUrl(String myurl) throws IOException {
+            private String createAccountUrl(String myurl) throws IOException {
             OutputStream os = null;
 
             try {

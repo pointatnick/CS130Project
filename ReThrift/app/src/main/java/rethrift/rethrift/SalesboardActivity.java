@@ -3,6 +3,7 @@ package rethrift.rethrift;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.content.DialogInterface;
+import android.os.HandlerThread;
 import android.support.v7.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -41,6 +42,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +52,9 @@ import java.text.NumberFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.net.URL;
+import android.util.Pair;
+
+
 
 
 
@@ -110,7 +115,7 @@ public class SalesboardActivity extends AppCompatActivity {
         //mDrawerList = (ListView) findViewById(R.id.navigation_view);
         //addDrawerItems();
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             // This method will trigger on item Click of navigation menu
             @Override
@@ -135,6 +140,8 @@ public class SalesboardActivity extends AppCompatActivity {
                         return true;
                     case R.id.watch_list:
                         Toast.makeText(getApplicationContext(),"watchlist Selected",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SalesboardActivity.this, WatchListActivity.class);
+                        startActivity(intent);
                         return true;
                     case R.id.my_posts:
                         Toast.makeText(getApplicationContext(),"myposts Selected",Toast.LENGTH_SHORT).show();
@@ -212,9 +219,6 @@ public class SalesboardActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-
-
     //for search
     @Override
     protected void onNewIntent(Intent intent) {
@@ -231,12 +235,114 @@ public class SalesboardActivity extends AppCompatActivity {
     }
 
     private void doMySearch(String query){
-        //TO-DO: pass to back-end here
-        //TO-DO: change return type to whatever back-end returns
-        //TO-DO: pass to Kexin's adapter? The results of this search
-        //       is shown on the Salesboard view.
-        //?? So open up Salesboard and pass result to show on the view?
+        //check connection existence
+        ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            //TO-DO: change this URL
+            String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/";
+            new CreateSearchFilterTask().execute(stringUrl, query);
+            // go back to SalesboardActivity? but change cards shown
+            finish();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("No network connection available.")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+
     }
+
+    //mc Friday
+    private class CreateSearchFilterTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            //params[0]: url string, params[1]=query
+            //TO-THINK: passing in a list of search queries
+            try {
+                return getSearchPosts(params[0], params[1]);
+            }
+            catch(IOException e){
+                e.printStackTrace();
+                return "Unable to filter search. Try again later.";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("CREATE FILTER", result);
+        }
+
+        private String getSearchPosts(String myURL, String query) throws IOException {
+            InputStream is = null;
+            int len = 5000;
+
+            try {
+                URL url = new URL(myURL);
+                Log.d("URL", "" + url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.connect();
+
+                //Add all search filters (only one for now)
+                List<Pair<String, String>> params = new ArrayList<>();
+                params.add(new Pair<>("username", query));
+                //to get values: params.get(i).first, params.get(i).second
+
+                //TO-THINK: use loop for supporting multiple search queries
+                //add request headers
+                conn.setRequestProperty(params.get(0).first, params.get(0).second);
+
+                Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseCode());
+                //get query results back
+                is = conn.getInputStream();
+                String queryPostsArray = readIt(is, len);
+                Log.d("RESULT", queryPostsArray);
+
+                try {
+                    JSONArray queryPostsArrayJson = new JSONArray(queryPostsArray);
+                    for (int i = 0; i < queryPostsArrayJson.length(); i++) {
+                        JSONObject postJson = queryPostsArrayJson.getJSONObject(i);
+                        int postId = postJson.getInt("id");
+                        int userId = postJson.getInt("UserId");
+                        new Post(postJson.getString("title"),
+                                postJson.getString("price"),
+                                postJson.getString("state"),
+                                "location",
+                                postJson.getString("description"),
+                                postJson.getString("category"),
+                                "name",
+                                postJson.getString("username"));
+                    }
+                } catch (JSONException e) {
+                    return "Error retrieving posts.";
+                }
+                return "good";
+            } catch (FileNotFoundException e){
+                return "Error retrieving posts.";
+            } finally {
+                if(is != null){
+                    is.close();
+                }
+            }
+        }
+
+        // Reads an InputStream and converts it to a String.
+        private String readIt(InputStream stream, int len) throws IOException {
+            Reader reader = new InputStreamReader(stream, "UTF-8");
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            return new String(buffer);
+        }
+    }
+
 
     // TODO: replace with AsyncTask that grabs 10 most recent posts
     private List<Post> createList() {
