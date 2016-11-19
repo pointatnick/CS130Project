@@ -228,6 +228,7 @@ public class SalesboardActivity extends AppCompatActivity {
         return result;
     }
 
+
     // AsyncTask that checks if the password is correct and logs in the user
     private class GetPostsTask extends AsyncTask<String, Void, List<Post>> {
         @Override
@@ -263,23 +264,159 @@ public class SalesboardActivity extends AppCompatActivity {
 
                 try {
                     JSONArray postArrayJson = new JSONArray(postArray);
+                    List<Post> postList = new ArrayList<>();
                     for (int i = 0; i < postArrayJson.length(); i++) {
                         JSONObject postJson = postArrayJson.getJSONObject(i);
                         int postId = postJson.getInt("id");
                         int userId = postJson.getInt("UserId");
-                        //new FindUserTask.execute();
-                        //new FindLocationTask.execute();
-                        new Post(postJson.getString("title"),
-                                 postJson.getString("price"),
-                                 postJson.getString("state"),
-                                 "location",
-                                 postJson.getString("description"),
-                                 postJson.getString("category"),
-                                 "name",
-                                 postJson.getString("username"));
+                        try {
+                            JSONObject userJson = new FindUserTask().execute("http://rethrift-1.herokuapp.com/users/" + userId).get();
+                            JSONObject locationJson = new FindLocationTask().execute("http://rethrift-1.herokuapp.com/").get();
+                            postList.add(
+                                    new Post(postJson.getString("title"),
+                                            postJson.getString("price"),
+                                            postJson.getString("state"),
+                                            // TODO: complete location retrieval
+                                            locationJson.getString("location"),
+                                            postJson.getString("description"),
+                                            postJson.getString("category"),
+                                            userJson.getString("name"),
+                                            userJson.getString("username")));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    // TODO: change to return List<Post>
+                    return postList;
+                } catch (JSONException e) {
+                    e.printStackTrace();
                     return null;
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            } finally {
+                // Makes sure that the InputStream is closed after the app is finished using it.
+                if (is != null) {
+                    is.close();
+                }
+            }
+        }
+
+        // Reads an InputStream and converts it to a String.
+        private String readIt(InputStream stream, int len) throws IOException {
+            Reader reader = new InputStreamReader(stream, "UTF-8");
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            return new String(buffer);
+        }
+    }
+
+
+    // AsyncTask that grabs info about the user
+    private class FindUserTask extends AsyncTask<String, Void, JSONObject> {
+        @Override
+        protected JSONObject doInBackground(String... urls) {
+            try {
+                return findUser(urls[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        private JSONObject findUser(String myurl) throws IOException {
+            InputStream is = null;
+            int len = 5000;
+
+            try {
+                URL url = new URL(myurl);
+                Log.d("URL", "" + url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+
+                // Starts the query
+                conn.connect();
+                is = conn.getInputStream();
+
+                // Convert the InputStream into a string
+                String userInfoString = readIt(is, len);
+                Log.d("RESULT", userInfoString);
+
+                try {
+                    JSONObject userInfoJson = new JSONObject(userInfoString);
+                    JSONObject user = new JSONObject();
+                    user.put("name", userInfoJson.getString("name"))
+                        .put("username", userInfoJson.getString("username"));
+                    return user;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            } finally {
+                // Makes sure that the InputStream is closed after the app is finished using it.
+                if (is != null) {
+                    is.close();
+                }
+            }
+        }
+
+        // Reads an InputStream and converts it to a String.
+        private String readIt(InputStream stream, int len) throws IOException {
+            Reader reader = new InputStreamReader(stream, "UTF-8");
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            return new String(buffer);
+        }
+    }
+
+
+    // TODO: AsyncTask that grabs post location
+    private class FindLocationTask extends AsyncTask<String, Void, JSONObject> {
+        @Override
+        protected JSONObject doInBackground(String... urls) {
+            try {
+                return findUser(urls[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        private JSONObject findUser(String myurl) throws IOException {
+            InputStream is = null;
+            int len = 5000;
+
+            try {
+                URL url = new URL(myurl);
+                Log.d("URL", "" + url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+
+                // Starts the query
+                conn.connect();
+                is = conn.getInputStream();
+
+                // Convert the InputStream into a string
+                String userInfoString = readIt(is, len);
+                Log.d("RESULT", userInfoString);
+
+                try {
+                    JSONObject userInfoJson = new JSONObject(userInfoString);
+                    JSONObject user = new JSONObject();
+                    user.put("name", userInfoJson.getString("name"))
+                            .put("username", userInfoJson.getString("username"));
+                    return user;
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return null;
