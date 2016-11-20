@@ -1,6 +1,5 @@
 package rethrift.rethrift;
 
-import android.*;
 import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
@@ -33,6 +32,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -264,6 +264,14 @@ public class SalesboardActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    @Override
+    public void onConnectionSuspended(int requestCode) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("CONNECTION", connectionResult.toString());
     }
 
     public void retrievePosts(RecyclerView recView) {
