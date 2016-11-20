@@ -4,15 +4,10 @@ package rethrift.rethrift;
  * Created by kexinyu on 11/18/2016.
  */
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-
 import android.app.ListActivity;
-import android.widget.ArrayAdapter;
+import android.os.Bundle;
+import android.view.Window;
 import android.widget.ListView;
-import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -22,7 +17,7 @@ public class MyPostsActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_salesboard);
+        setContentView(R.layout.activity_my_posts);
 
         // generate dummy post list
         ArrayList<String> posts = new ArrayList<String>();
