@@ -1,15 +1,21 @@
 package rethrift.rethrift;
 
+import android.*;
+import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -21,11 +27,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,11 +53,17 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-public class SalesboardActivity extends AppCompatActivity {
+public class SalesboardActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private String user, name;
     private Spinner category;
+    private GoogleApiClient mGoogleApiClient;
+    private RecyclerView cardList;
+    private Location mLastLocation;
+    private double mLatitude, mLongitude;
+    final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
 
     //for search input (mc)
     private TextInputEditText filter;
@@ -61,6 +76,14 @@ public class SalesboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
 
+        // setting up location services
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
 
         // populating category spinner for search
         category = (Spinner) findViewById(R.id.category_spinner2);
@@ -95,17 +118,18 @@ public class SalesboardActivity extends AppCompatActivity {
         //assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        RecyclerView card_list = (RecyclerView) findViewById(R.id.card_list);
-        card_list.setHasFixedSize(true);
+        cardList = (RecyclerView) findViewById(R.id.card_list);
+        cardList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-        card_list.setLayoutManager(llm);
+        cardList.setLayoutManager(llm);
 
         // retrieve posts
+        retrievePosts(cardList);
         try {
             String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
             PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
-            card_list.setAdapter(ca);
+            cardList.setAdapter(ca);
         } catch (InterruptedException e) {
             new AlertDialog.Builder(this)
                     .setTitle("Error")
@@ -129,8 +153,6 @@ public class SalesboardActivity extends AppCompatActivity {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         }
-        //PostAdapter ca = new PostAdapter(createList());
-        //card_list.setAdapter(ca);
 
         // Initialize Navigation View
         Bundle extras = getIntent().getExtras();
@@ -199,6 +221,81 @@ public class SalesboardActivity extends AppCompatActivity {
 
 
     }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        retrievePosts(cardList);
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                mLatitude = mLastLocation.getLatitude();
+                mLongitude = mLastLocation.getLongitude();
+            }
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    if (mLastLocation != null) {
+                        mLatitude = mLastLocation.getLatitude();
+                        mLongitude = mLastLocation.getLongitude();
+                    }
+                }
+            }
+        }
+    }
+
+    public void retrievePosts(RecyclerView recView) {
+        try {
+            String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
+            PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
+            recView.setAdapter(ca);
+        } catch (InterruptedException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Unable to load Salesboard")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } catch (ExecutionException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Unable to load Salesboard")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -229,6 +326,8 @@ public class SalesboardActivity extends AppCompatActivity {
     public void createPost(View view){
         Intent intent = new Intent(this, CreatePostActivity.class);
         intent.putExtra("USERNAME", user);
+        intent.putExtra("LATITUDE", mLatitude);
+        intent.putExtra("LONGITUDE", mLongitude);
         startActivity(intent);
     }
 
@@ -396,8 +495,7 @@ public class SalesboardActivity extends AppCompatActivity {
                 Log.d("RESULT", postArray);
 
                 try {
-                    JSONArray postArrayJson = new JSONArray(postArray);
-                    return postArrayJson;
+                    return new JSONArray(postArray);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return null;
