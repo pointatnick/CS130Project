@@ -6,7 +6,6 @@ package rethrift.rethrift;
 
 import android.app.ListActivity;
 import android.os.Bundle;
-import android.view.Window;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ public class MyPostsActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_my_posts);
 
         // generate dummy post list
@@ -29,7 +27,7 @@ public class MyPostsActivity extends ListActivity {
         MyPostsAdapter adapter = new MyPostsAdapter(posts, this);
 
         //handle listview and assign adapter
-        ListView listView = (ListView)findViewById(R.id.post_list);
+        ListView listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(adapter);
 
     }

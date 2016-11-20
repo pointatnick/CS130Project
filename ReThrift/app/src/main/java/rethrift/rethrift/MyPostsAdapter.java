@@ -4,14 +4,13 @@ package rethrift.rethrift;
  * Created by kexinyu on 11/18/16.
  */
 
-import android.content.Intent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class MyPostsAdapter extends BaseAdapter implements ListAdapter {
         View view = convertView;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.my_posts_item, null);
+            view = inflater.inflate(R.layout.my_posts_item, parent, false);
         }
 
         // handle TextView and display title string from your list
