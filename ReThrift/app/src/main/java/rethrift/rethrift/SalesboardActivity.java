@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,6 +12,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -28,7 +31,9 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,8 +52,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-public class SalesboardActivity extends AppCompatActivity /*implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener*/ {
+public class SalesboardActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private String user, name;
@@ -113,7 +118,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
         // retrieve posts
         retrievePosts(cardList);
 
-        /*
+
         // setting up location services
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -123,7 +128,6 @@ public class SalesboardActivity extends AppCompatActivity /*implements
                     .build();
             mGoogleApiClient.connect();
         }
-        */
 
         // Initialize Navigation View
         Bundle extras = getIntent().getExtras();
@@ -187,18 +191,16 @@ public class SalesboardActivity extends AppCompatActivity /*implements
         //Setting the actionbarToggle to drawer layout
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
-        //calling sync state is necessay or else your hamburger icon wont show up
+        //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
-
-
     }
 
-    /*
+
     protected void onStart() {
         mGoogleApiClient.connect();
         super.onStart();
     }
-    */
+
 
 
     protected void onResume() {
@@ -206,7 +208,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
         super.onResume();
     }
 
-    /*
+
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
@@ -215,15 +217,17 @@ public class SalesboardActivity extends AppCompatActivity /*implements
     @Override
     public void onConnected(Bundle connectionHint) {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
                 mLatitude = mLastLocation.getLatitude();
                 mLongitude = mLastLocation.getLongitude();
+                Log.d("LATITUDE", "" + mLatitude);
+                Log.d("LONGITUDE", "" + mLongitude);
             }
         } else {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_ACCESS_FINE_LOCATION);
         }
     }
@@ -234,7 +238,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
             case MY_PERMISSIONS_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                     if (mLastLocation != null) {
                         mLatitude = mLastLocation.getLatitude();
@@ -252,7 +256,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("CONNECTION", connectionResult.toString());
     }
-    */
+
 
     public void retrievePosts(RecyclerView recView) {
         try {
