@@ -1,11 +1,9 @@
 package rethrift.rethrift;
 
-import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,8 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -32,9 +28,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,8 +47,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-public class SalesboardActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class SalesboardActivity extends AppCompatActivity /*implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener*/ {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private String user, name;
@@ -63,7 +57,7 @@ public class SalesboardActivity extends AppCompatActivity implements
     private RecyclerView cardList;
     private Location mLastLocation;
     private double mLatitude, mLongitude;
-    final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
+    private final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
 
     //for search input (mc)
     private TextInputEditText filter;
@@ -75,15 +69,6 @@ public class SalesboardActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
-
-        // setting up location services
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
 
         // populating category spinner for search
         category = (Spinner) findViewById(R.id.category_spinner2);
@@ -100,7 +85,7 @@ public class SalesboardActivity extends AppCompatActivity implements
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 Object item = parent.getItemAtPosition(pos);
-                doMySearch(item.toString());
+                //doMySearch(item.toString());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -126,33 +111,18 @@ public class SalesboardActivity extends AppCompatActivity implements
 
         // retrieve posts
         retrievePosts(cardList);
-        try {
-            String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
-            PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
-            cardList.setAdapter(ca);
-        } catch (InterruptedException e) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Error")
-                    .setMessage("Unable to load Salesboard")
-                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        } catch (ExecutionException e) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Error")
-                    .setMessage("Unable to load Salesboard")
-                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+
+        /*
+        // setting up location services
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            mGoogleApiClient.connect();
         }
+        */
 
         // Initialize Navigation View
         Bundle extras = getIntent().getExtras();
@@ -162,7 +132,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         }
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             // This method will trigger on item Click of navigation menu
             @Override
@@ -222,12 +192,20 @@ public class SalesboardActivity extends AppCompatActivity implements
 
     }
 
+    /*
     protected void onStart() {
         mGoogleApiClient.connect();
-        retrievePosts(cardList);
         super.onStart();
     }
+    */
 
+
+    protected void onResume() {
+        retrievePosts(cardList);
+        super.onResume();
+    }
+
+    /*
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
@@ -273,6 +251,7 @@ public class SalesboardActivity extends AppCompatActivity implements
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("CONNECTION", connectionResult.toString());
     }
+    */
 
     public void retrievePosts(RecyclerView recView) {
         try {

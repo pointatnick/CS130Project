@@ -23,7 +23,9 @@
             android:name=".CreateAccountActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <!-- singletop allows search query to be returned to current activity -->
-        <activity android:name=".SalesboardActivity" android:launchMode="singleTop" >
+        <activity
+            android:name=".SalesboardActivity"
+            android:launchMode="singleTop">
         <intent-filter>
             <!-- used for search -->
             <action android:name="android.intent.action.SEARCH" />
