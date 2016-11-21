@@ -89,33 +89,6 @@ public class CreatePostActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: look at this again later
-    private class CurrencyTextWatcher implements TextWatcher {
-        private String current = "";
-
-        public CurrencyTextWatcher() {}
-
-        public void afterTextChanged(Editable s) {}
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(!s.toString().equals(current)){
-                price.removeTextChangedListener(this);
-
-                String cleanString = s.toString().replaceAll("[$,.]", "");
-
-                String formatted = NumberFormat.getCurrencyInstance().format((cleanString));
-
-                current = formatted;
-                price.setText(formatted);
-
-                price.addTextChangedListener(this);
-            }
-        }
-    }
-
     // AsyncTask which creates the post in the background
     private class CreatePostTask extends AsyncTask<String, Void, String> {
         @Override
