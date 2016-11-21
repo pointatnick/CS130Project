@@ -192,8 +192,6 @@ public class SalesboardActivity extends AppCompatActivity implements
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
-
-
     }
 
 
