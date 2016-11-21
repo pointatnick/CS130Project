@@ -106,12 +106,10 @@ public class CreatePostActivity extends AppCompatActivity {
 
                 String cleanString = s.toString().replaceAll("[$,.]", "");
 
-                double parsed = Double.parseDouble(cleanString);
-                String formatted = NumberFormat.getCurrencyInstance().format((parsed/100));
+                String formatted = NumberFormat.getCurrencyInstance().format((cleanString));
 
                 current = formatted;
                 price.setText(formatted);
-                price.setSelection(formatted.length());
 
                 price.addTextChangedListener(this);
             }
