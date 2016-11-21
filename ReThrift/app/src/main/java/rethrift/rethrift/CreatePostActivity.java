@@ -32,6 +32,7 @@ public class CreatePostActivity extends AppCompatActivity {
     private TextInputEditText title, price, description;
     private Spinner category;
     private String user;
+    private double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -50,6 +51,8 @@ public class CreatePostActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = extras.getString("USERNAME");
+            latitude = extras.getDouble("LATITUDE");
+            longitude = extras.getDouble("LONGITUDE");
         }
 
         category = (Spinner) findViewById(R.id.category_spinner);
@@ -155,12 +158,11 @@ public class CreatePostActivity extends AppCompatActivity {
                                 .put("description", description.getText().toString())
                                 .put("price", price.getText().toString())
                                 .put("category", category.getSelectedItem().toString())
-                                .put("state", "FRESH");
+                                .put("state", "FRESH")
+                                .put("latitude", latitude)
+                                .put("longitude", longitude);
                     // TODO: add image
                     //.put("image", )
-                    // TODO: add lat/long
-                    //.put("latitude", )
-                    //.put("longitude", )
 
                     Log.d("JSONOBJECT", postInfoJson.toString(2));
                     // Write JSONObject to output stream

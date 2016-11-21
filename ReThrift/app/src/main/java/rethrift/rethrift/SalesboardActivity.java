@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -18,15 +19,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,11 +47,17 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-public class SalesboardActivity extends AppCompatActivity {
+public class SalesboardActivity extends AppCompatActivity /*implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener*/ {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private String user, name;
     private Spinner category;
+    private GoogleApiClient mGoogleApiClient;
+    private RecyclerView cardList;
+    private Location mLastLocation;
+    private double mLatitude, mLongitude;
+    private final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
 
     //for search input (mc)
     private TextInputEditText filter;
@@ -61,7 +69,6 @@ public class SalesboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
-
 
         // populating category spinner for search
         category = (Spinner) findViewById(R.id.category_spinner2);
@@ -97,42 +104,26 @@ public class SalesboardActivity extends AppCompatActivity {
         //assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        RecyclerView card_list = (RecyclerView) findViewById(R.id.card_list);
-        card_list.setHasFixedSize(true);
+        cardList = (RecyclerView) findViewById(R.id.card_list);
+        cardList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-        card_list.setLayoutManager(llm);
+        cardList.setLayoutManager(llm);
 
         // retrieve posts
-        try {
-            String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
-            PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
-            card_list.setAdapter(ca);
-        } catch (InterruptedException e) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Error")
-                    .setMessage("Unable to load Salesboard")
-                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        } catch (ExecutionException e) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Error")
-                    .setMessage("Unable to load Salesboard")
-                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+        retrievePosts(cardList);
+
+        /*
+        // setting up location services
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            mGoogleApiClient.connect();
         }
-        //PostAdapter ca = new PostAdapter(createList());
-        //card_list.setAdapter(ca);
+        */
 
         // Initialize Navigation View
         Bundle extras = getIntent().getExtras();
@@ -142,7 +133,7 @@ public class SalesboardActivity extends AppCompatActivity {
         }
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             // This method will trigger on item Click of navigation menu
             @Override
@@ -201,6 +192,98 @@ public class SalesboardActivity extends AppCompatActivity {
 
 
     }
+
+    /*
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+    */
+
+
+    protected void onResume() {
+        retrievePosts(cardList);
+        super.onResume();
+    }
+
+    /*
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                mLatitude = mLastLocation.getLatitude();
+                mLongitude = mLastLocation.getLongitude();
+            }
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    if (mLastLocation != null) {
+                        mLatitude = mLastLocation.getLatitude();
+                        mLongitude = mLastLocation.getLongitude();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int requestCode) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("CONNECTION", connectionResult.toString());
+    }
+    */
+
+    public void retrievePosts(RecyclerView recView) {
+        try {
+            String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
+            PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
+            recView.setAdapter(ca);
+        } catch (InterruptedException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Unable to load Salesboard")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } catch (ExecutionException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Unable to load Salesboard")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -231,6 +314,8 @@ public class SalesboardActivity extends AppCompatActivity {
     public void createPost(View view){
         Intent intent = new Intent(this, CreatePostActivity.class);
         intent.putExtra("USERNAME", user);
+        intent.putExtra("LATITUDE", mLatitude);
+        intent.putExtra("LONGITUDE", mLongitude);
         startActivity(intent);
     }
 
@@ -362,33 +447,21 @@ public class SalesboardActivity extends AppCompatActivity {
         }
     }
 
-
-    // TODO: replace with AsyncTask that grabs 10 most recent posts
-    /*
-    private List<Post> createList() {
-        List<Post> result = new ArrayList<>();
-        Post ci = new Post("Title goes here", "$10", "FRESH", "5678 Alley Drive", "Test description", "Test category", "First Last", "firstlast");
-        Post di = new Post("Another title", "$5", "PENDING SALE", "1234 Park Lane", "This is a test", "Some test", "Last First", "lastfirst");
-        result.add(ci);
-        result.add(di);
-        return result;
-    }
-    */
-
-
     // AsyncTask that checks if the password is correct and logs in the user
     private class GetPostsTask extends AsyncTask<String, Void, List<Post>> {
         @Override
         protected List<Post> doInBackground(String... urls) {
             try {
-                return getPosts(urls[0]);
+                JSONArray postJsonArray = getPosts(urls[0]);
+                JSONArray userJsonArray = findUsers(postJsonArray);
+                return constructPosts(postJsonArray, userJsonArray);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
         }
 
-        private List<Post> getPosts(String myurl) throws IOException {
+        private JSONArray getPosts(String myurl) throws IOException {
             InputStream is = null;
             int len = 5000;
 
@@ -410,47 +483,57 @@ public class SalesboardActivity extends AppCompatActivity {
                 Log.d("RESULT", postArray);
 
                 try {
-                    JSONArray postArrayJson = new JSONArray(postArray);
-                    List<Post> postList = new ArrayList<>();
-                    for (int i = 0; i < postArrayJson.length(); i++) {
-                        JSONObject postJson = postArrayJson.getJSONObject(i);
-                        int postId = postJson.getInt("id");
-                        int userId = postJson.getInt("UserId");
-                        double latitude = postJson.getDouble("latitude");
-                        double longitude = postJson.getDouble("longitude");
-                        try {
-                            JSONObject userJson = new FindUserTask().execute("http://rethrift-1.herokuapp.com/users/" + userId).get();
-                            //JSONObject locationJson = new FindLocationTask().execute("http://rethrift-1.herokuapp.com/").get();
-                            postList.add(
-                                    new Post(postJson.getString("title"),
-                                            postJson.getString("price"),
-                                            postJson.getString("state"),
-                                            // TODO: complete location retrieval
-                                            latitude,
-                                            longitude,
-                                            postJson.getString("description"),
-                                            postJson.getString("category"),
-                                            userJson.getString("name"),
-                                            userJson.getString("username")));
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
+                    return new JSONArray(postArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } finally {
+                // Makes sure that the InputStream is closed after the app is finished using it.
+                if (is != null) {
+                    is.close();
+                }
+            }
+        }
+
+        private JSONArray findUsers(JSONArray postJsonArray) throws IOException {
+            try {
+                String stringUrl = "http://rethrift-1.herokuapp.com/users/";
+                JSONArray userJsonArray = new JSONArray();
+                for (int i = 0; i < postJsonArray.length(); i++) {
+                    JSONObject postJson = postJsonArray.getJSONObject(i);
+                    int userId = postJson.getInt("UserId");
+                    InputStream is = null;
+                    int len = 5000;
+                    try {
+                        URL url = new URL(stringUrl + userId);
+                        Log.d("URL", "" + url);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setReadTimeout(10000 /* milliseconds */);
+                        conn.setConnectTimeout(15000 /* milliseconds */);
+                        conn.setRequestMethod("GET");
+                        conn.setDoInput(true);
+
+                        // Starts the query
+                        conn.connect();
+                        is = conn.getInputStream();
+
+                        // Convert the InputStream into a string
+                        String userInfo = readIt(is, len);
+                        Log.d("RESULT", userInfo);
+                        JSONObject userInfoJson = new JSONObject(userInfo);
+                        userJsonArray.put(userInfoJson);
+                    } finally {
+                        // Makes sure that the InputStream is closed after the app is finished using it.
+                        if (is != null) {
+                            is.close();
                         }
                     }
-                    return postList;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return null;
                 }
-            } catch (FileNotFoundException e) {
+                return userJsonArray;
+            } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
-            } finally {
-                // Makes sure that the InputStream is closed after the app is finished using it.
-                if (is != null) {
-                    is.close();
-                }
             }
         }
 
@@ -461,135 +544,32 @@ public class SalesboardActivity extends AppCompatActivity {
             reader.read(buffer);
             return new String(buffer);
         }
-    }
 
-
-    // AsyncTask that grabs info about the user
-    private class FindUserTask extends AsyncTask<String, Void, JSONObject> {
-        @Override
-        protected JSONObject doInBackground(String... urls) {
+        private List<Post> constructPosts(JSONArray postJsonArray, JSONArray userJsonArray) {
             try {
-                return findUser(urls[0]);
-            } catch (IOException e) {
+                List<Post> posts = new ArrayList<>();
+                for (int i = 0; i < postJsonArray.length(); i++) {
+                    JSONObject postJson = postJsonArray.getJSONObject(i);
+                    Log.d("POST", postJson.toString());
+                    JSONObject userJson = userJsonArray.getJSONObject(i);
+                    Log.d("USER", userJson.toString());
+                    posts.add(
+                            new Post(postJson.getString("title"),
+                                     postJson.getString("price"),
+                                     postJson.getString("state"),
+                                     postJson.getDouble("latitude"),
+                                     postJson.getDouble("longitude"),
+                                     postJson.getString("description"),
+                                     postJson.getString("category"),
+                                     userJson.getString("firstname") + userJson.getString("lastname"),
+                                     userJson.getString("username")));
+                }
+                return posts;
+            } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
             }
-        }
-
-        private JSONObject findUser(String myurl) throws IOException {
-            InputStream is = null;
-            int len = 5000;
-
-            try {
-                URL url = new URL(myurl);
-                Log.d("URL", "" + url);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000 /* milliseconds */);
-                conn.setConnectTimeout(15000 /* milliseconds */);
-                conn.setRequestMethod("GET");
-                conn.setDoInput(true);
-
-                // Starts the query
-                conn.connect();
-                is = conn.getInputStream();
-
-                // Convert the InputStream into a string
-                String userInfoString = readIt(is, len);
-                Log.d("RESULT", userInfoString);
-
-                try {
-                    JSONObject userInfoJson = new JSONObject(userInfoString);
-                    JSONObject user = new JSONObject();
-                    user.put("name", userInfoJson.getString("name"))
-                        .put("username", userInfoJson.getString("username"));
-                    return user;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return null;
-            } finally {
-                // Makes sure that the InputStream is closed after the app is finished using it.
-                if (is != null) {
-                    is.close();
-                }
-            }
-        }
-
-        // Reads an InputStream and converts it to a String.
-        private String readIt(InputStream stream, int len) throws IOException {
-            Reader reader = new InputStreamReader(stream, "UTF-8");
-            char[] buffer = new char[len];
-            reader.read(buffer);
-            return new String(buffer);
         }
     }
 
-
-    // TODO: AsyncTask that grabs post location
-    /*
-    private class FindLocationTask extends AsyncTask<String, Void, JSONObject> {
-        @Override
-        protected JSONObject doInBackground(String... urls) {
-            try {
-                return findLocation(urls[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        private JSONObject findLocation(String myurl) throws IOException {
-            InputStream is = null;
-            int len = 5000;
-
-            try {
-                URL url = new URL(myurl);
-                Log.d("URL", "" + url);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestMethod("GET");
-                conn.setDoInput(true);
-
-                // Starts the query
-                conn.connect();
-                is = conn.getInputStream();
-
-                // Convert the InputStream into a string
-                String userInfoString = readIt(is, len);
-                Log.d("RESULT", userInfoString);
-
-                try {
-                    JSONObject userInfoJson = new JSONObject(userInfoString);
-                    JSONObject user = new JSONObject();
-                    user.put("name", userInfoJson.getString("name"))
-                        .put("username", userInfoJson.getString("username"));
-                    return user;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return null;
-            } finally {
-                // Makes sure that the InputStream is closed after the app is finished using it.
-                if (is != null) {
-                    is.close();
-                }
-            }
-        }
-
-        // Reads an InputStream and converts it to a String.
-        private String readIt(InputStream stream, int len) throws IOException {
-            Reader reader = new InputStreamReader(stream, "UTF-8");
-            char[] buffer = new char[len];
-            reader.read(buffer);
-            return new String(buffer);
-        }
-    }
-    */
 }
