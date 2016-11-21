@@ -40,7 +40,7 @@ public class ViewPostActivity extends AppCompatActivity {
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
     }
-
+    
     btnWatchlist.setOnClickListener(new View.OnClickListener()
     {
 
@@ -49,6 +49,7 @@ public class ViewPostActivity extends AppCompatActivity {
         i.putExtra("TITLE", tvTitle.getText().toString());
       }
     });
+
     //==
 
     //i.putExtra("Price",  tvPrice );
