@@ -73,12 +73,13 @@ public class SalesboardActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         category.setAdapter(adapter);
 
+        //TODO: set up so that only one filter (search bar or category?)
         //setting up a listener for spinner2 to send category selected as search filter
         category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 Object item = parent.getItemAtPosition(pos);
-                doMySearch(item.toString());
+                //doMySearch(item.toString());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
