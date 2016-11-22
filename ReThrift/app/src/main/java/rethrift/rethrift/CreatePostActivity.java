@@ -156,7 +156,7 @@ public class CreatePostActivity extends AppCompatActivity {
                 try {
                     postInfoJson.put("title", title.getText().toString())
                                 .put("description", description.getText().toString())
-                                .put("price", price.getText().toString())
+                                .put("price", Double.parseDouble(price.getText().toString()))
                                 .put("category", category.getSelectedItem().toString())
                                 .put("state", "FRESH")
                                 .put("latitude", latitude)

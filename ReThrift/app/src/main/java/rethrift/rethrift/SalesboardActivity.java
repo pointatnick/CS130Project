@@ -431,7 +431,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                         int postId = postJson.getInt("id");
                         int userId = postJson.getInt("UserId");
                         new Post(postJson.getString("title"),
-                                postJson.getString("price"),
+                                postJson.getDouble("price"),
                                 postJson.getString("state"),
                                 postJson.getDouble("latitude"),
                                 postJson.getDouble("longitude"),
@@ -570,7 +570,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                     Log.d("USER", userJson.toString());
                     posts.add(
                             new Post(postJson.getString("title"),
-                                     postJson.getString("price"),
+                                     postJson.getDouble("price"),
                                      postJson.getString("state"),
                                      postJson.getDouble("latitude"),
                                      postJson.getDouble("longitude"),
