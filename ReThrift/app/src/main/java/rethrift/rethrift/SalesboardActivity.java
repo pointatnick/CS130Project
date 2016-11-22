@@ -62,7 +62,6 @@ public class SalesboardActivity extends AppCompatActivity implements
     private RecyclerView cardList;
 
     protected GoogleApiClient mGoogleApiClient;
-    protected String mAddressOutput;
     protected Location mLastLocation;
     private double mLatitude, mLongitude;
     private final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
