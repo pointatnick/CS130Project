@@ -56,7 +56,7 @@ public class MyPostsActivity extends AppCompatActivity {
     public void retrievePosts(RecyclerView recView) {
         try {
             String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/posts";
-            PostPreviewAdapter ca = new PostPreviewAdapter(new MyPostsActivity.GetMyPostsTask().execute(stringUrl).get());
+            MyPostsAdapter ca = new MyPostsAdapter(new MyPostsActivity.GetMyPostsTask().execute(stringUrl).get());
             recView.setAdapter(ca);
         } catch (InterruptedException e) {
             new AlertDialog.Builder(this)

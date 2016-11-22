@@ -24,12 +24,12 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class PostPreviewAdapter extends RecyclerView.Adapter<PostPreviewAdapter.PostHolder> {
+public class MyPostsAdapter extends RecyclerView.Adapter<MyPostsAdapter.PostHolder> {
 
   private List<Post> postList;
   private static final String API_KEY = "AIzaSyCpnQeSQBSuxb_hITDW63AcVzCeLuT5hcg";
 
-  public PostPreviewAdapter(List<Post> postList) {
+  public MyPostsAdapter(List<Post> postList) {
     this.postList = postList;
   }
 
