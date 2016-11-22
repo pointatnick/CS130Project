@@ -17,6 +17,7 @@ public class Post {
         this.category = category;
         this.name = name;
         this.username = username;
+
     }
 
     public String getTitle() {
@@ -54,4 +55,6 @@ public class Post {
     public String getUsername() {
         return username;
     }
+
 }
+

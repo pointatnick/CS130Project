@@ -160,6 +160,8 @@ public class SalesboardActivity extends AppCompatActivity implements
                     // For rest of the options we just show a toast on click
                     case R.id.profile:
                         Toast.makeText(getApplicationContext(),"profile Selected",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SalesboardActivity.this, ProfileActivity.class);
+                        startActivity(intent);
                         return true;
                     case R.id.watch_list:
                         Toast.makeText(getApplicationContext(),"watchlist Selected",Toast.LENGTH_SHORT).show();

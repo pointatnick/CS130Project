@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:layout_height="48dp"
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/card_list"
         android:layout_width="match_parent"
-        android:text="Watchlist entered!"
-        android:textSize="20sp" />
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
