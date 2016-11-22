@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -58,9 +59,11 @@ public class SalesboardActivity extends AppCompatActivity implements
     private ArrayAdapter<String> mAdapter;
     private String user, name;
     private Spinner category;
-    private GoogleApiClient mGoogleApiClient;
     private RecyclerView cardList;
-    private Location mLastLocation;
+
+    protected GoogleApiClient mGoogleApiClient;
+    protected String mAddressOutput;
+    protected Location mLastLocation;
     private double mLatitude, mLongitude;
     private final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
 
@@ -117,7 +120,6 @@ public class SalesboardActivity extends AppCompatActivity implements
         // retrieve posts
         retrievePosts(cardList);
 
-
         // setting up location services
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -125,7 +127,6 @@ public class SalesboardActivity extends AppCompatActivity implements
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-            mGoogleApiClient.connect();
         }
 
         // Initialize Navigation View
@@ -134,6 +135,7 @@ public class SalesboardActivity extends AppCompatActivity implements
             user = extras.getString("USERNAME");
             name = extras.getString("FIRSTNAME");
         }
+
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -219,6 +221,15 @@ public class SalesboardActivity extends AppCompatActivity implements
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
+                if (!Geocoder.isPresent()) {
+                    Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                // It is possible that the user presses the button to get the address before the
+                // GoogleApiClient object successfully connects. In such a case, mAddressRequested
+                // is set to true, but no attempt is made to fetch the address (see
+                // fetchAddressButtonHandler()) . Instead, we start the intent service here if the
+                // user has requested an address, since we now have a connection to GoogleApiClient.
                 mLatitude = mLastLocation.getLatitude();
                 mLongitude = mLastLocation.getLongitude();
                 Log.d("LATITUDE", "" + mLatitude);
@@ -249,7 +260,9 @@ public class SalesboardActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onConnectionSuspended(int requestCode) {}
+    public void onConnectionSuspended(int requestCode) {
+        mGoogleApiClient.connect();
+    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {

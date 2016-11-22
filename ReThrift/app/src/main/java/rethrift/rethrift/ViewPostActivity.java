@@ -40,7 +40,6 @@ public class ViewPostActivity extends AppCompatActivity {
     }
   }
 
-  // TODO: translate lat/long to location
   // TODO: add to watchlist
   // TODO: contacts seller
   public void contactSeller(View view) {
