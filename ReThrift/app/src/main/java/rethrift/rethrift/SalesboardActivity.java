@@ -57,7 +57,6 @@ import java.util.concurrent.ExecutionException;
 public class SalesboardActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
     private String user, name;
     private Spinner category;
     private RecyclerView cardList;
@@ -168,6 +167,8 @@ public class SalesboardActivity extends AppCompatActivity implements
                         return true;
                     case R.id.my_posts:
                         Intent myPostsIntent = new Intent(SalesboardActivity.this, MyPostsActivity.class);
+                        myPostsIntent.putExtra("USERNAME", user);
+                        myPostsIntent.putExtra("NAME", name);
                         startActivity(myPostsIntent);
                         return true;
 

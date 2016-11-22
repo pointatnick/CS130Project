@@ -4,11 +4,14 @@ package rethrift.rethrift;
  * Created by kexinyu on 11/18/2016.
  */
 
-import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,27 +25,62 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-public class MyPostsActivity extends ListActivity {
+public class MyPostsActivity extends AppCompatActivity {
+    private RecyclerView cardList;
+    String user, name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_posts);
 
-        // generate dummy post list
-        ArrayList<String> posts = new ArrayList<String>();
-        posts.add("Selling Queen Size Bed Frame");
-        posts.add("Silver iPhone 5s");
-        posts.add("Selling Like New White Sectional Couch");
+        // get extras
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            user = extras.getString("USERNAME");
+            name = extras.getString("NAME");
+        }
 
-        //instantiate adapter
-        MyPostsAdapter adapter = new MyPostsAdapter(posts, this);
+        cardList = (RecyclerView) findViewById(R.id.card_list);
+        cardList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        cardList.setLayoutManager(llm);
 
-        //handle listview and assign adapter
-        ListView listView = (ListView) findViewById(android.R.id.list);
-        listView.setAdapter(adapter);
+        // retrieve posts
+        retrievePosts(cardList);
+    }
 
+    public void retrievePosts(RecyclerView recView) {
+        try {
+            String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/posts";
+            PostPreviewAdapter ca = new PostPreviewAdapter(new MyPostsActivity.GetMyPostsTask().execute(stringUrl).get());
+            recView.setAdapter(ca);
+        } catch (InterruptedException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Unable to load your posts")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } catch (ExecutionException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Unable to load your posts")
+                    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
     }
 
     // AsyncTask that gets the posts the user created
@@ -50,16 +88,14 @@ public class MyPostsActivity extends ListActivity {
         @Override
         protected List<Post> doInBackground(String... urls) {
             try {
-                JSONArray postJsonArray = getPosts(urls[0]);
-                JSONArray userJsonArray = findUsers(postJsonArray);
-                return constructPosts(postJsonArray, userJsonArray);
+                return getPosts(urls[0]);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
         }
 
-        private JSONArray getPosts(String myurl) throws IOException {
+        private List<Post> getPosts(String myurl) throws IOException {
             InputStream is = null;
             int len = 5000;
 
@@ -81,7 +117,24 @@ public class MyPostsActivity extends ListActivity {
                 Log.d("RESULT", postArray);
 
                 try {
-                    return new JSONArray(postArray);
+                    JSONArray postJsonArray = new JSONArray(postArray);
+                    List<Post> posts = new ArrayList<>();
+                    for (int i = 0; i < postJsonArray.length(); i++) {
+                        JSONObject postJson = postJsonArray.getJSONObject(i);
+                        Log.d("POST", postJson.toString());
+                        posts.add(
+                                new Post(postJson.getString("title"),
+                                        // TODO: change to getDouble
+                                        "$" + postJson.getString("price"),
+                                        postJson.getString("state"),
+                                        postJson.getDouble("latitude"),
+                                        postJson.getDouble("longitude"),
+                                        postJson.getString("description"),
+                                        postJson.getString("category"),
+                                        name,
+                                        user));
+                    }
+                    return posts;
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return null;
@@ -94,80 +147,12 @@ public class MyPostsActivity extends ListActivity {
             }
         }
 
-        private JSONArray findUsers(JSONArray postJsonArray) throws IOException {
-            try {
-                String stringUrl = "http://rethrift-1.herokuapp.com/users/";
-                JSONArray userJsonArray = new JSONArray();
-                for (int i = 0; i < postJsonArray.length(); i++) {
-                    JSONObject postJson = postJsonArray.getJSONObject(i);
-                    int userId = postJson.getInt("UserId");
-                    InputStream is = null;
-                    int len = 5000;
-                    try {
-                        URL url = new URL(stringUrl + userId);
-                        Log.d("URL", "" + url);
-                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                        conn.setReadTimeout(10000 /* milliseconds */);
-                        conn.setConnectTimeout(15000 /* milliseconds */);
-                        conn.setRequestMethod("GET");
-                        conn.setDoInput(true);
-
-                        // Starts the query
-                        conn.connect();
-                        is = conn.getInputStream();
-
-                        // Convert the InputStream into a string
-                        String userInfo = readIt(is, len);
-                        Log.d("RESULT", userInfo);
-                        JSONObject userInfoJson = new JSONObject(userInfo);
-                        userJsonArray.put(userInfoJson);
-                    } finally {
-                        // Makes sure that the InputStream is closed after the app is finished using it.
-                        if (is != null) {
-                            is.close();
-                        }
-                    }
-                }
-                return userJsonArray;
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
         // Reads an InputStream and converts it to a String.
         private String readIt(InputStream stream, int len) throws IOException {
             Reader reader = new InputStreamReader(stream, "UTF-8");
             char[] buffer = new char[len];
             reader.read(buffer);
             return new String(buffer);
-        }
-
-        private List<Post> constructPosts(JSONArray postJsonArray, JSONArray userJsonArray) {
-            try {
-                List<Post> posts = new ArrayList<>();
-                for (int i = 0; i < postJsonArray.length(); i++) {
-                    JSONObject postJson = postJsonArray.getJSONObject(i);
-                    Log.d("POST", postJson.toString());
-                    JSONObject userJson = userJsonArray.getJSONObject(i);
-                    Log.d("USER", userJson.toString());
-                    posts.add(
-                            new Post(postJson.getString("title"),
-                                    // TODO: change to getDouble
-                                    "$" + postJson.getString("price"),
-                                    postJson.getString("state"),
-                                    postJson.getDouble("latitude"),
-                                    postJson.getDouble("longitude"),
-                                    postJson.getString("description"),
-                                    postJson.getString("category"),
-                                    userJson.getString("firstname") + userJson.getString("lastname"),
-                                    userJson.getString("username")));
-                }
-                return posts;
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
         }
     }
 }
