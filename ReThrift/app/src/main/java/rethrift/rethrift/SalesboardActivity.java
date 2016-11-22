@@ -491,7 +491,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         }
     }
 
-    // AsyncTask that checks if the password is correct and logs in the user
+    // AsyncTask that gets posts
     private class GetPostsTask extends AsyncTask<String, Void, List<Post>> {
         @Override
         protected List<Post> doInBackground(String... urls) {
