@@ -41,10 +41,13 @@ public class ViewMyPostActivity extends AppCompatActivity {
     }
   }
 
-  // TODO: translate lat/long to location
-  // TODO: add to watchlist
-  // TODO: contacts seller
+  // TODO: edit post
   public void editPost(View view) {
+
+  }
+
+  // TODO: delete post
+  public void deletePost(View view) {
 
   }
 }
