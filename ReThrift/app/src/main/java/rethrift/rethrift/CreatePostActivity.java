@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -26,12 +24,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.NumberFormat;
 
 public class CreatePostActivity extends AppCompatActivity {
     private TextInputEditText title, price, description;
     private Spinner category;
     private String user;
+    private double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -41,7 +39,7 @@ public class CreatePostActivity extends AppCompatActivity {
         title = (TextInputEditText) findViewById(R.id.title_field);
 
         price = (TextInputEditText) findViewById(R.id.price_field);
-        price.addTextChangedListener(new CurrencyTextWatcher());
+        //price.addTextChangedListener(new CurrencyTextWatcher());
 
         description = (TextInputEditText) findViewById(R.id.description_field);
         description.setHorizontallyScrolling(false);
@@ -50,6 +48,8 @@ public class CreatePostActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = extras.getString("USERNAME");
+            latitude = extras.getDouble("LATITUDE");
+            longitude = extras.getDouble("LONGITUDE");
         }
 
         category = (Spinner) findViewById(R.id.category_spinner);
@@ -87,6 +87,7 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     // TODO: look at this again later
+    /*
     private class CurrencyTextWatcher implements TextWatcher {
         private String current = "";
 
@@ -103,17 +104,18 @@ public class CreatePostActivity extends AppCompatActivity {
 
                 String cleanString = s.toString().replaceAll("[$,.]", "");
 
-                double parsed = Double.parseDouble(cleanString);
-                String formatted = NumberFormat.getCurrencyInstance().format((parsed/100));
+                //double parsed = Double.parseDouble(cleanString);
+                int parsed = Integer.parseInt(cleanString);
+                String formatted = NumberFormat.getCurrencyInstance().format(parsed);   //.format(parsed/100);
 
                 current = formatted;
                 price.setText(formatted);
-                price.setSelection(formatted.length());
 
                 price.addTextChangedListener(this);
             }
         }
     }
+    */
 
     // AsyncTask which creates the post in the background
     private class CreatePostTask extends AsyncTask<String, Void, String> {
@@ -132,7 +134,7 @@ public class CreatePostActivity extends AppCompatActivity {
             Log.d("CREATE ACCOUNT", result);
         }
 
-        private String createAccountUrl(String myurl) throws IOException {
+            private String createAccountUrl(String myurl) throws IOException {
             OutputStream os = null;
 
             try {
@@ -149,19 +151,21 @@ public class CreatePostActivity extends AppCompatActivity {
                 conn.connect();
                 os = conn.getOutputStream();
 
-                JSONObject userAcctJson = new JSONObject();
+                JSONObject postInfoJson = new JSONObject();
                 try {
-                    userAcctJson.put("title", title.getText().toString())
-                            .put("price", price.getText().toString())
-                            .put("description", description.getText().toString())
-                            .put("category", category.getSelectedItem().toString())
-                            .put("state", "FRESH");
+                    postInfoJson.put("title", title.getText().toString())
+                                .put("description", description.getText().toString())
+                                .put("price", Double.parseDouble(price.getText().toString()))
+                                .put("category", category.getSelectedItem().toString())
+                                .put("state", "FRESH")
+                                .put("latitude", latitude)
+                                .put("longitude", longitude);
                     // TODO: add image
-                    //.put("image", );
+                    //.put("image", )
 
-                    Log.d("JSONOBJECT", userAcctJson.toString(2));
+                    Log.d("JSONOBJECT", postInfoJson.toString(2));
                     // Write JSONObject to output stream
-                    writeIt(os, userAcctJson.toString(2));
+                    writeIt(os, postInfoJson.toString(2));
                     int response = conn.getResponseCode();
                     conn.disconnect();
                     return "good";

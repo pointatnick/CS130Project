@@ -40,9 +40,10 @@ public class ViewPostActivity extends AppCompatActivity {
     }
   }
 
+  // TODO: add to watchlist
+  // TODO: contacts seller
   public void contactSeller(View view) {
 
   }
-
 
 }
