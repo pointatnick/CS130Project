@@ -40,24 +40,7 @@ public class ViewPostActivity extends AppCompatActivity {
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
     }
-    
-    btnWatchlist.setOnClickListener(new View.OnClickListener()
-    {
-
-      public void onClick(View v){
-        Intent i = new Intent(ViewPostActivity.this, WatchListActivity.class);
-        i.putExtra("TITLE", tvTitle.getText().toString());
-      }
-    });
-
-    //==
-
-    //i.putExtra("Price",  tvPrice );
-    //i.putExtra("Location", tvLocation);
-    //==
   }
-
-
 
   // TODO: translate lat/long to location
   // TODO: add to watchlist

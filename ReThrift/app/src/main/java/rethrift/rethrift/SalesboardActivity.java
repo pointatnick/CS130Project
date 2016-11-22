@@ -4,6 +4,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,6 +13,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -24,11 +28,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,15 +54,16 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-public class SalesboardActivity extends AppCompatActivity /*implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener*/ {
+public class SalesboardActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private String user, name;
     private Spinner category;
-    private GoogleApiClient mGoogleApiClient;
     private RecyclerView cardList;
-    private Location mLastLocation;
+
+    protected GoogleApiClient mGoogleApiClient;
+    protected Location mLastLocation;
     private double mLatitude, mLongitude;
     private final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
 
@@ -63,6 +71,8 @@ public class SalesboardActivity extends AppCompatActivity /*implements
     private TextInputEditText filter;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+    private SearchView searchView = null;
+    int check = 0;
 
 
     @Override
@@ -84,20 +94,22 @@ public class SalesboardActivity extends AppCompatActivity /*implements
         category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                Object item = parent.getItemAtPosition(pos);
-                //doMySearch(item.toString());
+                check = check + 1;
+                if (check > 1){
+                    Object item = parent.getItemAtPosition(pos);
+                    doMySearch(item.toString());
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
-
         // for search
         // getIntent and pass to handler
         handleIntent(getIntent());
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) findViewById(R.id.search_bar);
+        searchView = (SearchView) findViewById(R.id.search_bar);
         //sets up a submit button
         searchView.setSubmitButtonEnabled(true);
         //assumes current activity is the searchable activity
@@ -112,7 +124,6 @@ public class SalesboardActivity extends AppCompatActivity /*implements
         // retrieve posts
         retrievePosts(cardList);
 
-        /*
         // setting up location services
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -120,9 +131,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-            mGoogleApiClient.connect();
         }
-        */
 
         // Initialize Navigation View
         Bundle extras = getIntent().getExtras();
@@ -130,6 +139,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
             user = extras.getString("USERNAME");
             name = extras.getString("FIRSTNAME");
         }
+
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -188,18 +198,16 @@ public class SalesboardActivity extends AppCompatActivity /*implements
         //Setting the actionbarToggle to drawer layout
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
-        //calling sync state is necessay or else your hamburger icon wont show up
+        //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
-
-
     }
 
-    /*
+
     protected void onStart() {
         mGoogleApiClient.connect();
         super.onStart();
     }
-    */
+
 
 
     protected void onResume() {
@@ -207,7 +215,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
         super.onResume();
     }
 
-    /*
+
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
@@ -216,15 +224,26 @@ public class SalesboardActivity extends AppCompatActivity /*implements
     @Override
     public void onConnected(Bundle connectionHint) {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
+                if (!Geocoder.isPresent()) {
+                    Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                // It is possible that the user presses the button to get the address before the
+                // GoogleApiClient object successfully connects. In such a case, mAddressRequested
+                // is set to true, but no attempt is made to fetch the address (see
+                // fetchAddressButtonHandler()) . Instead, we start the intent service here if the
+                // user has requested an address, since we now have a connection to GoogleApiClient.
                 mLatitude = mLastLocation.getLatitude();
                 mLongitude = mLastLocation.getLongitude();
+                Log.d("LATITUDE", "" + mLatitude);
+                Log.d("LONGITUDE", "" + mLongitude);
             }
         } else {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_ACCESS_FINE_LOCATION);
         }
     }
@@ -235,7 +254,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
             case MY_PERMISSIONS_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                     if (mLastLocation != null) {
                         mLatitude = mLastLocation.getLatitude();
@@ -247,13 +266,15 @@ public class SalesboardActivity extends AppCompatActivity /*implements
     }
 
     @Override
-    public void onConnectionSuspended(int requestCode) {}
+    public void onConnectionSuspended(int requestCode) {
+        mGoogleApiClient.connect();
+    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("CONNECTION", connectionResult.toString());
     }
-    */
+
 
     public void retrievePosts(RecyclerView recView) {
         try {
@@ -332,6 +353,11 @@ public class SalesboardActivity extends AppCompatActivity /*implements
             //obtain the query string from Intent.ACTION_SEARCH
             String query = intent.getStringExtra(SearchManager.QUERY);
             doMySearch(query);
+
+            //clear search entry bar
+            searchView.setQuery("", false);
+            //hides keyboard
+            searchView.clearFocus();
         }
     }
 
@@ -339,11 +365,24 @@ public class SalesboardActivity extends AppCompatActivity /*implements
         //check connection existence
         ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
+        cardList = (RecyclerView) findViewById(R.id.card_list);
+        cardList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        cardList.setLayoutManager(llm);
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
-            new CreateSearchFilterTask().execute(stringUrl, query);
-            finish();
+            try {
+                //String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
+                String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
+                //PostAdapter ca = new PostAdapter(new CreateSearchFilterTask().execute(stringUrl, query).get());
+                PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
+                cardList.setAdapter(ca);
+            } catch(ExecutionException e) {
+                //// TODO: ...
+            } catch(InterruptedException ie){
+                //TODO: ...
+            }
         } else {
             new AlertDialog.Builder(this)
                     .setTitle("Error")
@@ -357,6 +396,10 @@ public class SalesboardActivity extends AppCompatActivity /*implements
                     .show();
         }
 
+        //then close nav drawer
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        LinearLayout drawerLinear = (LinearLayout) findViewById(R.id.right_drawer);
+        drawerLayout.closeDrawer(drawerLinear);
     }
 
     //mc Friday
@@ -403,7 +446,7 @@ public class SalesboardActivity extends AppCompatActivity /*implements
                 conn.connect();
 
 
-                Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseCode());
+                Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseMessage());
                 //get query results back
                 is = conn.getInputStream();
                 String queryPostsArray = readIt(is, len);
@@ -417,7 +460,8 @@ public class SalesboardActivity extends AppCompatActivity /*implements
                         int postId = postJson.getInt("id");
                         int userId = postJson.getInt("UserId");
                         new Post(postJson.getString("title"),
-                                postJson.getString("price"),
+                                // TODO: change to getDouble
+                                "$" + postJson.getString("price"),
                                 postJson.getString("state"),
                                 postJson.getDouble("latitude"),
                                 postJson.getDouble("longitude"),
@@ -556,7 +600,8 @@ public class SalesboardActivity extends AppCompatActivity /*implements
                     Log.d("USER", userJson.toString());
                     posts.add(
                             new Post(postJson.getString("title"),
-                                     postJson.getString("price"),
+                                     // TODO: change to getDouble
+                                     "$" + postJson.getString("price"),
                                      postJson.getString("state"),
                                      postJson.getDouble("latitude"),
                                      postJson.getDouble("longitude"),
@@ -574,3 +619,4 @@ public class SalesboardActivity extends AppCompatActivity /*implements
     }
 
 }
+
