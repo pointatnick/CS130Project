@@ -163,13 +163,13 @@ public class SalesboardActivity extends AppCompatActivity implements
                         return true;
                     case R.id.watch_list:
                         Toast.makeText(getApplicationContext(),"watchlist Selected",Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(SalesboardActivity.this, WatchListActivity.class);
-                        startActivity(intent);
+                        Intent watchListIntent = new Intent(SalesboardActivity.this, WatchListActivity.class);
+                        startActivity(watchListIntent);
                         return true;
                     case R.id.my_posts:
                         //Toast.makeText(getApplicationContext(),"myposts Selected",Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(SalesboardActivity.this, MyPostsActivity.class);
-                        startActivity(intent);
+                        Intent myPostsIntent = new Intent(SalesboardActivity.this, MyPostsActivity.class);
+                        startActivity(myPostsIntent);
                         return true;
 
                     default:
