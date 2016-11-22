@@ -2,18 +2,19 @@ package rethrift.rethrift;
 
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class EditPostActivity {
+public class ViewMyPostActivity extends AppCompatActivity {
   private TextView tvTitle, tvPrice, tvState, tvLocation, tvCategory, tvDescription, tvName, tvUsername;
-  private Button btnWatchlist, btnContact;
+  private Button btnEdit, btnDelete;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_view_post);
+    setContentView(R.layout.activity_view_my_post);
 
     tvTitle = (TextView) findViewById(R.id.title);
     tvPrice = (TextView) findViewById(R.id.price);
@@ -24,8 +25,8 @@ public class EditPostActivity {
     tvName = (TextView) findViewById(R.id.name);
     tvUsername = (TextView) findViewById(R.id.username);
 
-    btnWatchlist = (Button) findViewById(R.id.watchlist_btn);
-    btnContact = (Button) findViewById(R.id.contact_btn);
+    btnEdit = (Button) findViewById(R.id.edit_btn);
+    btnDelete = (Button) findViewById(R.id.delete_btn);
 
     Bundle extras = getIntent().getExtras();
     if (extras != null) {
@@ -43,7 +44,7 @@ public class EditPostActivity {
   // TODO: translate lat/long to location
   // TODO: add to watchlist
   // TODO: contacts seller
-  public void contactSeller(View view) {
+  public void editPost(View view) {
 
   }
 }

@@ -147,8 +147,7 @@ public class MyPostsAdapter extends RecyclerView.Adapter<MyPostsAdapter.PostHold
     // Handles the row being being clicked
     @Override
     public void onClick(View view) {
-      // TODO: change to EditPostActivity.class
-      Intent intent = new Intent(context, ViewPostActivity.class);
+      Intent intent = new Intent(context, ViewMyPostActivity.class);
       intent.putExtra("TITLE", tvTitle.getText().toString());
       intent.putExtra("PRICE", tvPrice.getText().toString());
       intent.putExtra("STATE", state);
