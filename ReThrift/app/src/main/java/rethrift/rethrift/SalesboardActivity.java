@@ -159,17 +159,14 @@ public class SalesboardActivity extends AppCompatActivity implements
                 switch (menuItem.getItemId()){
                     // For rest of the options we just show a toast on click
                     case R.id.profile:
-                        Toast.makeText(getApplicationContext(),"profile Selected",Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(SalesboardActivity.this, ProfileActivity.class);
-                        startActivity(intent);
+                        Intent profileIntent = new Intent(SalesboardActivity.this, ProfileActivity.class);
+                        startActivity(profileIntent);
                         return true;
                     case R.id.watch_list:
-                        Toast.makeText(getApplicationContext(),"watchlist Selected",Toast.LENGTH_SHORT).show();
                         Intent watchListIntent = new Intent(SalesboardActivity.this, WatchListActivity.class);
                         startActivity(watchListIntent);
                         return true;
                     case R.id.my_posts:
-                        //Toast.makeText(getApplicationContext(),"myposts Selected",Toast.LENGTH_SHORT).show();
                         Intent myPostsIntent = new Intent(SalesboardActivity.this, MyPostsActivity.class);
                         startActivity(myPostsIntent);
                         return true;
