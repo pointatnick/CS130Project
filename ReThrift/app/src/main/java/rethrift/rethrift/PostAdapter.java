@@ -2,6 +2,7 @@ package rethrift.rethrift;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,9 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.List;
 
@@ -54,7 +57,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     return new PostHolder(itemView, context);
   }
 
-  public static class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+  public static class PostHolder extends RecyclerView.ViewHolder implements
+          View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
     protected TextView title, price, location;
     protected double latitude, longitude;
     protected String state, description, category, name, username;
@@ -65,6 +69,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     protected String mAddressOutput;
     private AddressResultReceiver mResultReceiver;
 
+    protected static final String ADDRESS_REQUESTED_KEY = "address-request-pending";
+    protected static final String LOCATION_ADDRESS_KEY = "location-address";
+
     public PostHolder(View view, Context context) {
       super(view);
       title =  (TextView) view.findViewById(R.id.title);
@@ -72,6 +79,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       location = (TextView) view.findViewById(R.id.location);
       this.context = context;
       view.setOnClickListener(this);
+
+      mResultReceiver = new AddressResultReceiver(new Handler());
+
+      // Set defaults, then update using values stored in the Bundle.
+      mAddressRequested = false;
+      mAddressOutput = "";
+
+      buildGoogleApiClient();
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+      mGoogleApiClient = new GoogleApiClient.Builder(context)
+              .addConnectionCallbacks(this)
+              .addOnConnectionFailedListener(this)
+              .addApi(LocationServices.API)
+              .build();
     }
 
     /**
@@ -126,6 +149,28 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
         // Display the address string or an error message sent from the intent service.
         mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
         location.setText(mAddressOutput);
+      }
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+      // Gets the best and most recent location currently available, which may be null
+      // in rare cases when a location is not available.
+      mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+      if (mLastLocation != null) {
+        // Determine whether a Geocoder is available.
+        if (!Geocoder.isPresent()) {
+          Toast.makeText(context, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
+          return;
+        }
+        // It is possible that the user presses the button to get the address before the
+        // GoogleApiClient object successfully connects. In such a case, mAddressRequested
+        // is set to true, but no attempt is made to fetch the address (see
+        // fetchAddressButtonHandler()) . Instead, we start the intent service here if the
+        // user has requested an address, since we now have a connection to GoogleApiClient.
+        if (mAddressRequested) {
+          startIntentService();
+        }
       }
     }
 
