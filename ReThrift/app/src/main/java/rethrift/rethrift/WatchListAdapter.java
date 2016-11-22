@@ -14,9 +14,9 @@ import java.util.List;
 
 public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.WatchListHolder>{
 
-    private List<WatchList> watchListL;
+    private List<Post> watchListL;
 
-    public WatchListAdapter(List<WatchList> watchListL) {
+    public WatchListAdapter(List<Post> watchListL) {
         this.watchListL= watchListL;
     }
 
@@ -27,15 +27,14 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
 
     @Override
     public void onBindViewHolder(WatchListHolder watchListHolder, int i) {
-        WatchList wl = watchListL.get(i);
+        Post wl = watchListL.get(i);
         watchListHolder.title.setText(wl.getTitle());
         watchListHolder.price.setText(wl.getPrice());
-        watchListHolder.location.setText(wl.getLocation());
     }
 
     @Override
     public WatchListHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_layout, viewGroup, false);
+        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_preview_layout, viewGroup, false);
         Context context = viewGroup.getContext();
         return new WatchListHolder(itemView, context);
     }
@@ -59,6 +58,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
             Intent intent = new Intent(context, ViewPostActivity.class);
             intent.putExtra("TITLE", title.getText().toString());
             intent.putExtra("PRICE", price.getText().toString());
+
             context.startActivity(intent);
         }
     }
