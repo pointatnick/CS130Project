@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -26,7 +24,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.NumberFormat;
 
 public class CreatePostActivity extends AppCompatActivity {
     private TextInputEditText title, price, description;
@@ -42,7 +39,7 @@ public class CreatePostActivity extends AppCompatActivity {
         title = (TextInputEditText) findViewById(R.id.title_field);
 
         price = (TextInputEditText) findViewById(R.id.price_field);
-        price.addTextChangedListener(new CurrencyTextWatcher());
+        //price.addTextChangedListener(new CurrencyTextWatcher());
 
         description = (TextInputEditText) findViewById(R.id.description_field);
         description.setHorizontallyScrolling(false);
@@ -90,6 +87,7 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     // TODO: look at this again later
+    /*
     private class CurrencyTextWatcher implements TextWatcher {
         private String current = "";
 
@@ -117,6 +115,7 @@ public class CreatePostActivity extends AppCompatActivity {
             }
         }
     }
+    */
 
     // AsyncTask which creates the post in the background
     private class CreatePostTask extends AsyncTask<String, Void, String> {

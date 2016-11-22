@@ -42,7 +42,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
   public void onBindViewHolder(PostHolder postHolder, int i) {
     Post ci = postList.get(i);
     postHolder.tvTitle.setText(ci.getTitle());
-    postHolder.tvPrice.setText(Double.toString(ci.getPrice()));
+    postHolder.tvPrice.setText(ci.getPrice());
     postHolder.tvLocation.setText(findAddress(ci.getLatitude(), ci.getLongitude()));
     postHolder.state = ci.getState();
     postHolder.description = ci.getDescription();
