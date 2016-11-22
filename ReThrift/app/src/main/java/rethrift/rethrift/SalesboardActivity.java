@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -68,6 +69,8 @@ public class SalesboardActivity extends AppCompatActivity implements
     private TextInputEditText filter;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+    private SearchView searchView = null;
+    int check = 0;
 
 
     @Override
@@ -85,29 +88,20 @@ public class SalesboardActivity extends AppCompatActivity implements
         // Apply the adapter to the spinner
         category.setAdapter(adapter);
 
-        //TODO: set up so that only one filter (search bar or category?)
         //setting up a listener for spinner2 to send category selected as search filter
         category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                Object item = parent.getItemAtPosition(pos);
-                //doMySearch(item.toString());
+                check = check + 1;
+                if (check > 1){
+                    Object item = parent.getItemAtPosition(pos);
+                    doMySearch(item.toString());
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
-
-        // for search
-        // getIntent and pass to handler
-        handleIntent(getIntent());
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) findViewById(R.id.search_bar);
-        //sets up a submit button
-        searchView.setSubmitButtonEnabled(true);
-        //assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         cardList = (RecyclerView) findViewById(R.id.card_list);
         cardList.setHasFixedSize(true);
@@ -116,7 +110,17 @@ public class SalesboardActivity extends AppCompatActivity implements
         cardList.setLayoutManager(llm);
 
         // retrieve posts
-        retrievePosts(cardList);
+        //retrievePosts(cardList);
+
+        // for search
+        // getIntent and pass to handler
+        handleIntent(getIntent());
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) findViewById(R.id.search_bar);
+        //sets up a submit button
+        searchView.setSubmitButtonEnabled(true);
+        //assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
 
         // setting up location services
@@ -335,6 +339,11 @@ public class SalesboardActivity extends AppCompatActivity implements
             //obtain the query string from Intent.ACTION_SEARCH
             String query = intent.getStringExtra(SearchManager.QUERY);
             doMySearch(query);
+
+            //clear search entry bar
+            searchView.setQuery("", false);
+            //hides keyboard
+            searchView.clearFocus();
         }
     }
 
@@ -342,11 +351,24 @@ public class SalesboardActivity extends AppCompatActivity implements
         //check connection existence
         ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
+        cardList = (RecyclerView) findViewById(R.id.card_list);
+        cardList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        cardList.setLayoutManager(llm);
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
-            new CreateSearchFilterTask().execute(stringUrl, query);
-            finish();
+            try {
+                //String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
+                String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
+                //PostAdapter ca = new PostAdapter(new CreateSearchFilterTask().execute(stringUrl, query).get());
+                PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
+                cardList.setAdapter(ca);
+            } catch(ExecutionException e) {
+                //// TODO: ...
+            } catch(InterruptedException ie){
+                //TODO: ...
+            }
         } else {
             new AlertDialog.Builder(this)
                     .setTitle("Error")
@@ -360,6 +382,10 @@ public class SalesboardActivity extends AppCompatActivity implements
                     .show();
         }
 
+        //then close nav drawer
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        LinearLayout drawerLinear = (LinearLayout) findViewById(R.id.right_drawer);
+        drawerLayout.closeDrawer(drawerLinear);
     }
 
     //mc Friday
@@ -406,7 +432,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                 conn.connect();
 
 
-                Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseCode());
+                Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseMessage());
                 //get query results back
                 is = conn.getInputStream();
                 String queryPostsArray = readIt(is, len);
@@ -559,14 +585,14 @@ public class SalesboardActivity extends AppCompatActivity implements
                     Log.d("USER", userJson.toString());
                     posts.add(
                             new Post(postJson.getString("title"),
-                                     postJson.getString("price"),
-                                     postJson.getString("state"),
-                                     postJson.getDouble("latitude"),
-                                     postJson.getDouble("longitude"),
-                                     postJson.getString("description"),
-                                     postJson.getString("category"),
-                                     userJson.getString("firstname") + userJson.getString("lastname"),
-                                     userJson.getString("username")));
+                                    postJson.getString("price"),
+                                    postJson.getString("state"),
+                                    postJson.getDouble("latitude"),
+                                    postJson.getDouble("longitude"),
+                                    postJson.getString("description"),
+                                    postJson.getString("category"),
+                                    userJson.getString("firstname") + userJson.getString("lastname"),
+                                    userJson.getString("username")));
                 }
                 return posts;
             } catch (JSONException e) {
@@ -577,3 +603,4 @@ public class SalesboardActivity extends AppCompatActivity implements
     }
 
 }
+
