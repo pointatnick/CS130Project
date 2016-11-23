@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 
 public class EditPostActivity extends AppCompatActivity {
-  private TextView tvTitle, tvPrice, tvState, tvLocation, tvCategory, tvDescription, tvName, tvUsername;
+  private TextView tvTitle, tvPrice, tvState, tvCategory, tvDescription, tvName, tvUsername;
   private Button btnUpdate, btnDelete;
 
   @Override
@@ -16,8 +16,27 @@ public class EditPostActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_edit_post);
 
+    tvTitle = (TextView) findViewById(R.id.title);
+    tvPrice = (TextView) findViewById(R.id.price);
+    tvState = (TextView) findViewById(R.id.state);
+    tvCategory = (TextView) findViewById(R.id.category);
+    tvDescription = (TextView) findViewById(R.id.description);
+    tvName = (TextView) findViewById(R.id.name);
+    tvUsername = (TextView) findViewById(R.id.username);
+
     btnUpdate = (Button) findViewById(R.id.update_btn);
     btnDelete = (Button) findViewById(R.id.delete_btn);
+
+    Bundle extras = getIntent().getExtras();
+    if (extras != null) {
+      tvTitle.setText(extras.getString("TITLE"));
+      tvPrice.setText(extras.getString("PRICE"));
+      tvState.setText(extras.getString("STATE"));
+      tvCategory.setText(extras.getString("CATEGORY"));
+      tvDescription.setText(extras.getString("DESCRIPTION"));
+      tvName.setText(extras.getString("NAME"));
+      tvUsername.setText(extras.getString("USERNAME"));
+    }
   }
 
   public void updatePost(View view) {
