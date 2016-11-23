@@ -14,6 +14,7 @@ public class EditPostActivity extends AppCompatActivity {
   private Spinner state, category;
   private String name, username;
   private Button btnUpdate, btnDelete;
+  private int postId;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,7 @@ public class EditPostActivity extends AppCompatActivity {
 
     Bundle extras = getIntent().getExtras();
     if (extras != null) {
+      postId = extras.getInt("ID");
       tvTitle.setText(extras.getString("TITLE"));
       tvPrice.setText(extras.getString("PRICE"));
       state.setSelection(stateAdapter.getPosition(extras.getString("STATE")));
@@ -57,14 +59,8 @@ public class EditPostActivity extends AppCompatActivity {
     }
   }
 
+  // TODO: edit post
   public void updatePost(View view) {
-
-
-    //finish();
-  }
-
-  // TODO: delete post
-  public void deletePost(View view) {
-
+    finish();
   }
 }

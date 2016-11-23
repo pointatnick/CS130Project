@@ -50,6 +50,12 @@ public class MyPostsActivity extends AppCompatActivity {
         retrievePosts(cardList);
     }
 
+    @Override
+    public void onResume() {
+        retrievePosts(cardList);
+        super.onResume();
+    }
+
     public void retrievePosts(RecyclerView recView) {
         try {
             String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/posts";
@@ -120,16 +126,16 @@ public class MyPostsActivity extends AppCompatActivity {
                         JSONObject postJson = postJsonArray.getJSONObject(i);
                         Log.d("POST", postJson.toString());
                         posts.add(
-                                new Post(postJson.getString("title"),
-                                        // TODO: change to getDouble
-                                        "$" + postJson.getString("price"),
-                                        postJson.getString("state"),
-                                        postJson.getDouble("latitude"),
-                                        postJson.getDouble("longitude"),
-                                        postJson.getString("description"),
-                                        postJson.getString("category"),
-                                        name,
-                                        user));
+                                new Post(postJson.getInt("id"),
+                                         postJson.getString("title"),
+                                         "$" + postJson.getDouble("price"),
+                                         postJson.getString("state"),
+                                         postJson.getDouble("latitude"),
+                                         postJson.getDouble("longitude"),
+                                         postJson.getString("description"),
+                                         postJson.getString("category"),
+                                         name,
+                                         user));
                     }
                     return posts;
                 } catch (JSONException e) {

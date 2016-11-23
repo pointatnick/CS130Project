@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.content.Intent;
 
 
 public class ViewPostActivity extends AppCompatActivity {
@@ -42,7 +41,6 @@ public class ViewPostActivity extends AppCompatActivity {
     }
   }
 
-  // TODO: translate lat/long to location
   // TODO: add to watchlist
   // TODO: contacts seller
   public void contactSeller(View view) {

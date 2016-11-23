@@ -41,6 +41,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
   @Override
   public void onBindViewHolder(PostHolder postHolder, int i) {
     Post ci = postList.get(i);
+    postHolder.postId = ci.getId();
     postHolder.tvTitle.setText(ci.getTitle());
     postHolder.tvPrice.setText(ci.getPrice());
     postHolder.tvLocation.setText(findAddress(ci.getLatitude(), ci.getLongitude()));
@@ -134,6 +135,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     protected TextView tvTitle, tvPrice, tvLocation;
     protected String state, description, category, name, username;
     private Context context;
+    private int postId;
 
     public PostHolder(View view, Context context) {
       super(view);
@@ -148,6 +150,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     @Override
     public void onClick(View view) {
       Intent intent = new Intent(context, ViewPostActivity.class);
+      intent.putExtra("ID", postId);
       intent.putExtra("TITLE", tvTitle.getText().toString());
       intent.putExtra("PRICE", tvPrice.getText().toString());
       intent.putExtra("STATE", state);

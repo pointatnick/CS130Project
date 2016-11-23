@@ -459,16 +459,16 @@ public class SalesboardActivity extends AppCompatActivity implements
                         JSONObject postJson = queryPostsArrayJson.getJSONObject(i);
                         int postId = postJson.getInt("id");
                         int userId = postJson.getInt("UserId");
-                        new Post(postJson.getString("title"),
-                                // TODO: change to getDouble
-                                "$" + postJson.getString("price"),
-                                postJson.getString("state"),
-                                postJson.getDouble("latitude"),
-                                postJson.getDouble("longitude"),
-                                postJson.getString("description"),
-                                postJson.getString("category"),
-                                "name",
-                                postJson.getString("username"));
+                        new Post(postJson.getInt("id"),
+                                 postJson.getString("title"),
+                                 "$" + postJson.getDouble("price"),
+                                 postJson.getString("state"),
+                                 postJson.getDouble("latitude"),
+                                 postJson.getDouble("longitude"),
+                                 postJson.getString("description"),
+                                 postJson.getString("category"),
+                                 "name",
+                                 postJson.getString("username"));
                     }
                     return postList;
                 } catch (JSONException e) {
@@ -599,9 +599,9 @@ public class SalesboardActivity extends AppCompatActivity implements
                     JSONObject userJson = userJsonArray.getJSONObject(i);
                     Log.d("USER", userJson.toString());
                     posts.add(
-                            new Post(postJson.getString("title"),
-                                     // TODO: change to getDouble
-                                     "$" + postJson.getString("price"),
+                            new Post(postJson.getInt("id"),
+                                     postJson.getString("title"),
+                                     "$" + postJson.getDouble("price"),
                                      postJson.getString("state"),
                                      postJson.getDouble("latitude"),
                                      postJson.getDouble("longitude"),
