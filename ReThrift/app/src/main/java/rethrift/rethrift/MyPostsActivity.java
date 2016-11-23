@@ -1,8 +1,5 @@
 package rethrift.rethrift;
 
-/**
- * Created by kexinyu on 11/18/2016.
- */
 
 import android.content.DialogInterface;
 import android.os.AsyncTask;

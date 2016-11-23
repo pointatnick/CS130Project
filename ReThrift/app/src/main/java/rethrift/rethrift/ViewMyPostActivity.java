@@ -1,6 +1,7 @@
 package rethrift.rethrift;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,7 +10,7 @@ import android.widget.TextView;
 
 public class ViewMyPostActivity extends AppCompatActivity {
   private TextView tvTitle, tvPrice, tvState, tvLocation, tvCategory, tvDescription, tvName, tvUsername;
-  private Button btnEdit, btnDelete;
+  private Button btnEdit;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +27,6 @@ public class ViewMyPostActivity extends AppCompatActivity {
     tvUsername = (TextView) findViewById(R.id.username);
 
     btnEdit = (Button) findViewById(R.id.edit_btn);
-    btnDelete = (Button) findViewById(R.id.delete_btn);
 
     Bundle extras = getIntent().getExtras();
     if (extras != null) {
@@ -41,13 +41,17 @@ public class ViewMyPostActivity extends AppCompatActivity {
     }
   }
 
-  // TODO: edit post
+  // edit post
   public void editPost(View view) {
-
-  }
-
-  // TODO: delete post
-  public void deletePost(View view) {
-
+    Intent intent = new Intent(this, EditPostActivity.class);
+    intent.putExtra("TITLE", tvTitle.getText().toString());
+    intent.putExtra("PRICE", tvPrice.getText().toString());
+    intent.putExtra("STATE", tvState.getText().toString());
+    intent.putExtra("LOCATION", tvLocation.getText().toString());
+    intent.putExtra("CATEGORY", tvCategory.getText().toString());
+    intent.putExtra("DESCRIPTION", tvDescription.getText().toString());
+    intent.putExtra("NAME", tvName.getText().toString());
+    intent.putExtra("USERNAME", tvUsername.getText().toString());
+    startActivity(intent);
   }
 }

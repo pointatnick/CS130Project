@@ -70,12 +70,23 @@
             android:textSize="16sp"/>
     </android.support.design.widget.TextInputLayout>
 
+
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:text="@string/edit_post_btn"
+        android:id="@+id/update_btn"
         style="?android:attr/borderlessButtonStyle"
-        android:onClick="addPost"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/edit_post_btn"
+        android:onClick="updatePost"/>
+
+    <Button
+        android:id="@+id/delete_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF4336"
+        android:textColor="@android:color/white"
+        android:text="@string/delete_btn"
+        android:onClick="deletePost"/>
 
 </LinearLayout>
