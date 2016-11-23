@@ -1,5 +1,6 @@
 package rethrift.rethrift;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -61,6 +62,11 @@ public class EditPostActivity extends AppCompatActivity {
 
   // TODO: edit post
   public void updatePost(View view) {
-    finish();
+
+
+    Intent intent = new Intent(this, MyPostsActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    startActivity(intent);
   }
 }
