@@ -10,8 +10,9 @@ import android.widget.TextView;
 
 
 public class EditPostActivity extends AppCompatActivity {
-  private TextView tvTitle, tvPrice, tvDescription, tvName, tvUsername;
+  private TextView tvTitle, tvPrice, tvDescription;
   private Spinner state, category;
+  private String name, username;
   private Button btnUpdate, btnDelete;
 
   @Override
@@ -19,11 +20,9 @@ public class EditPostActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_edit_post);
 
-    tvTitle = (TextView) findViewById(R.id.title);
-    tvPrice = (TextView) findViewById(R.id.price);
-    tvDescription = (TextView) findViewById(R.id.description);
-    tvName = (TextView) findViewById(R.id.name);
-    tvUsername = (TextView) findViewById(R.id.username);
+    tvTitle = (TextView) findViewById(R.id.title_field);
+    tvPrice = (TextView) findViewById(R.id.price_field);
+    tvDescription = (TextView) findViewById(R.id.description_field);
 
     category = (Spinner) findViewById(R.id.category_spinner);
     // Create an ArrayAdapter using the string array and a default spinner layout
@@ -50,11 +49,11 @@ public class EditPostActivity extends AppCompatActivity {
     if (extras != null) {
       tvTitle.setText(extras.getString("TITLE"));
       tvPrice.setText(extras.getString("PRICE"));
-      state.setText(extras.getString("STATE"));
-      category.setText(extras.getString("CATEGORY"));
+      state.setSelection(stateAdapter.getPosition(extras.getString("STATE")));
+      category.setSelection(catAdapter.getPosition(extras.getString("CATEGORY")));
       tvDescription.setText(extras.getString("DESCRIPTION"));
-      tvName.setText(extras.getString("NAME"));
-      tvUsername.setText(extras.getString("USERNAME"));
+      name = extras.getString("NAME");
+      username = extras.getString("USERNAME");
     }
   }
 
