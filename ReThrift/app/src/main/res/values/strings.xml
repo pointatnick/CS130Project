@@ -23,6 +23,12 @@
         <item>Clothing</item>
         <item>Other</item>
     </string-array>
+
+    <string-array name="state_array">
+        <item>FRESH</item>
+        <item>PENDING SALE</item>
+        <item>SOLD</item>
+    </string-array>
     <string name="description_hint">Description</string>
     <string name="search_hint">Type...</string>
 
