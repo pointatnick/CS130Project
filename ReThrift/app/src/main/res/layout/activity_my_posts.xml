@@ -5,26 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- The main content view -->
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/main_content"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/card_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/card_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <android.support.design.widget.FloatingActionButton
-            app:layout_behavior="rethrift.rethrift.ScrollAwareFABBehavior"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_add_white_24dp"
-            app:layout_anchor="@id/card_list"
-            app:layout_anchorGravity="bottom|right|end"
-            android:onClick="createPost"/>
-
-    </android.support.design.widget.CoordinatorLayout>
+        android:layout_height="match_parent"/>
 </RelativeLayout>
