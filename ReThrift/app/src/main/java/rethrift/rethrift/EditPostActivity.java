@@ -54,7 +54,7 @@ public class EditPostActivity extends AppCompatActivity {
     // Specify the layout to use when the list of choices appears
     stateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     // Apply the adapter to the spinner
-    category.setAdapter(stateAdapter);
+    state.setAdapter(stateAdapter);
 
     btnUpdate = (Button) findViewById(R.id.update_btn);
     btnDelete = (Button) findViewById(R.id.delete_btn);
@@ -64,8 +64,8 @@ public class EditPostActivity extends AppCompatActivity {
       postId = extras.getInt("ID");
       tvTitle.setText(extras.getString("TITLE"));
       tvPrice.setText(extras.getString("PRICE"));
-      state.setSelection(stateAdapter.getPosition(extras.getString("STATE")));
-      category.setSelection(catAdapter.getPosition(extras.getString("CATEGORY")));
+      //state.setSelection(stateAdapter.getPosition(extras.getString("STATE")));
+      //category.setSelection(catAdapter.getPosition(extras.getString("CATEGORY")));
       tvDescription.setText(extras.getString("DESCRIPTION"));
       name = extras.getString("NAME");
       username = extras.getString("USERNAME");
@@ -86,7 +86,7 @@ public class EditPostActivity extends AppCompatActivity {
     @Override
     protected String doInBackground(String... urls) {
       try {
-        return createAccountUrl(urls[0]);
+        return updatePost(urls[0]);
       } catch (IOException e) {
         e.printStackTrace();
         return "Unable to update post";
@@ -98,7 +98,7 @@ public class EditPostActivity extends AppCompatActivity {
       Log.d("CREATE ACCOUNT", result);
     }
 
-    private String createAccountUrl(String myurl) throws IOException {
+    private String updatePost(String myurl) throws IOException {
       OutputStream os = null;
 
       try {
