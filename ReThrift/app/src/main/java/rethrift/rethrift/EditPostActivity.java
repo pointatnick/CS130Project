@@ -1,13 +1,25 @@
 package rethrift.rethrift;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 public class EditPostActivity extends AppCompatActivity {
@@ -62,11 +74,85 @@ public class EditPostActivity extends AppCompatActivity {
 
   // TODO: edit post
   public void updatePost(View view) {
-
-
+    String stringUrl = "http://rethrift-1.herokuapp.com/posts/update";
+    new UpdatePostTask().execute(stringUrl);
     Intent intent = new Intent(this, MyPostsActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     startActivity(intent);
+  }
+
+  private class UpdatePostTask extends AsyncTask<String, Void, String> {
+    @Override
+    protected String doInBackground(String... urls) {
+      try {
+        return createAccountUrl(urls[0]);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return "Unable to update post";
+      }
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+      Log.d("CREATE ACCOUNT", result);
+    }
+
+    private String createAccountUrl(String myurl) throws IOException {
+      OutputStream os = null;
+
+      try {
+        URL url = new URL(myurl);
+        Log.d("URL", "" + url);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setReadTimeout(10000 /* milliseconds */);
+        conn.setConnectTimeout(15000 /* milliseconds */);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+
+        // Starts the query
+        conn.connect();
+        os = conn.getOutputStream();
+
+        JSONObject postInfoJson = new JSONObject();
+        JSONObject updateVals = new JSONObject();
+        try {
+          updateVals.put("title", tvTitle.getText().toString())
+                    .put("description", tvDescription.getText().toString())
+                    .put("price", Double.parseDouble(tvPrice.getText().toString()))
+                    .put("category", category.getSelectedItem().toString())
+                    .put("state", state.getSelectedItem().toString());
+          // TODO: add image
+          //.put("image", )
+
+          postInfoJson.put("postID", postId)
+                      .put("updateVals", updateVals);
+
+          Log.d("JSONOBJECT", postInfoJson.toString(2));
+          // Write JSONObject to output stream
+          writeIt(os, postInfoJson.toString(2));
+          int response = conn.getResponseCode();
+          conn.disconnect();
+          return "good";
+        } catch (JSONException e) {
+          e.printStackTrace();
+          return "Unable to update post";
+        }
+        // Makes sure that the OutputStream is closed after the app is finished using it.
+      } finally {
+        if (os != null) {
+          os.close();
+        }
+      }
+    }
+
+    // Writes an OutputStream
+    private void writeIt(OutputStream stream, String msg) throws IOException {
+      Writer writer = new OutputStreamWriter(stream, "UTF-8");
+      writer.write(msg);
+      writer.flush();
+      writer.close();
+    }
   }
 }
