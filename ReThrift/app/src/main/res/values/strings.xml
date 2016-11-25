@@ -40,6 +40,7 @@
     <string name="edit_btn">Edit</string>
     <string name="delete_btn">Delete</string>
     <string name="edit_post_btn">Update</string>
+    <string name="unwatch_btn">Remove from Watchlist</string>
 
     <string name="no_geocoder_available">No geocoder available</string>
     <string name="fetch_address">Fetch address</string>

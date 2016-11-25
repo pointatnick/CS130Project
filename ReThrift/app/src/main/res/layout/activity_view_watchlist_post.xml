@@ -97,7 +97,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/watchlist_btn"
+        android:text="@string/unwatch_btn"
         android:onClick="removeFromWatchlist"/>
 
     <Button

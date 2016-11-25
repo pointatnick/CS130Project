@@ -29,7 +29,7 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_view_post);
+    setContentView(R.layout.activity_view_watchlist_post);
 
     tvTitle = (TextView) findViewById(R.id.title);
     tvPrice = (TextView) findViewById(R.id.price);
