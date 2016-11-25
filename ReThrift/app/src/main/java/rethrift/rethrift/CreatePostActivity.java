@@ -125,7 +125,7 @@ public class CreatePostActivity extends AppCompatActivity {
                 return createAccountUrl(urls[0]);
             } catch (IOException e) {
                 e.printStackTrace();
-                return "Unable to create account. Please try again later.";
+                return "Unable to create post";
             }
         }
 
@@ -171,7 +171,7 @@ public class CreatePostActivity extends AppCompatActivity {
                     return "good";
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    return "Unable to create account. Please try again later.";
+                    return "Unable to create post";
                 }
                 // Makes sure that the OutputStream is closed after the app is finished using it.
             } finally {
