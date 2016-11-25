@@ -88,6 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
         android:textColor="@android:color/black"/>
 
     <Button
@@ -96,12 +97,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/watchlist_btn"/>
+        android:text="@string/watchlist_btn"
+        android:onClick="addToWatchlist"/>
 
     <Button
         android:id="@+id/contact_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/contact_btn"/>
+        android:text="@string/contact_btn"
+        android:onClick="contactSeller"/>
 
 </LinearLayout>

@@ -27,10 +27,12 @@ import java.util.concurrent.ExecutionException;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
 
   private List<Post> postList;
+  private String user;
   private static final String API_KEY = "AIzaSyCpnQeSQBSuxb_hITDW63AcVzCeLuT5hcg";
 
-  public PostAdapter(List<Post> postList) {
+  public PostAdapter(List<Post> postList, String user) {
     this.postList = postList;
+    this.user = user;
   }
 
   @Override
@@ -128,20 +130,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
   public PostHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
     View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_layout, viewGroup, false);
     Context context = viewGroup.getContext();
-    return new PostHolder(itemView, context);
+    return new PostHolder(itemView, context, user);
   }
 
   public static class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     protected TextView tvTitle, tvPrice, tvLocation;
-    protected String state, description, category, name, username;
+    protected String state, description, category, name, username, user;
     private Context context;
     private int postId;
 
-    public PostHolder(View view, Context context) {
+    public PostHolder(View view, Context context, String currentUser) {
       super(view);
       tvTitle =  (TextView) view.findViewById(R.id.title);
       tvPrice = (TextView) view.findViewById(R.id.price);
       tvLocation = (TextView) view.findViewById(R.id.location);
+      user = currentUser;
       this.context = context;
       view.setOnClickListener(this);
     }
@@ -150,6 +153,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     @Override
     public void onClick(View view) {
       Intent intent = new Intent(context, ViewPostActivity.class);
+      intent.putExtra("CURRENT USER", user);
       intent.putExtra("ID", postId);
       intent.putExtra("TITLE", tvTitle.getText().toString());
       intent.putExtra("PRICE", tvPrice.getText().toString());

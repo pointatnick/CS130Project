@@ -163,6 +163,8 @@ public class SalesboardActivity extends AppCompatActivity implements
                         return true;
                     case R.id.watch_list:
                         Intent watchListIntent = new Intent(SalesboardActivity.this, WatchListActivity.class);
+                        watchListIntent.putExtra("USERNAME", user);
+                        watchListIntent.putExtra("NAME", name);
                         startActivity(watchListIntent);
                         return true;
                     case R.id.my_posts:
@@ -279,7 +281,7 @@ public class SalesboardActivity extends AppCompatActivity implements
     public void retrievePosts(RecyclerView recView) {
         try {
             String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
-            PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
+            PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get(), user);
             recView.setAdapter(ca);
         } catch (InterruptedException e) {
             new AlertDialog.Builder(this)
@@ -376,7 +378,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                 //String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
                 String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
                 //PostAdapter ca = new PostAdapter(new CreateSearchFilterTask().execute(stringUrl, query).get());
-                PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
+                PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get(), user);
                 cardList.setAdapter(ca);
             } catch(ExecutionException e) {
                 //// TODO: ...
