@@ -68,33 +68,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
 
 //camera
-        this.imageView = (ImageView)this.findViewById(R.id.imageView);
-        final Button button = (Button) findViewById(R.id.camera_btn);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if(intent.resolveActivity(getPackageManager()) != null) {
-                    File photoFile = null;
-                    try {
-                        photoFile = createImageFile();
-                    }catch (IOException ex) {
-                        //error during creation of File
-                        Log.i(TAG, "IOException");
-                    }
-                    //continue only if the FIle was created successfully
-                    if (photoFile != null) {
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                        startActivityForResult(intent, IMAGE_CAPTURE);
-                    }
-
-                }
-
-            }
-
-        });
-
+        imageView = (ImageView) findViewById(R.id.imageView);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -112,6 +86,29 @@ public class CreatePostActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         category.setAdapter(adapter);
     }
+
+    public void camera(View view) {
+        // Perform action on click
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(intent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            }catch (IOException ex) {
+                //error during creation of File
+                Log.i(TAG, "IOException");
+            }
+            //continue only if the FIle was created successfully
+            if (photoFile != null) {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(intent, IMAGE_CAPTURE);
+            }
+
+        }
+
+    }
+
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());

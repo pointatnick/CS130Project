@@ -96,12 +96,12 @@
 
             />
 
-        <Button
+        <ImageButton
             android:id="@+id/camera_btn"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="42dp"
             android:layout_height="35dp"
-            android:background="@drawable/camera_icon"
+            android:background="@drawable/ic_photo_camera_black_24dp"
             android:onClick="camera"
             />
 
