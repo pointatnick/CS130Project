@@ -58,7 +58,7 @@ public class WatchListActivity extends AppCompatActivity {
     public void retrievePosts(RecyclerView recView) {
         try {
             String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/watchlist";
-            WatchListAdapter ca = new WatchListAdapter(new GetWatchlistTask().execute(stringUrl).get());
+            WatchListAdapter ca = new WatchListAdapter(new GetWatchlistTask().execute(stringUrl).get(), user);
             recView.setAdapter(ca);
         } catch (InterruptedException e) {
             new AlertDialog.Builder(this)

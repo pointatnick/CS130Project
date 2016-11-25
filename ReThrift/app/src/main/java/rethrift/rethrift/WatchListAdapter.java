@@ -27,10 +27,12 @@ import java.util.concurrent.ExecutionException;
 public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.WatchListHolder>{
 
     private List<Post> postList;
+    private String user;
     private static final String API_KEY = "AIzaSyCpnQeSQBSuxb_hITDW63AcVzCeLuT5hcg";
 
-    public WatchListAdapter(List<Post> postList) {
+    public WatchListAdapter(List<Post> postList, String user) {
         this.postList = postList;
+        this.user = user;
     }
 
     @Override
@@ -128,21 +130,22 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
     public WatchListHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_preview_layout, viewGroup, false);
         Context context = viewGroup.getContext();
-        return new WatchListHolder(itemView, context);
+        return new WatchListHolder(itemView, context, user);
     }
 
     public static class WatchListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected TextView tvTitle, tvPrice, tvLocation;
-        protected String state, description, category, name, username;
+        protected String state, description, category, name, username, user;
         private Context context;
         private int postId;
 
-        public WatchListHolder(View view, Context context) {
+        public WatchListHolder(View view, Context context, String user) {
             super(view);
             tvTitle =  (TextView) view.findViewById(R.id.title);
             tvPrice = (TextView) view.findViewById(R.id.price);
             tvLocation = (TextView) view.findViewById(R.id.location);
             this.context = context;
+            this.user = user;
             view.setOnClickListener(this);
         }
 
@@ -150,6 +153,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, ViewWatchlistPostActivity.class);
+            intent.putExtra("CURRENT USER", user);
             intent.putExtra("ID", postId);
             intent.putExtra("TITLE", tvTitle.getText().toString());
             intent.putExtra("PRICE", tvPrice.getText().toString());

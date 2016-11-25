@@ -57,7 +57,7 @@ public class ViewPostActivity extends AppCompatActivity {
     }
   }
 
-  // TODO: add to watchlist
+  // add to watchlist
   public void addToWatchlist(View view) {
     String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/watch";
     new WatchTask().execute(stringUrl);
