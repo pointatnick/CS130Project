@@ -2,8 +2,10 @@ package rethrift.rethrift;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Button;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,12 +27,36 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+import android.graphics.Bitmap;
+import android.graphics.Bitmap;
+import android.widget.ImageView;
+import android.widget.Toast;
+import android.provider.MediaStore;
+import android.os.Environment;
+import android.content.ContentResolver;
+import android.hardware.Camera;
+
+
+
+
 
 public class CreatePostActivity extends AppCompatActivity {
     private TextInputEditText title, price, description;
     private Spinner category;
     private String user;
     private double latitude, longitude;
+    static final int IMAGE_CAPTURE = 129; // an arbitrary request number for capturing image
+    private Bitmap mImageBitmap;
+    ImageView imageView;
+    private String mCurrentPhotoPath;
+    public static final String TAG = "tag...";
+    private Uri mImageUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -44,6 +71,36 @@ public class CreatePostActivity extends AppCompatActivity {
         description = (TextInputEditText) findViewById(R.id.description_field);
         description.setHorizontallyScrolling(false);
         description.setMaxLines(Integer.MAX_VALUE);
+
+
+//camera
+        this.imageView = (ImageView)this.findViewById(R.id.imageView);
+        final Button button = (Button) findViewById(R.id.camera_btn);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if(intent.resolveActivity(getPackageManager()) != null) {
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    }catch (IOException ex) {
+                        //error during creation of File
+                        Log.i(TAG, "IOException");
+                    }
+                    //continue only if the FIle was created successfully
+                    if (photoFile != null) {
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                        startActivityForResult(intent, IMAGE_CAPTURE);
+                    }
+
+                }
+
+            }
+
+        });
+
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -61,7 +118,37 @@ public class CreatePostActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         category.setAdapter(adapter);
     }
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  // prefix
+                ".jpg",         // suffix
+                storageDir      // directory
+        );
 
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == IMAGE_CAPTURE) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
+                    imageView.setImageBitmap(mImageBitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+//============
     public void addPost(View view){
         // check that they have a connection
         ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -86,36 +173,7 @@ public class CreatePostActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: look at this again later
-    /*
-    private class CurrencyTextWatcher implements TextWatcher {
-        private String current = "";
 
-        public CurrencyTextWatcher() {}
-
-        public void afterTextChanged(Editable s) {}
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(!s.toString().equals(current)){
-                price.removeTextChangedListener(this);
-
-                String cleanString = s.toString().replaceAll("[$,.]", "");
-
-                //double parsed = Double.parseDouble(cleanString);
-                int parsed = Integer.parseInt(cleanString);
-                String formatted = NumberFormat.getCurrencyInstance().format(parsed);   //.format(parsed/100);
-
-                current = formatted;
-                price.setText(formatted);
-
-                price.addTextChangedListener(this);
-            }
-        }
-    }
-    */
 
     // AsyncTask which creates the post in the background
     private class CreatePostTask extends AsyncTask<String, Void, String> {

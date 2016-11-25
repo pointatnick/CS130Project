@@ -23,12 +23,6 @@
         <item>Clothing</item>
         <item>Other</item>
     </string-array>
-
-    <string-array name="state_array">
-        <item>FRESH</item>
-        <item>PENDING SALE</item>
-        <item>SOLD</item>
-    </string-array>
     <string name="description_hint">Description</string>
     <string name="search_hint">Type...</string>
 
@@ -37,9 +31,7 @@
     <string name="create_post_btn">Create Post</string>
     <string name="watchlist_btn">Add to Watchlist</string>
     <string name="contact_btn">Contact Seller</string>
-    <string name="edit_btn">Edit</string>
-    <string name="delete_btn">Delete</string>
-    <string name="edit_post_btn">Update</string>
+    <string name="camera_btn">Camera</string>
 
     <string name="no_geocoder_available">No geocoder available</string>
     <string name="fetch_address">Fetch address</string>
