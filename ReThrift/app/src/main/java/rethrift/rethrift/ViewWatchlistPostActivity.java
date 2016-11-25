@@ -61,7 +61,7 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
   //TODO: remove from watchlist
   public void removeFromWatchlist(View view) {
     String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/unwatch";
-    new WatchTask().execute(stringUrl);
+    new UnwatchTask().execute(stringUrl);
     finish();
   }
   // TODO: contacts seller
@@ -70,23 +70,23 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
   }
 
   // AsyncTask that deletes the post
-  private class WatchTask extends AsyncTask<String, Void, String> {
+  private class UnwatchTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... urls) {
       try {
-        return watchPost(urls[0]);
+        return unwatchPost(urls[0]);
       } catch (IOException e) {
         e.printStackTrace();
-        return "Unable to add to watchlist";
+        return "Unable to remove from watchlist";
       }
     }
 
     @Override
     protected void onPostExecute(String result) {
-      Log.d("WATCH POST", result);
+      Log.d("UNWATCH POST", result);
     }
 
-    private String watchPost(String myurl) throws IOException {
+    private String unwatchPost(String myurl) throws IOException {
       OutputStream os = null;
 
       try {
@@ -114,7 +114,7 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
           return "good";
         } catch (JSONException e) {
           e.printStackTrace();
-          return "Unable to add to watchlist";
+          return "Unable to remove from watchlist";
         }
         // Makes sure that the OutputStream is closed after the app is finished using it.
       } finally {
