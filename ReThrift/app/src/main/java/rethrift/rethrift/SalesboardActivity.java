@@ -1,5 +1,7 @@
 package rethrift.rethrift;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,9 +12,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -65,12 +69,109 @@ public class SalesboardActivity extends AppCompatActivity implements
     private double mLatitude, mLongitude;
     private final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
 
+    // /*
     //for search input (mc)
     private TextInputEditText filter;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private SearchView searchView = null;
     int check = 0;
+
+    //for watchlist status update
+    private Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            //check for updates
+            try{
+                String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/notifications";
+                //String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
+                String watchListUpdates = new GetWListUpdateTask().execute(stringUrl).get();
+                if(watchListUpdates != null){
+                    NotificationCompat.Builder builder =
+                            new NotificationCompat.Builder(SalesboardActivity.this)
+                                    .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                                    .setContentTitle("Notification!")
+                                    .setContentText("Post in Watchlist has been updated!");
+
+                    Log.d("WATCHLIST_UPDATE: ", watchListUpdates);
+                    Intent resultIntent = new Intent(SalesboardActivity.this, ViewUpdatedPosts.class);
+                    resultIntent.putExtra("UPDATED_POSTS", watchListUpdates);
+                    PendingIntent pIntent = PendingIntent.getActivity(
+                            SalesboardActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                    );
+                    //send to UpdatedPosts when user clicks on notification
+                    builder.setContentIntent(pIntent);
+
+                    // Sets an ID for the notification
+                    int mNotificationId = 001;
+                    // Gets an instance of the NotificationManager service
+                    NotificationManager mNotifyMgr =
+                            (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    // Builds the notification and issues it.
+                    mNotifyMgr.notify(mNotificationId, builder.build());
+                }
+                else
+                    Log.d("NO_WUPDATES: ", "No updates OR no posts in watchlist!");
+
+            } catch(InterruptedException ie){
+                //TODO ...
+            } catch(ExecutionException e){
+                //TODO ...
+            }
+            //runs every 5 minutes
+            handler.postDelayed(this, 300000);
+
+            //for testing purposes
+            //handler.postDelayed(this, 10000);
+        }
+    };
+
+    private class GetWListUpdateTask extends AsyncTask<String, Void, String>{
+        @Override
+        protected String doInBackground(String... url) {
+            try{
+                return getUpdatedPosts(url[0]);
+            } catch(IOException ie){
+                ie.printStackTrace();
+                return null;
+            }
+        }
+
+        private String getUpdatedPosts(String myURL) throws IOException{
+            InputStream is = null;
+            int len = 5000;
+            try {
+                URL url = new URL(myURL);
+                Log.d("URL", "" + url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.connect();
+
+
+                Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseMessage());
+                is = conn.getInputStream();
+                //queryPostsArray is [] if there are no updates OR if there are no posts in watchlist
+                String queryPostsArray = readIt(is, len);
+                Log.d("RESULT", queryPostsArray);
+                return queryPostsArray;
+            } finally {
+                if(is!=null){
+                    is.close();
+                }
+            }
+
+        }
+
+        private String readIt(InputStream stream, int len) throws IOException {
+            Reader reader = new InputStreamReader(stream, "UTF-8");
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            Log.d("READ_STREAM: ", new String(buffer));
+            return new String(buffer);
+        }
+    }
+//*/
 
 
     @Override
@@ -110,7 +211,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         cardList.setLayoutManager(llm);
 
         // retrieve posts
-        //retrievePosts(cardList);
+        retrievePosts(cardList);
 
         // for search
         // getIntent and pass to handler
@@ -197,7 +298,11 @@ public class SalesboardActivity extends AppCompatActivity implements
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
+
+        //check for watchlist status
+        handler.postDelayed(runnable, 100);
     }
+
 
 
     protected void onStart() {
@@ -208,7 +313,7 @@ public class SalesboardActivity extends AppCompatActivity implements
 
 
     protected void onResume() {
-        retrievePosts(cardList);
+        //retrievePosts(cardList);
         super.onResume();
     }
 
@@ -359,15 +464,24 @@ public class SalesboardActivity extends AppCompatActivity implements
 
         if (networkInfo != null && networkInfo.isConnected()) {
             try {
-                //String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
-                String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
-                //PostAdapter ca = new PostAdapter(new CreateSearchFilterTask().execute(stringUrl, query).get());
-                PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
-                cardList.setAdapter(ca);
+                String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
+                //String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
+                if(new CreateSearchFilterTask().execute(stringUrl, query).get() == null){
+                    Log.d("NO SEARCH RESULTS", "NO RESULTS");
+                    Toast.makeText(getApplicationContext(),"Search yields no results!",Toast.LENGTH_SHORT).show();
+                    retrievePosts(cardList);
+                }
+                else {
+                    PostAdapter ca = new PostAdapter(new CreateSearchFilterTask().execute(stringUrl, query).get());
+                    //PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get());
+                    cardList.setAdapter(ca);
+                }
             } catch(ExecutionException e) {
-                //// TODO: ...
+                //TODO
+                Log.d("ERROR:", "SEARCH CANNOT BE LOADED");
             } catch(InterruptedException ie){
-                //TODO: ...
+                //TODO
+                Log.d("ERROR:", "SEARCH CANNOT BE LOADED");
             }
         } else {
             new AlertDialog.Builder(this)
@@ -388,7 +502,6 @@ public class SalesboardActivity extends AppCompatActivity implements
         drawerLayout.closeDrawer(drawerLinear);
     }
 
-    //mc Friday
     private class CreateSearchFilterTask extends AsyncTask<String, Void, List<Post>> {
         @Override
         protected List<Post> doInBackground(String... params) {
@@ -403,6 +516,8 @@ public class SalesboardActivity extends AppCompatActivity implements
             }
         }
 
+
+
         private List<Post> getSearchPosts(String myURL, String query) throws IOException {
             InputStream is = null;
             int len = 5000;
@@ -416,47 +531,66 @@ public class SalesboardActivity extends AppCompatActivity implements
 
                 //TO-THINK: use loop for supporting multiple search queries
 
-                //store query as a JSON object
-                JSONObject jo = new JSONObject();
-                try {
-                    jo.put("query", query);
-                } catch (JSONException e){
-                    e.printStackTrace();
-                    return null;
-                }
-                myURL = myURL + URLEncoder.encode(jo.toString(), "utf-8");
-                URL url = new URL(myURL);
-                Log.d("URL", "" + url);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.connect();
-
-
-                Log.d("GET RESPONSE:", "Response Code : " + conn.getResponseMessage());
-                //get query results back
-                is = conn.getInputStream();
-                String queryPostsArray = readIt(is, len);
-                Log.d("RESULT", queryPostsArray);
+                String json =
+                "{" +
+                    "where: {" +
+                        "$or:[" +
+                          "{" +
+                            "title: {" +
+                                "$like: %" + query + '%' +
+                            "}" +
+                          "}," +
+                          "{" +
+                            "description: {" +
+                                "$like: %" + query + '%' +
+                            "}" +
+                          "}" +
+                        "]" +
+                    "}" +
+                "}";
 
                 try {
+                    JSONObject jQuery = new JSONObject(json);
+                    myURL = myURL + URLEncoder.encode(jQuery.toString(), "utf-8");
+                    URL url = new URL(myURL);
+                    Log.d("URL", "" + url);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.connect();
+
+                    Log.d("GET RESPONSE", "Response Code: " + conn.getResponseMessage());
+                    //get query results back
+                    is = conn.getInputStream();
+                    String queryPostsArray = readIt(is, len);
+                    Log.d("SEARCH_RESULT", queryPostsArray);
+
+
                     JSONArray queryPostsArrayJson = new JSONArray(queryPostsArray);
+                    //if search yields no results
+                    if(queryPostsArrayJson.length() <= 0){
+                        return null;
+                    }
+                    JSONArray queryUsersArrayJson = findUsers(queryPostsArrayJson);
                     List<Post> postList = new ArrayList<>();
                     for (int i = 0; i < queryPostsArrayJson.length(); i++) {
                         JSONObject postJson = queryPostsArrayJson.getJSONObject(i);
-                        int postId = postJson.getInt("id");
-                        int userId = postJson.getInt("UserId");
-                        new Post(postJson.getString("title"),
-                                postJson.getString("price"),
-                                postJson.getString("state"),
-                                postJson.getDouble("latitude"),
-                                postJson.getDouble("longitude"),
-                                postJson.getString("description"),
-                                postJson.getString("category"),
-                                "name",
-                                postJson.getString("username"));
+                        JSONObject userJson = queryUsersArrayJson.getJSONObject(i);
+                        Log.d("POST", postJson.toString());
+                        Log.d("USER", userJson.toString());
+                        postList.add(
+                                new Post(postJson.getString("title"),
+                                        postJson.getString("price"),
+                                        postJson.getString("state"),
+                                        postJson.getDouble("latitude"),
+                                        postJson.getDouble("longitude"),
+                                        postJson.getString("description"),
+                                        postJson.getString("category"),
+                                        userJson.getString("firstname") + userJson.getString("lastname"),
+                                        userJson.getString("username")));
                     }
                     return postList;
-                } catch (JSONException e) {
+                } catch (JSONException e){
+                    e.printStackTrace();
                     return null;
                 }
             } catch (FileNotFoundException e){
@@ -465,6 +599,47 @@ public class SalesboardActivity extends AppCompatActivity implements
                 if(is != null){
                     is.close();
                 }
+            }
+        }
+
+        private JSONArray findUsers(JSONArray postJsonArray) throws IOException {
+            try {
+                String stringUrl = "http://rethrift-1.herokuapp.com/users/";
+                JSONArray userJsonArray = new JSONArray();
+                for (int i = 0; i < postJsonArray.length(); i++) {
+                    JSONObject postJson = postJsonArray.getJSONObject(i);
+                    int userId = postJson.getInt("UserId");
+                    InputStream is = null;
+                    int len = 5000;
+                    try {
+                        URL url = new URL(stringUrl + userId);
+                        Log.d("URL", "" + url);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setReadTimeout(10000 /* milliseconds */);
+                        conn.setConnectTimeout(15000 /* milliseconds */);
+                        conn.setRequestMethod("GET");
+                        conn.setDoInput(true);
+
+                        // Starts the query
+                        conn.connect();
+                        is = conn.getInputStream();
+
+                        // Convert the InputStream into a string
+                        String userInfo = readIt(is, len);
+                        Log.d("RESULT", userInfo);
+                        JSONObject userInfoJson = new JSONObject(userInfo);
+                        userJsonArray.put(userInfoJson);
+                    } finally {
+                        // Makes sure that the InputStream is closed after the app is finished using it.
+                        if (is != null) {
+                            is.close();
+                        }
+                    }
+                }
+                return userJsonArray;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
             }
         }
 
