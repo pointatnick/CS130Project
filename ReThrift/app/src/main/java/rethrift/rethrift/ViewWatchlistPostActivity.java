@@ -1,5 +1,6 @@
 package rethrift.rethrift;
 
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,8 +28,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
+public class ViewWatchlistPostActivity extends AppCompatActivity {
 
-public class ViewPostActivity extends AppCompatActivity {
   private TextView tvTitle, tvPrice, tvState, tvLocation, tvCategory, tvDescription, tvName, tvUsername;
   private ImageView ivImage;
   private String user;
@@ -38,7 +39,7 @@ public class ViewPostActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_view_post);
+    setContentView(R.layout.activity_view_watchlist_post);
 
     tvTitle = (TextView) findViewById(R.id.title);
     tvPrice = (TextView) findViewById(R.id.price);
@@ -48,7 +49,6 @@ public class ViewPostActivity extends AppCompatActivity {
     tvDescription = (TextView) findViewById(R.id.description);
     tvName = (TextView) findViewById(R.id.name);
     tvUsername = (TextView) findViewById(R.id.username);
-
     ivImage = (ImageView) findViewById(R.id.imageView);
 
     btnWatchlist = (Button) findViewById(R.id.watchlist_btn);
@@ -73,10 +73,10 @@ public class ViewPostActivity extends AppCompatActivity {
     }
   }
 
-  // add to watchlist
-  public void addToWatchlist(View view) {
-    String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/watch";
-    new WatchTask().execute(stringUrl);
+  // remove from watchlist
+  public void removeFromWatchlist(View view) {
+    String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/unwatch";
+    new UnwatchTask().execute(stringUrl);
     finish();
   }
   // open phone dialer, fill phone with phone number
@@ -107,24 +107,24 @@ public class ViewPostActivity extends AppCompatActivity {
     }
   }
 
-  // AsyncTask that adds post to watchlist
-  private class WatchTask extends AsyncTask<String, Void, String> {
+  // AsyncTask that removes post from watchlist
+  private class UnwatchTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... urls) {
       try {
-        return watchPost(urls[0]);
+        return unwatchPost(urls[0]);
       } catch (IOException e) {
         e.printStackTrace();
-        return "Unable to add to watchlist";
+        return "Unable to remove from watchlist";
       }
     }
 
     @Override
     protected void onPostExecute(String result) {
-      Log.d("WATCH POST", result);
+      Log.d("UNWATCH POST", result);
     }
 
-    private String watchPost(String myurl) throws IOException {
+    private String unwatchPost(String myurl) throws IOException {
       OutputStream os = null;
 
       try {
@@ -152,7 +152,7 @@ public class ViewPostActivity extends AppCompatActivity {
           return "good";
         } catch (JSONException e) {
           e.printStackTrace();
-          return "Unable to add to watchlist";
+          return "Unable to remove from watchlist";
         }
         // Makes sure that the OutputStream is closed after the app is finished using it.
       } finally {

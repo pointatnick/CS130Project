@@ -2,37 +2,50 @@ package rethrift.rethrift;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CreatePostActivity extends AppCompatActivity {
     private TextInputEditText title, price, description;
     private Spinner category;
     private String user;
     private double latitude, longitude;
+    static final int IMAGE_CAPTURE = 129; // an arbitrary request number for capturing image
+    private Bitmap mImageBitmap;
+    ImageView imageView;
+    private String mCurrentPhotoPath;
+    public static final String TAG = "tag...";
+    private Uri mImageUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -42,11 +55,16 @@ public class CreatePostActivity extends AppCompatActivity {
         title = (TextInputEditText) findViewById(R.id.title_field);
 
         price = (TextInputEditText) findViewById(R.id.price_field);
-        price.addTextChangedListener(new CurrencyTextWatcher());
+        //price.addTextChangedListener(new CurrencyTextWatcher());
 
         description = (TextInputEditText) findViewById(R.id.description_field);
         description.setHorizontallyScrolling(false);
         description.setMaxLines(Integer.MAX_VALUE);
+
+
+//camera
+        imageView = (ImageView) findViewById(R.id.imageView);
+        imageView.setMaxHeight(150);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -65,6 +83,60 @@ public class CreatePostActivity extends AppCompatActivity {
         category.setAdapter(adapter);
     }
 
+    public void camera(View view) {
+        // Perform action on click
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(intent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            }catch (IOException ex) {
+                //error during creation of File
+                Log.i(TAG, "IOException");
+            }
+            //continue only if the FIle was created successfully
+            if (photoFile != null) {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(intent, IMAGE_CAPTURE);
+            }
+
+        }
+
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  // prefix
+                ".jpg",         // suffix
+                storageDir      // directory
+        );
+
+        mImageUri = Uri.fromFile(image);
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == IMAGE_CAPTURE) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
+                    imageView.setImageBitmap(mImageBitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+//============
     public void addPost(View view){
         // check that they have a connection
         ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -89,34 +161,7 @@ public class CreatePostActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: look at this again later
-    private class CurrencyTextWatcher implements TextWatcher {
-        private String current = "";
 
-        public CurrencyTextWatcher() {}
-
-        public void afterTextChanged(Editable s) {}
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if(!s.toString().equals(current)){
-                price.removeTextChangedListener(this);
-
-                String cleanString = s.toString().replaceAll("[$,.]", "");
-
-                double parsed = Double.parseDouble(cleanString);
-                String formatted = NumberFormat.getCurrencyInstance().format((parsed/100));
-
-                current = formatted;
-                price.setText(formatted);
-                price.setSelection(formatted.length());
-
-                price.addTextChangedListener(this);
-            }
-        }
-    }
 
     // AsyncTask which creates the post in the background
     private class CreatePostTask extends AsyncTask<String, Void, String> {
@@ -126,7 +171,7 @@ public class CreatePostActivity extends AppCompatActivity {
                 return createAccountUrl(urls[0]);
             } catch (IOException e) {
                 e.printStackTrace();
-                return "Unable to create account. Please try again later.";
+                return "Unable to create post";
             }
         }
 
@@ -156,13 +201,12 @@ public class CreatePostActivity extends AppCompatActivity {
                 try {
                     postInfoJson.put("title", title.getText().toString())
                                 .put("description", description.getText().toString())
-                                .put("price", price.getText().toString())
+                                .put("price", Double.parseDouble(price.getText().toString()))
                                 .put("category", category.getSelectedItem().toString())
                                 .put("state", "FRESH")
                                 .put("latitude", latitude)
-                                .put("longitude", longitude);
-                    // TODO: add image
-                    //.put("image", )
+                                .put("longitude", longitude)
+                                .put("image", mImageUri);
 
                     Log.d("JSONOBJECT", postInfoJson.toString(2));
                     // Write JSONObject to output stream
@@ -172,7 +216,7 @@ public class CreatePostActivity extends AppCompatActivity {
                     return "good";
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    return "Unable to create account. Please try again later.";
+                    return "Unable to create post";
                 }
                 // Makes sure that the OutputStream is closed after the app is finished using it.
             } finally {
@@ -181,6 +225,15 @@ public class CreatePostActivity extends AppCompatActivity {
                 }
             }
         }
+
+        /*
+        public String bitmapToString(Bitmap bitmap){
+            ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+            byte [] b=baos.toByteArray();
+            return Base64.encodeToString(b, Base64.DEFAULT);
+        }
+        */
 
         // Writes an OutputStream
         private void writeIt(OutputStream stream, String msg) throws IOException {

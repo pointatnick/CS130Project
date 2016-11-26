@@ -1,5 +1,6 @@
 package rethrift.rethrift;
 
+
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,15 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-
-public class WatchListActivity extends AppCompatActivity {
-
+public class MyPostsActivity extends AppCompatActivity {
     private RecyclerView cardList;
     String user, name;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.watchlist);
+        setContentView(R.layout.activity_my_posts);
 
         // get extras
         Bundle extras = getIntent().getExtras();
@@ -46,6 +46,7 @@ public class WatchListActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         cardList.setLayoutManager(llm);
 
+        // retrieve posts
         retrievePosts(cardList);
     }
 
@@ -57,8 +58,8 @@ public class WatchListActivity extends AppCompatActivity {
 
     public void retrievePosts(RecyclerView recView) {
         try {
-            String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/watchlist";
-            WatchListAdapter ca = new WatchListAdapter(new GetWatchlistTask().execute(stringUrl).get(), user);
+            String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/posts";
+            MyPostsAdapter ca = new MyPostsAdapter(new MyPostsActivity.GetMyPostsTask().execute(stringUrl).get());
             recView.setAdapter(ca);
         } catch (InterruptedException e) {
             new AlertDialog.Builder(this)
@@ -86,18 +87,18 @@ public class WatchListActivity extends AppCompatActivity {
     }
 
     // AsyncTask that gets the posts the user created
-    private class GetWatchlistTask extends AsyncTask<String, Void, List<Post>> {
+    private class GetMyPostsTask extends AsyncTask<String, Void, List<Post>> {
         @Override
         protected List<Post> doInBackground(String... urls) {
             try {
-                return getWatchlist(urls[0]);
+                return getPosts(urls[0]);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
         }
 
-        private List<Post> getWatchlist(String myurl) throws IOException {
+        private List<Post> getPosts(String myurl) throws IOException {
             InputStream is = null;
             int len = 5000;
 

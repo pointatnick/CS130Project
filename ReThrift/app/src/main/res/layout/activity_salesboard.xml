@@ -43,7 +43,6 @@
     <!-- The right navigation drawer: search -->
 
     <LinearLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
         android:layout_width="240dp"
         android:id="@+id/right_drawer"

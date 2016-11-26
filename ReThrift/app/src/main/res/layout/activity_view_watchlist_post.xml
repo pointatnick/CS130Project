@@ -100,13 +100,13 @@
         android:textColor="@android:color/black"/>
 
     <Button
-        android:id="@+id/watchlist_btn"
+        android:id="@+id/unwatch_btn"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/watchlist_btn"
-        android:onClick="addToWatchlist"/>
+        android:text="@string/unwatch_btn"
+        android:onClick="removeFromWatchlist"/>
 
     <Button
         android:id="@+id/contact_btn"

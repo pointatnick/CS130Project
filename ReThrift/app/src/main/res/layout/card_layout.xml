@@ -16,8 +16,8 @@
         <ImageView
             android:id="@+id/card_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/profile"/>
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"/>
 
         <LinearLayout
             android:id="@+id/card_info"
@@ -43,13 +43,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
-                    android:textSize="24sp"/>
+                    android:textSize="20sp"/>
 
                 <TextView
                     android:id="@+id/location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"/>
+                    android:textSize="12sp"/>
             </LinearLayout>
 
             <TextView
@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#4CAF50"
-                android:textSize="24sp"/>
+                android:textSize="20sp"/>
 
         </LinearLayout>
     </RelativeLayout>
