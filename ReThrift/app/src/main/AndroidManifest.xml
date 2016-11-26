@@ -45,6 +45,7 @@
         <activity android:name=".ProfileActivity"/>
         <activity android:name=".MyPostsActivity"/>
         <activity android:name=".ViewMyPostActivity"/>
+        <activity android:name=".EditPostActivity"/>
     </application>
 
 </manifest>
