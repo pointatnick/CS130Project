@@ -604,7 +604,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                     posts.add(
                             new Post(postJson.getInt("id"),
                                      postJson.getString("title"),
-                                     "$" + postJson.getDouble("price"),
+                                     "$" + postJson.getInt("price"),
                                      postJson.getString("state"),
                                      postJson.getDouble("latitude"),
                                      postJson.getDouble("longitude"),

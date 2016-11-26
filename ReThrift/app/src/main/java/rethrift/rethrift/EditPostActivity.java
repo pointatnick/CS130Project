@@ -63,16 +63,14 @@ public class EditPostActivity extends AppCompatActivity {
     if (extras != null) {
       postId = extras.getInt("ID");
       tvTitle.setText(extras.getString("TITLE"));
-      tvPrice.setText(extras.getString("PRICE"));
-      //state.setSelection(stateAdapter.getPosition(extras.getString("STATE")));
-      //category.setSelection(catAdapter.getPosition(extras.getString("CATEGORY")));
+      tvPrice.setText(Integer.parseInt(extras.getString("PRICE")));
       tvDescription.setText(extras.getString("DESCRIPTION"));
       name = extras.getString("NAME");
       username = extras.getString("USERNAME");
     }
   }
 
-  // TODO: edit post
+  // edit post
   public void updatePost(View view) {
     String stringUrl = "http://rethrift-1.herokuapp.com/posts/update";
     new UpdatePostTask().execute(stringUrl);
@@ -123,8 +121,6 @@ public class EditPostActivity extends AppCompatActivity {
                     .put("price", Double.parseDouble(tvPrice.getText().toString()))
                     .put("category", category.getSelectedItem().toString())
                     .put("state", state.getSelectedItem().toString());
-          // TODO: add image
-          //.put("image", )
 
           postInfoJson.put("postID", postId)
                       .put("updateVals", updateVals);
