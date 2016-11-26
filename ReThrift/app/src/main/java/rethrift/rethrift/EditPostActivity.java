@@ -63,7 +63,8 @@ public class EditPostActivity extends AppCompatActivity {
     if (extras != null) {
       postId = extras.getInt("ID");
       tvTitle.setText(extras.getString("TITLE"));
-      tvPrice.setText(Integer.parseInt(extras.getString("PRICE")));
+      String[] parts = extras.getString("PRICE").split("[$]");
+      tvPrice.setText(parts[1]);
       tvDescription.setText(extras.getString("DESCRIPTION"));
       name = extras.getString("NAME");
       username = extras.getString("USERNAME");
