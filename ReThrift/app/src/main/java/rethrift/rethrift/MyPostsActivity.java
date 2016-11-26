@@ -135,7 +135,8 @@ public class MyPostsActivity extends AppCompatActivity {
                                          postJson.getString("description"),
                                          postJson.getString("category"),
                                          name,
-                                         user));
+                                         user,
+                                         postJson.getString("image")));
                     }
                     return posts;
                 } catch (JSONException e) {

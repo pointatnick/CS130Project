@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -34,10 +33,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-
-
-
 
 public class CreatePostActivity extends AppCompatActivity {
     private TextInputEditText title, price, description;
@@ -121,6 +116,7 @@ public class CreatePostActivity extends AppCompatActivity {
                 storageDir      // directory
         );
 
+        mImageUri = Uri.fromFile(image);
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
@@ -208,9 +204,8 @@ public class CreatePostActivity extends AppCompatActivity {
                                 .put("category", category.getSelectedItem().toString())
                                 .put("state", "FRESH")
                                 .put("latitude", latitude)
-                                .put("longitude", longitude);
-                    // TODO: add image
-                    //.put("image", )
+                                .put("longitude", longitude)
+                                .put("image", mImageUri);
 
                     Log.d("JSONOBJECT", postInfoJson.toString(2));
                     // Write JSONObject to output stream
@@ -229,6 +224,15 @@ public class CreatePostActivity extends AppCompatActivity {
                 }
             }
         }
+
+        /*
+        public String bitmapToString(Bitmap bitmap){
+            ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+            byte [] b=baos.toByteArray();
+            return Base64.encodeToString(b, Base64.DEFAULT);
+        }
+        */
 
         // Writes an OutputStream
         private void writeIt(OutputStream stream, String msg) throws IOException {

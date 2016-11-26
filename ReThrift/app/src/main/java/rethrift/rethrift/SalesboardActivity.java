@@ -470,7 +470,8 @@ public class SalesboardActivity extends AppCompatActivity implements
                                  postJson.getString("description"),
                                  postJson.getString("category"),
                                  "name",
-                                 postJson.getString("username"));
+                                 postJson.getString("username"),
+                                 postJson.getString("image"));
                     }
                     return postList;
                 } catch (JSONException e) {
@@ -610,7 +611,8 @@ public class SalesboardActivity extends AppCompatActivity implements
                                      postJson.getString("description"),
                                      postJson.getString("category"),
                                      userJson.getString("firstname") + userJson.getString("lastname"),
-                                     userJson.getString("username")));
+                                     userJson.getString("username"),
+                                     postJson.getString("image")));
                 }
                 return posts;
             } catch (JSONException e) {
