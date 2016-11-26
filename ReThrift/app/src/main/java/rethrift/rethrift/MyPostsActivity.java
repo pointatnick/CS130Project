@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MyPostsActivity extends AppCompatActivity {
     private RecyclerView cardList;
-    String user, name;
+    String user, firstname, lastname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -37,7 +37,8 @@ public class MyPostsActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = extras.getString("USERNAME");
-            name = extras.getString("NAME");
+            firstname = extras.getString("FIRSTNAME");
+            lastname = extras.getString("LASTNAME");
         }
 
         cardList = (RecyclerView) findViewById(R.id.card_list);
@@ -134,7 +135,7 @@ public class MyPostsActivity extends AppCompatActivity {
                                          postJson.getDouble("longitude"),
                                          postJson.getString("description"),
                                          postJson.getString("category"),
-                                         name,
+                                         firstname + lastname,
                                          user,
                                          postJson.getString("image")));
                     }

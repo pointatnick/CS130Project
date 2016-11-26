@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 public class LoginActivity extends AppCompatActivity {
 
   private EditText username, password;
-  private String user, name;
+  private String user, firstname, lastname, email, phoneNumber;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,10 @@ public class LoginActivity extends AppCompatActivity {
           // go to MainActivity
           Intent intent = new Intent(this, SalesboardActivity.class);
           intent.putExtra("USERNAME", user);
-          intent.putExtra("FIRSTNAME", name);
+          intent.putExtra("FIRSTNAME", firstname);
+          intent.putExtra("LASTNAME", lastname);
+          intent.putExtra("EMAIL", email);
+          intent.putExtra("PHONE", phoneNumber);
           startActivity(intent);
         }
       } catch (InterruptedException e) {
@@ -139,7 +142,10 @@ public class LoginActivity extends AppCompatActivity {
           if (!userAcctJson.getString("password").equals(password.getText().toString())) {
             return "Invalid password";
           } else {
-            name = userAcctJson.getString("firstname");
+            firstname = userAcctJson.getString("firstname");
+            lastname = userAcctJson.getString("lastname");
+            email = userAcctJson.getString("email");
+            phoneNumber = userAcctJson.getString("phone");
           }
         } catch (JSONException e) {
           e.printStackTrace();
