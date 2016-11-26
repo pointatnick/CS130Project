@@ -52,6 +52,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
         postHolder.category = ci.getCategory();
         postHolder.name = ci.getName();
         postHolder.username = ci.getUsername();
+        postHolder.image = ci.getImage();
     }
 
     public String findAddress(double latitude, double longitude) {
@@ -136,6 +137,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
     public static class WatchListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected TextView tvTitle, tvPrice, tvLocation;
         protected String state, description, category, name, username, user;
+        protected String image;
         private Context context;
         private int postId;
 
@@ -163,6 +165,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
             intent.putExtra("CATEGORY", category);
             intent.putExtra("NAME", name);
             intent.putExtra("USERNAME", username);
+            intent.putExtra("IMAGE", image);
             context.startActivity(intent);
         }
     }

@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -30,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 public class ViewWatchlistPostActivity extends AppCompatActivity {
 
   private TextView tvTitle, tvPrice, tvState, tvLocation, tvCategory, tvDescription, tvName, tvUsername;
+  private ImageView ivImage;
   private String user;
   private int postId;
   private Button btnWatchlist, btnContact;
@@ -47,6 +49,7 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
     tvDescription = (TextView) findViewById(R.id.description);
     tvName = (TextView) findViewById(R.id.name);
     tvUsername = (TextView) findViewById(R.id.username);
+    ivImage = (ImageView) findViewById(R.id.imageView);
 
     btnWatchlist = (Button) findViewById(R.id.watchlist_btn);
     btnContact = (Button) findViewById(R.id.contact_btn);
@@ -63,6 +66,10 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
       tvDescription.setText(extras.getString("DESCRIPTION"));
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
+      if (extras.getString("IMAGE") != null) {
+        Uri imageUri = Uri.parse(extras.getString("IMAGE"));
+        ivImage.setImageURI(imageUri);
+      }
     }
   }
 

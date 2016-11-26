@@ -2,12 +2,14 @@ package rethrift.rethrift;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -52,6 +54,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     postHolder.category = ci.getCategory();
     postHolder.name = ci.getName();
     postHolder.username = ci.getUsername();
+    if (ci.getImage() != null) {
+      Uri imageUri = Uri.parse(ci.getImage());
+      postHolder.ivImage.setImageURI(imageUri);
+      postHolder.image = ci.getImage();
+    }
   }
 
   public String findAddress(double latitude, double longitude) {
@@ -135,7 +142,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
 
   public static class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     protected TextView tvTitle, tvPrice, tvLocation;
+    protected ImageView ivImage;
     protected String state, description, category, name, username, user;
+    protected String image;
     private Context context;
     private int postId;
 
@@ -144,6 +153,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       tvTitle =  (TextView) view.findViewById(R.id.title);
       tvPrice = (TextView) view.findViewById(R.id.price);
       tvLocation = (TextView) view.findViewById(R.id.location);
+      ivImage = (ImageView) view.findViewById(R.id.card_image);
       user = currentUser;
       this.context = context;
       view.setOnClickListener(this);
@@ -163,6 +173,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       intent.putExtra("CATEGORY", category);
       intent.putExtra("NAME", name);
       intent.putExtra("USERNAME", username);
+      intent.putExtra("IMAGE", image);
       context.startActivity(intent);
     }
   }

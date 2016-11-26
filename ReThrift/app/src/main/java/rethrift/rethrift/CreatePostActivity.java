@@ -64,6 +64,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
 //camera
         imageView = (ImageView) findViewById(R.id.imageView);
+        imageView.setMaxHeight(150);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {

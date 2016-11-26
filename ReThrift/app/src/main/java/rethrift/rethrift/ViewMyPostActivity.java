@@ -2,12 +2,14 @@ package rethrift.rethrift;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -23,6 +25,7 @@ import java.net.URL;
 public class ViewMyPostActivity extends AppCompatActivity {
   private int postId;
   private TextView tvTitle, tvPrice, tvState, tvLocation, tvCategory, tvDescription, tvName, tvUsername;
+  private ImageView ivImage;
   private Button btnEdit;
 
   @Override
@@ -38,6 +41,7 @@ public class ViewMyPostActivity extends AppCompatActivity {
     tvDescription = (TextView) findViewById(R.id.description);
     tvName = (TextView) findViewById(R.id.name);
     tvUsername = (TextView) findViewById(R.id.username);
+    ivImage = (ImageView) findViewById(R.id.imageView);
 
     btnEdit = (Button) findViewById(R.id.edit_btn);
 
@@ -52,6 +56,10 @@ public class ViewMyPostActivity extends AppCompatActivity {
       tvDescription.setText(extras.getString("DESCRIPTION"));
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
+      if (extras.getString("IMAGE") != null) {
+        Uri imageUri = Uri.parse(extras.getString("IMAGE"));
+        ivImage.setImageURI(imageUri);
+      }
     }
   }
 
