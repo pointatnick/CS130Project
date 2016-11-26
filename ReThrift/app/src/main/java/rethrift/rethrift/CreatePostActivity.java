@@ -127,8 +127,14 @@ public class CreatePostActivity extends AppCompatActivity {
         if (requestCode == IMAGE_CAPTURE) {
             if (resultCode == RESULT_OK) {
                 try {
-                    mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
+                    Bitmap tmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
+                    //Canvas canvas = new Canvas(tmp);
+                    //imageView.draw(canvas);
+                    mImageBitmap = Bitmap.createBitmap(tmp, imageView.getLeft(), imageView.getTop(), imageView.getWidth(), 150);
                     imageView.setImageBitmap(mImageBitmap);
+                    tmp.recycle();
+                    //mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
+                    //imageView.setImageBitmap(mImageBitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -57,7 +57,7 @@ import java.util.concurrent.ExecutionException;
 public class SalesboardActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private ListView mDrawerList;
-    private String user, name;
+    private String user, firstname, lastname, email, phone;
     private Spinner category;
     private RecyclerView cardList;
 
@@ -136,7 +136,10 @@ public class SalesboardActivity extends AppCompatActivity implements
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = extras.getString("USERNAME");
-            name = extras.getString("FIRSTNAME");
+            firstname = extras.getString("FIRSTNAME");
+            lastname = extras.getString("LASTNAME");
+            email = extras.getString("EMAIL");
+            phone = extras.getString("PHONE");
         }
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -159,23 +162,29 @@ public class SalesboardActivity extends AppCompatActivity implements
                     // For rest of the options we just show a toast on click
                     case R.id.profile:
                         Intent profileIntent = new Intent(SalesboardActivity.this, ProfileActivity.class);
+                        profileIntent.putExtra("USERNAME", user);
+                        profileIntent.putExtra("FIRSTNAME", firstname);
+                        profileIntent.putExtra("LASTNAME", lastname);
+                        profileIntent.putExtra("EMAIL", email);
+                        profileIntent.putExtra("PHONE", phone);
                         startActivity(profileIntent);
                         return true;
                     case R.id.watch_list:
                         Intent watchListIntent = new Intent(SalesboardActivity.this, WatchListActivity.class);
                         watchListIntent.putExtra("USERNAME", user);
-                        watchListIntent.putExtra("NAME", name);
+                        watchListIntent.putExtra("FIRSTNAME", firstname);
                         startActivity(watchListIntent);
                         return true;
                     case R.id.my_posts:
                         Intent myPostsIntent = new Intent(SalesboardActivity.this, MyPostsActivity.class);
                         myPostsIntent.putExtra("USERNAME", user);
-                        myPostsIntent.putExtra("NAME", name);
+                        myPostsIntent.putExtra("FIRSTNAME", firstname);
+                        myPostsIntent.putExtra("LASTNAME", lastname);
                         startActivity(myPostsIntent);
                         return true;
 
                     default:
-                        Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
                         return true;
                 }
             }
@@ -469,7 +478,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                                  postJson.getDouble("longitude"),
                                  postJson.getString("description"),
                                  postJson.getString("category"),
-                                 "name",
+                                 "firstname",
                                  postJson.getString("username"),
                                  postJson.getString("image"));
                     }

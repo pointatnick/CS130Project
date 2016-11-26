@@ -37,7 +37,7 @@ public class WatchListActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = extras.getString("USERNAME");
-            name = extras.getString("NAME");
+            name = extras.getString("FIRSTNAME");
         }
 
         cardList = (RecyclerView) findViewById(R.id.card_list);
