@@ -99,7 +99,7 @@ public class ViewUpdatedPosts extends AppCompatActivity {
                                 joPost.getString("description"),
                                 joPost.getString("category"),
                                 userJson.getString("firstname") + userJson.getString("lastname"),
-                                joPost.getString("username"),
+                                userJson.getString("username"),
                                 joPost.getString("image")));
             }
             return resultList;
