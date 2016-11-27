@@ -193,6 +193,15 @@ public class SalesboardActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
 
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            user = extras.getString("USERNAME");
+            firstname = extras.getString("FIRSTNAME");
+            lastname = extras.getString("LASTNAME");
+            email = extras.getString("EMAIL");
+            phone = extras.getString("PHONE");
+        }
+
         // populating category spinner for search
         categorySpinner = (Spinner) findViewById(R.id.category_spinner2);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -278,15 +287,6 @@ public class SalesboardActivity extends AppCompatActivity implements
         }
 
         // Initialize Navigation View
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            user = extras.getString("USERNAME");
-            firstname = extras.getString("FIRSTNAME");
-            lastname = extras.getString("LASTNAME");
-            email = extras.getString("EMAIL");
-            phone = extras.getString("PHONE");
-        }
-
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
