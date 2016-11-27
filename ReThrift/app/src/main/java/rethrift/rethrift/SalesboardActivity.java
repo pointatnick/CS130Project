@@ -79,6 +79,10 @@ public class SalesboardActivity extends AppCompatActivity implements
     private SearchView searchView = null;
     private int check = 0;
     private int checkPrice = 0;
+    private boolean doingSearch = false;
+    //1: keyterms, 2: category, 3: price
+    private int whichSearch = 0;
+
 
     //for watchlist status update
     private Handler handler = new Handler();
@@ -193,26 +197,15 @@ public class SalesboardActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
 
-        // populating category spinner for search
-        categorySpinner = (Spinner) findViewById(R.id.category_spinner2);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.category_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        categorySpinner.setAdapter(adapter);
-
-        // populating price spinner for search
-        priceSpinner = (Spinner) findViewById(R.id.price_spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> priceAdapter = ArrayAdapter.createFromResource(this,
-                R.array.price_search_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        priceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        priceSpinner.setAdapter(priceAdapter);
-
+        // Initialize Navigation View
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            user = extras.getString("USERNAME");
+            firstname = extras.getString("FIRSTNAME");
+            lastname = extras.getString("LASTNAME");
+            email = extras.getString("EMAIL");
+            phone = extras.getString("PHONE");
+        }
 
         cardList = (RecyclerView) findViewById(R.id.card_list);
         cardList.setHasFixedSize(true);
@@ -223,6 +216,42 @@ public class SalesboardActivity extends AppCompatActivity implements
         // retrieve posts
         retrievePosts(cardList);
 
+        // populating category spinner for search
+        categorySpinner = (Spinner) findViewById(R.id.category_spinner2);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.category_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setPrompt("Select a category");
+
+        // Apply the adapter to the spinner
+        categorySpinner.setAdapter(
+                new NothingSelectedSpinnerAdapter(
+                        adapter,
+                        R.layout.contact_spinner_row_nothing_selected,
+                        // R.layout.contact_spinner_nothing_selected_dropdown, // Optional
+                        this));
+
+
+        // populating price spinner for search
+        priceSpinner = (Spinner) findViewById(R.id.price_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> priceAdapter = ArrayAdapter.createFromResource(this,
+                R.array.price_search_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        priceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        priceSpinner.setPrompt("Pick a price option");
+        // Apply the adapter to the spinner
+        priceSpinner.setAdapter(
+                new NothingSelectedSpinnerAdapter(
+                        priceAdapter,
+                        R.layout.contact_spinner_row_nothing_selected,
+                        // R.layout.contact_spinner_nothing_selected_dropdown, // Optional
+                        this));
+
+
         //setting up a listener for spinner2 to send category selected as search filter
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -230,8 +259,8 @@ public class SalesboardActivity extends AppCompatActivity implements
                 check = check + 1;
                 if (check > 1){
                     Object item = parent.getItemAtPosition(pos);
+                    whichSearch = 2;
                     doMySearch(item.toString());
-                    check = 0;
                 }
             }
             @Override
@@ -244,12 +273,11 @@ public class SalesboardActivity extends AppCompatActivity implements
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 checkPrice = checkPrice + 1;
-                Log.d("CP", "CHECK PRICE > 0");
                 if (checkPrice > 1){
                     Object item = parent.getItemAtPosition(pos);
                     Log.d("CALLING SEARCH", item.toString());
+                    whichSearch = 3;
                     doMySearch(item.toString());
-                    checkPrice = 0;
                 }
             }
             @Override
@@ -261,6 +289,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         // for search
         // getIntent and pass to handler
         handleIntent(getIntent());
+        Log.d("Search here?", "SEARCH");
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) findViewById(R.id.search_bar);
         //sets up a submit button
@@ -275,16 +304,6 @@ public class SalesboardActivity extends AppCompatActivity implements
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-        }
-
-        // Initialize Navigation View
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            user = extras.getString("USERNAME");
-            firstname = extras.getString("FIRSTNAME");
-            lastname = extras.getString("LASTNAME");
-            email = extras.getString("EMAIL");
-            phone = extras.getString("PHONE");
         }
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -358,7 +377,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         actionBarDrawerToggle.syncState();
 
         //check for watchlist status
-        handler.postDelayed(runnable, 100);
+        ///'handler.postDelayed(runnable, 100);
     }
 
 
@@ -371,7 +390,10 @@ public class SalesboardActivity extends AppCompatActivity implements
 
 
     protected void onResume() {
-        //retrievePosts(cardList);
+        if(doingSearch == false)
+            retrievePosts(cardList);
+        else
+            doingSearch = false;
         super.onResume();
     }
 
@@ -512,6 +534,8 @@ public class SalesboardActivity extends AppCompatActivity implements
         if(Intent.ACTION_SEARCH.equals(intent.getAction())){
             //obtain the query string from Intent.ACTION_SEARCH
             String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.d("Search key word", query);
+            whichSearch = 1;
             doMySearch(query);
 
             //clear search entry bar
@@ -522,6 +546,9 @@ public class SalesboardActivity extends AppCompatActivity implements
     }
 
     private void doMySearch(String query){
+        //set search flag to true
+        doingSearch = true;
+
         //check connection existence
         ConnectivityManager cxnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cxnMgr.getActiveNetworkInfo();
@@ -569,6 +596,9 @@ public class SalesboardActivity extends AppCompatActivity implements
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         LinearLayout drawerLinear = (LinearLayout) findViewById(R.id.right_drawer);
         drawerLayout.closeDrawer(drawerLinear);
+
+        //reset search
+        whichSearch = 0;
     }
 
     private class CreateSearchFilterTask extends AsyncTask<String, Void, List<Post>> {
@@ -589,7 +619,7 @@ public class SalesboardActivity extends AppCompatActivity implements
 
         private List<Post> getSearchPosts(String myURL, String query) throws IOException {
             InputStream is = null;
-            int len = 5000;
+            int len = 500000;
 
             try {
 
@@ -600,37 +630,55 @@ public class SalesboardActivity extends AppCompatActivity implements
 
                 //TO-THINK: use loop for supporting multiple search queries
 
-                String json =
-                "{" +
-                    "where: {" +
-                        "$or:[" +
-                          "{" +
-                            "title: {" +
-                                "$like: %" + query + '%' +
-                            "}" +
-                          "}," +
-                          "{" +
-                            "description: {" +
-                                "$like: %" + query + '%' +
-                            "}" +
-                          "}" +
-                        "]" +
-                    "}" +
-                "}";
+                Log.d("QUERY", query);
 
-                if(query.equals("Price High to Low")){
-                    Log.d("Price search", query);
+                String json = "";
+
+                //key term search
+                if (whichSearch == 1) {
                     json =
                             "{" +
-                                "order:[[price, DESC]]" +
+                                "where: {" +
+                                    "$or:[" +
+                                        "{" +
+                                            "title: {" +
+                                            "$like: %" + query + '%' +
+                                            "}" +
+                                        "}," +
+                                        "{" +
+                                            "description: {" +
+                                            "$like: %" + query + '%' +
+                                            "}" +
+                                        "}" +
+                                    "]" +
+                                "}" +
                             "}";
                 }
-                else if(query.equals("Price Low to High")){
-                    Log.d("Price search", query);
+                //category search
+                else if(whichSearch == 2){
                     json =
-                            "{" +
-                                "order:[[price, ASC]]" +
-                            "}";
+                            "{where: {category: {$like: %" + query + "%}}}";
+                }
+                //price search
+                else if(whichSearch == 3) {
+                    if (query.equals("Price High to Low")) {
+                        Log.d("Price search", query);
+                        json =
+                                "{" +
+                                        "order:[[price, DESC]]" +
+                                        "}";
+                    } else if (query.equals("Price Low to High")) {
+                        Log.d("Price search", query);
+                        json =
+                                "{" +
+                                        "order:[[price, ASC]]" +
+                                        "}";
+                    }
+                }
+
+                if(json.equals("")){
+                    Log.d("SEARCH JSON", "NOT SET");
+                    return null;
                 }
 
                 try {
