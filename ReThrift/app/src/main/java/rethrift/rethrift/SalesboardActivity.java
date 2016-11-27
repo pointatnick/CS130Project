@@ -125,10 +125,10 @@ public class SalesboardActivity extends AppCompatActivity implements
                 //TODO ...
             }
             //runs every 5 minutes
-            handler.postDelayed(this, 300000);
+            //handler.postDelayed(this, 300000);
 
             //for testing purposes
-            //handler.postDelayed(this, 10000);
+            handler.postDelayed(this, 10000);
         }
     };
 
@@ -145,7 +145,7 @@ public class SalesboardActivity extends AppCompatActivity implements
 
         private String getUpdatedPosts(String myURL) throws IOException{
             InputStream is = null;
-            int len = 5000;
+            int len = 50000;
             try {
                 URL url = new URL(myURL);
                 Log.d("URL", "" + url);
@@ -589,7 +589,7 @@ public class SalesboardActivity extends AppCompatActivity implements
 
         private List<Post> getSearchPosts(String myURL, String query) throws IOException {
             InputStream is = null;
-            int len = 5000;
+            int len = 50000;
 
             try {
 

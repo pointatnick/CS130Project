@@ -73,6 +73,14 @@ public class ViewPostActivity extends AppCompatActivity {
           Uri imageUri = Uri.parse(extras.getString("IMAGE"));
           Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
           ivImage.setImageBitmap(bitmap);
+          /*
+          BitmapFactory.Options options = new BitmapFactory.Options();
+          options.inJustDecodeBounds = true;
+          ivImage.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.id.imageView, options));
+          int imageHeight = options.outHeight;
+          int imageWidth = options.outWidth;
+          String imageType = options.outMimeType;
+          */
         } catch (IOException e) {
           e.printStackTrace();
         }
