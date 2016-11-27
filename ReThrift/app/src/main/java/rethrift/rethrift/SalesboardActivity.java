@@ -77,7 +77,8 @@ public class SalesboardActivity extends AppCompatActivity implements
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private SearchView searchView = null;
-    int check = 0;
+    private int check = 0;
+    private int checkPrice = 0;
 
     //for watchlist status update
     private Handler handler = new Handler();
@@ -159,8 +160,17 @@ public class SalesboardActivity extends AppCompatActivity implements
                 //queryPostsArray is [] if there are no updates OR if there are no posts in watchlist
                 String queryPostsArray = readIt(is, len);
                 Log.d("RESULT", queryPostsArray);
+                JSONArray queryPostsArrayJson = new JSONArray(queryPostsArray);
+
+                //if search yields no results
+                if(queryPostsArrayJson.length() <= 0){
+                    return null;
+                }
                 return queryPostsArray;
-            } finally {
+            } catch(JSONException je){
+                je.printStackTrace();
+                return null;
+            } finally{
                 if(is!=null){
                     is.close();
                 }
@@ -200,7 +210,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         ArrayAdapter<CharSequence> priceAdapter = ArrayAdapter.createFromResource(this,
                 R.array.price_search_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        priceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         priceSpinner.setAdapter(priceAdapter);
 
@@ -233,9 +243,10 @@ public class SalesboardActivity extends AppCompatActivity implements
         priceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                check = check + 1;
-                if (check > 1){
+                checkPrice = checkPrice + 1;
+                if (checkPrice > 1){
                     Object item = parent.getItemAtPosition(pos);
+                    Log.d("CALLING SEARCH", item.toString());
                     //doMySearch(item.toString());
                 }
             }
@@ -522,6 +533,7 @@ public class SalesboardActivity extends AppCompatActivity implements
             try {
                 String stringUrl = "http://rethrift-1.herokuapp.com/posts/search/?searchterms=";
                 //String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
+
                 if(new CreateSearchFilterTask().execute(stringUrl, query).get() == null){
                     Log.d("NO SEARCH RESULTS", "NO RESULTS");
                     Toast.makeText(getApplicationContext(),"Search yields no results!",Toast.LENGTH_SHORT).show();
@@ -603,6 +615,21 @@ public class SalesboardActivity extends AppCompatActivity implements
                         "]" +
                     "}" +
                 "}";
+
+                /*if(query.equals("Price High to Low")){
+                    Log.d("Price search", query);
+                    json =
+                            "{" +
+                                "order:[[price, DESC]]" +
+                            "}";
+                }
+                else if(query.equals("Price Low to High")){
+                    Log.d("Price search", query);
+                    json =
+                            "{" +
+                                "order:[[price, ASC]]" +
+                            "}";
+                }*/
 
                 try {
                     JSONObject jQuery = new JSONObject(json);
