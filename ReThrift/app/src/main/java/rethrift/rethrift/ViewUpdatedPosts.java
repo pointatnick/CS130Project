@@ -29,6 +29,8 @@ import java.util.concurrent.ExecutionException;
 public class ViewUpdatedPosts extends AppCompatActivity {
     private String updatedPosts;
     private RecyclerView updatedCardRecList;
+    private String user;
+    private int userLength;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +41,14 @@ public class ViewUpdatedPosts extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             updatedPosts = extras.getString("UPDATED_POSTS");
+
+            //parse user from string passed in
+            userLength = Character.getNumericValue(updatedPosts.charAt(0));
+            user = updatedPosts.substring(1,userLength + 1);
+
+            //get updates post list
+            updatedPosts = updatedPosts.substring(userLength + 1, updatedPosts.length());
+
             Log.d("updated list", updatedPosts);
             //display posts
             updatedCardRecList = (RecyclerView) findViewById(R.id.updated_card_list);
@@ -48,7 +58,7 @@ public class ViewUpdatedPosts extends AppCompatActivity {
             updatedCardRecList.setLayoutManager(llm);
 
             try {
-                PostAdapter pa = new PostAdapter(new getPosts().execute(updatedPosts).get());
+                PostAdapter pa = new PostAdapter(new getPosts().execute(updatedPosts).get(), user);
                 updatedCardRecList.setAdapter(pa);
             } catch(ExecutionException e){
 
@@ -80,15 +90,17 @@ public class ViewUpdatedPosts extends AppCompatActivity {
                 JSONObject userJson = userJsonArray.getJSONObject(i);
                 Log.d("USER", userJson.toString());
                 resultList.add(
-                    new Post(joPost.getString("title"),
-                            joPost.getString("price"),
-                            joPost.getString("state"),
-                            joPost.getDouble("latitude"),
-                            joPost.getDouble("longitude"),
-                            joPost.getString("description"),
-                            joPost.getString("category"),
-                            userJson.getString("firstname") + userJson.getString("lastname"),
-                            userJson.getString("username")));
+                        new Post(joPost.getInt("id"),
+                                joPost.getString("title"),
+                                "$" + joPost.getInt("price"),
+                                joPost.getString("state"),
+                                joPost.getDouble("latitude"),
+                                joPost.getDouble("longitude"),
+                                joPost.getString("description"),
+                                joPost.getString("category"),
+                                userJson.getString("firstname") + userJson.getString("lastname"),
+                                joPost.getString("username"),
+                                joPost.getString("image")));
             }
             return resultList;
         }catch(Exception e){

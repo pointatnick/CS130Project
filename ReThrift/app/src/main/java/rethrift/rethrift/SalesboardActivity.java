@@ -97,6 +97,9 @@ public class SalesboardActivity extends AppCompatActivity implements
 
                     Log.d("WATCHLIST_UPDATE: ", watchListUpdates);
                     Intent resultIntent = new Intent(SalesboardActivity.this, ViewUpdatedPosts.class);
+
+                    //add user name to the front of string to be passed to viewUpdatedPosts activity
+                    watchListUpdates = user.length() + user + watchListUpdates;
                     resultIntent.putExtra("UPDATED_POSTS", watchListUpdates);
                     PendingIntent pIntent = PendingIntent.getActivity(
                             SalesboardActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -190,6 +193,15 @@ public class SalesboardActivity extends AppCompatActivity implements
         // Apply the adapter to the spinner
         category.setAdapter(adapter);
 
+        cardList = (RecyclerView) findViewById(R.id.card_list);
+        cardList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        cardList.setLayoutManager(llm);
+
+        // retrieve posts
+        retrievePosts(cardList);
+
         //setting up a listener for spinner2 to send category selected as search filter
         category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -214,15 +226,6 @@ public class SalesboardActivity extends AppCompatActivity implements
         searchView.setSubmitButtonEnabled(true);
         //assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        cardList = (RecyclerView) findViewById(R.id.card_list);
-        cardList.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        cardList.setLayoutManager(llm);
-
-        // retrieve posts
-        retrievePosts(cardList);
 
         // setting up location services
         if (mGoogleApiClient == null) {
@@ -599,8 +602,8 @@ public class SalesboardActivity extends AppCompatActivity implements
                     for (int i = 0; i < queryPostsArrayJson.length(); i++) {
                         JSONObject postJson = queryPostsArrayJson.getJSONObject(i);
                         JSONObject userJson = queryUsersArrayJson.getJSONObject(i);
-                        Log.d("POST", postJson.toString());
-                        Log.d("USER", userJson.toString());
+                        Log.d("SEARCH_POST", postJson.toString());
+                        Log.d("SEARCH_USER", userJson.toString());
                         postList.add(
                                 new Post(postJson.getInt("id"),
                                          postJson.getString("title"),
@@ -611,7 +614,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                                          postJson.getString("description"),
                                          postJson.getString("category"),
                                          userJson.getString("firstname") + userJson.getString("lastname"),
-                                         postJson.getString("username"),
+                                         userJson.getString("username"),
                                          postJson.getString("image")));
                     }
                     return postList;
