@@ -62,7 +62,8 @@ public class SalesboardActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private ListView mDrawerList;
     private String user, firstname, lastname, email, phone;
-    private Spinner category;
+    private Spinner categorySpinner;
+    private Spinner priceSpinner;
     private RecyclerView cardList;
 
     protected GoogleApiClient mGoogleApiClient;
@@ -184,14 +185,25 @@ public class SalesboardActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_salesboard);
 
         // populating category spinner for search
-        category = (Spinner) findViewById(R.id.category_spinner2);
+        categorySpinner = (Spinner) findViewById(R.id.category_spinner2);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.category_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        category.setAdapter(adapter);
+        categorySpinner.setAdapter(adapter);
+
+        // populating price spinner for search
+        priceSpinner = (Spinner) findViewById(R.id.price_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> priceAdapter = ArrayAdapter.createFromResource(this,
+                R.array.price_search_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        priceSpinner.setAdapter(priceAdapter);
+
 
         cardList = (RecyclerView) findViewById(R.id.card_list);
         cardList.setHasFixedSize(true);
@@ -203,7 +215,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         retrievePosts(cardList);
 
         //setting up a listener for spinner2 to send category selected as search filter
-        category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 check = check + 1;
@@ -216,6 +228,22 @@ public class SalesboardActivity extends AppCompatActivity implements
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        //setting up a listener for priceSpinner to send category selected as search filter
+        priceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                check = check + 1;
+                if (check > 1){
+                    Object item = parent.getItemAtPosition(pos);
+                    //doMySearch(item.toString());
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
 
         // for search
         // getIntent and pass to handler

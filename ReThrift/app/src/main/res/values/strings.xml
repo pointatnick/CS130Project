@@ -24,6 +24,11 @@
         <item>Other</item>
     </string-array>
 
+    <string-array name="price_search_array">
+        <item>Price Low to High</item>
+        <item>Price High to Low</item>
+    </string-array>
+
     <string-array name="state_array">
         <item>FRESH</item>
         <item>PENDING SALE</item>

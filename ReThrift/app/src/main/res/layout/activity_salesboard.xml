@@ -87,7 +87,8 @@
             <Spinner
                 android:id="@+id/category_spinner2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:padding="5dp"/>
         </LinearLayout>
 
         <TextView
@@ -100,7 +101,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="By Price"/>
+
+            <Spinner
+                android:id="@+id/price_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"></Spinner>
 
         </LinearLayout>
     </LinearLayout>
