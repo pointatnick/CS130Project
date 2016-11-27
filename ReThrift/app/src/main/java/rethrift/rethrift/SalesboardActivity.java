@@ -88,7 +88,6 @@ public class SalesboardActivity extends AppCompatActivity implements
             //check for updates
             try{
                 String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/notifications";
-                //String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
                 String watchListUpdates = new GetWListUpdateTask().execute(stringUrl).get();
                 if(watchListUpdates != null){
                     NotificationCompat.Builder builder =
@@ -232,6 +231,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                 if (check > 1){
                     Object item = parent.getItemAtPosition(pos);
                     doMySearch(item.toString());
+                    check = 0;
                 }
             }
             @Override
@@ -244,10 +244,12 @@ public class SalesboardActivity extends AppCompatActivity implements
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 checkPrice = checkPrice + 1;
+                Log.d("CP", "CHECK PRICE > 0");
                 if (checkPrice > 1){
                     Object item = parent.getItemAtPosition(pos);
                     Log.d("CALLING SEARCH", item.toString());
-                    //doMySearch(item.toString());
+                    doMySearch(item.toString());
+                    checkPrice = 0;
                 }
             }
             @Override
@@ -616,7 +618,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                     "}" +
                 "}";
 
-                /*if(query.equals("Price High to Low")){
+                if(query.equals("Price High to Low")){
                     Log.d("Price search", query);
                     json =
                             "{" +
@@ -629,7 +631,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                             "{" +
                                 "order:[[price, ASC]]" +
                             "}";
-                }*/
+                }
 
                 try {
                     JSONObject jQuery = new JSONObject(json);
