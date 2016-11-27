@@ -2,9 +2,11 @@ package rethrift.rethrift;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -67,8 +69,21 @@ public class ViewPostActivity extends AppCompatActivity {
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
       if (extras.getString("IMAGE") != null) {
-        Uri imageUri = Uri.parse(extras.getString("IMAGE"));
-        ivImage.setImageURI(imageUri);
+        try {
+          Uri imageUri = Uri.parse(extras.getString("IMAGE"));
+          Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+          ivImage.setImageBitmap(bitmap);
+          /*
+          BitmapFactory.Options options = new BitmapFactory.Options();
+          options.inJustDecodeBounds = true;
+          ivImage.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.id.imageView, options));
+          int imageHeight = options.outHeight;
+          int imageWidth = options.outWidth;
+          String imageType = options.outMimeType;
+          */
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
   }

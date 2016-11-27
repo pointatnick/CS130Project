@@ -129,10 +129,10 @@ public class SalesboardActivity extends AppCompatActivity implements
                 //TODO ...
             }
             //runs every 5 minutes
-            handler.postDelayed(this, 300000);
+            //handler.postDelayed(this, 300000);
 
             //for testing purposes
-            //handler.postDelayed(this, 10000);
+            handler.postDelayed(this, 10000);
         }
     };
 
@@ -149,7 +149,7 @@ public class SalesboardActivity extends AppCompatActivity implements
 
         private String getUpdatedPosts(String myURL) throws IOException{
             InputStream is = null;
-            int len = 5000;
+            int len = 50000;
             try {
                 URL url = new URL(myURL);
                 Log.d("URL", "" + url);
@@ -197,7 +197,6 @@ public class SalesboardActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salesboard);
 
-        // Initialize Navigation View
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = extras.getString("USERNAME");
@@ -206,6 +205,7 @@ public class SalesboardActivity extends AppCompatActivity implements
             email = extras.getString("EMAIL");
             phone = extras.getString("PHONE");
         }
+
 
         cardList = (RecyclerView) findViewById(R.id.card_list);
         cardList.setHasFixedSize(true);
@@ -306,6 +306,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                     .build();
         }
 
+        // Initialize Navigation View
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
