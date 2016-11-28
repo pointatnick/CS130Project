@@ -90,6 +90,8 @@ public class SalesboardActivity extends AppCompatActivity implements
     //1: keyterms, 2: category, 3: price
     private int whichSearch = 0;
 
+    private int hit = 0;
+
 
     //for watchlist status update
 
@@ -108,13 +110,16 @@ public class SalesboardActivity extends AppCompatActivity implements
                 //DateFormat df = DateFormat.getDateTimeInstance();
                 //df.setTimeZone(TimeZone.getTimeZone("GMT+0"));
                 //String prevDateTimeString = df.format(new Date());
-
-                SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sTZD");
-                isoFormat.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+                SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                //2016-11-28T02:57:15.977Z
+                Log.d("NOTIF", "ENTERED");
+                isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Log.d("NOTIF", "ENTERED2");
                 Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.SECOND, -10);
+                cal.add(Calendar.SECOND, -20);
+                //cal.add(Calendar.HOUR, 8);
                 prevDateTimeString = isoFormat.format(cal.getTime());
-
+                Log.d("NOTIF STRING", prevDateTimeString);
 
                 //prevDateTimeString = DateFormat.getDateInstance(DateFormat.LONG, Locale.UK).format(new Date());
                 String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/notifications/?timestamp=";
@@ -123,6 +128,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                 //prevDateTimeString = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK).format(new Date());
 
                 if(watchListUpdates != null){
+                    hit = hit + 1;
                     NotificationCompat.Builder builder =
                             new NotificationCompat.Builder(SalesboardActivity.this)
                                     .setSmallIcon(R.drawable.ic_notifications_black_24dp)
@@ -140,14 +146,16 @@ public class SalesboardActivity extends AppCompatActivity implements
                     );
                     //send to UpdatedPosts when user clicks on notification
                     builder.setContentIntent(pIntent);
-
+                    Log.d("NUM HIT", "" + hit);
                     // Sets an ID for the notification
                     int mNotificationId = 001;
                     // Gets an instance of the NotificationManager service
                     NotificationManager mNotifyMgr =
                             (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                     // Builds the notification and issues it.
+                    hit = hit + 1;
                     mNotifyMgr.notify(mNotificationId, builder.build());
+                    Log.d("NUM HIT", "" + hit);
                 }
                 else
                     Log.d("NO_WUPDATES: ", "No updates OR no posts in watchlist!");
@@ -161,7 +169,7 @@ public class SalesboardActivity extends AppCompatActivity implements
             //handler.postDelayed(this, 300000);
 
             //for testing purposes
-            handler.postDelayed(this, 10000);
+            handler.postDelayed(this, 20000);
         }
     };
 
