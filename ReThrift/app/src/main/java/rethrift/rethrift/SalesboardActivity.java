@@ -485,7 +485,7 @@ public class SalesboardActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionSuspended(int requestCode) {
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
     }
 
     @Override

@@ -3,7 +3,7 @@ package rethrift.rethrift;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -56,9 +56,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     postHolder.category = ci.getCategory();
     postHolder.name = ci.getName();
     postHolder.username = ci.getUsername();
-    if (ci.getImage() != null) {
-      Uri imageUri = Uri.parse(ci.getImage());
-      postHolder.ivImage.setImageURI(imageUri);
+    if (!ci.getImage().equals("null")) {
+      String path = ci.getImage().substring(5);
+      BitmapFactory.Options options = new BitmapFactory.Options();
+      options.inJustDecodeBounds = false;
+      options.inPreferredConfig = Bitmap.Config.RGB_565;
+      Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+      postHolder.ivImage.setImageBitmap(bitmap);
     }
   }
 
