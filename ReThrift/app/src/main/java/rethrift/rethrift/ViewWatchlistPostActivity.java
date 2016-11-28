@@ -4,10 +4,10 @@ package rethrift.rethrift;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -68,14 +68,13 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
       tvDescription.setText(extras.getString("DESCRIPTION"));
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
-      if (extras.getString("IMAGE") != null) {
-        try {
-          Uri imageUri = Uri.parse(extras.getString("IMAGE"));
-          Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-          ivImage.setImageBitmap(bitmap);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+      if (getIntent().hasExtra("IMAGE")) {
+        String path = extras.getString("IMAGE").substring(5);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+        ivImage.setImageBitmap(bitmap);
       }
     }
   }

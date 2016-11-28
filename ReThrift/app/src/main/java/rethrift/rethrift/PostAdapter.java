@@ -2,6 +2,7 @@ package rethrift.rethrift;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +59,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     if (ci.getImage() != null) {
       Uri imageUri = Uri.parse(ci.getImage());
       postHolder.ivImage.setImageURI(imageUri);
-      postHolder.image = ci.getImage();
     }
   }
 
@@ -144,7 +145,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
     protected TextView tvTitle, tvPrice, tvLocation;
     protected ImageView ivImage;
     protected String state, description, category, name, username, user;
-    protected String image;
+    protected Bitmap bitmap;
     private Context context;
     private int postId;
 
@@ -173,7 +174,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       intent.putExtra("CATEGORY", category);
       intent.putExtra("NAME", name);
       intent.putExtra("USERNAME", username);
-      intent.putExtra("IMAGE", image);
+
+      ivImage.buildDrawingCache();
+      bitmap = ivImage.getDrawingCache();
+      ByteArrayOutputStream bs = new ByteArrayOutputStream();
+      bitmap.compress(Bitmap.CompressFormat.PNG, 50, bs);
+      intent.putExtra("IMAGE", bs.toByteArray());
       context.startActivity(intent);
     }
   }

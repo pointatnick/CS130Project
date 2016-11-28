@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -126,12 +127,12 @@ public class CreatePostActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == IMAGE_CAPTURE) {
             if (resultCode == RESULT_OK) {
-                try {
-                    mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
-                    imageView.setImageBitmap(mImageBitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                String path = mCurrentPhotoPath.substring(5);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = false;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                mImageBitmap = BitmapFactory.decodeFile(path, options);
+                imageView.setImageBitmap(mImageBitmap);
             }
         }
     }

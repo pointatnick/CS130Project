@@ -3,10 +3,10 @@ package rethrift.rethrift;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -68,22 +68,24 @@ public class ViewPostActivity extends AppCompatActivity {
       tvDescription.setText(extras.getString("DESCRIPTION"));
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
-      if (extras.getString("IMAGE") != null) {
+      if (getIntent().hasExtra("IMAGE")) {
+        Bitmap bitmap = BitmapFactory.decodeByteArray(getIntent().getByteArrayExtra("IMAGE"), 0, getIntent().getByteArrayExtra("IMAGE").length);
+        ivImage.setImageBitmap(bitmap);
+        //ivImage.setImageBitmap((Bitmap) getIntent().getParcelableExtra("IMAGE"));
+        /*
         try {
           Uri imageUri = Uri.parse(extras.getString("IMAGE"));
           Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
           ivImage.setImageBitmap(bitmap);
-          /*
-          BitmapFactory.Options options = new BitmapFactory.Options();
-          options.inJustDecodeBounds = true;
-          ivImage.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.id.imageView, options));
-          int imageHeight = options.outHeight;
-          int imageWidth = options.outWidth;
-          String imageType = options.outMimeType;
-          */
         } catch (IOException e) {
           e.printStackTrace();
         }
+        */
+        /*
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        ivImage.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.id.imageView, options));
+        */
       }
     }
   }
