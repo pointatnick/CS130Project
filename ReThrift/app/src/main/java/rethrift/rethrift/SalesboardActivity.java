@@ -53,9 +53,14 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 
 public class SalesboardActivity extends AppCompatActivity implements
@@ -85,14 +90,21 @@ public class SalesboardActivity extends AppCompatActivity implements
 
 
     //for watchlist status update
+
+    //get time here
+
+    //String prevDateTimeString = DateFormat.getDateTimeInstance().format(new Date()).setTimeZone(TimeZone.getTimeZone("GMT+0"));
+
     private Handler handler = new Handler();
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
             //check for updates
             try{
-                String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/notifications";
+                String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/notifications/?timestamp=";
+                stringUrl = stringUrl;// + prevDateTimeString;
                 String watchListUpdates = new GetWListUpdateTask().execute(stringUrl).get();
+                //prevDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
                 if(watchListUpdates != null){
                     NotificationCompat.Builder builder =
                             new NotificationCompat.Builder(SalesboardActivity.this)
@@ -152,6 +164,8 @@ public class SalesboardActivity extends AppCompatActivity implements
             int len = 50000;
             try {
                 URL url = new URL(myURL);
+
+
                 Log.d("URL", "" + url);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -378,7 +392,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         actionBarDrawerToggle.syncState();
 
         //check for watchlist status
-        ///'handler.postDelayed(runnable, 100);
+        handler.postDelayed(runnable, 100);
     }
 
 
