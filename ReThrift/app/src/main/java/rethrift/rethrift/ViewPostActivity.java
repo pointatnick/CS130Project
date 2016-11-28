@@ -68,24 +68,13 @@ public class ViewPostActivity extends AppCompatActivity {
       tvDescription.setText(extras.getString("DESCRIPTION"));
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
-      if (getIntent().hasExtra("IMAGE")) {
-        Bitmap bitmap = BitmapFactory.decodeByteArray(getIntent().getByteArrayExtra("IMAGE"), 0, getIntent().getByteArrayExtra("IMAGE").length);
-        ivImage.setImageBitmap(bitmap);
-        //ivImage.setImageBitmap((Bitmap) getIntent().getParcelableExtra("IMAGE"));
-        /*
-        try {
-          Uri imageUri = Uri.parse(extras.getString("IMAGE"));
-          Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-          ivImage.setImageBitmap(bitmap);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        */
-        /*
+      if (!extras.getString("IMAGE").equals("null")) {
+        String path = extras.getString("IMAGE").substring(5);
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        ivImage.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.id.imageView, options));
-        */
+        options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+        ivImage.setImageBitmap(bitmap);
       }
     }
   }

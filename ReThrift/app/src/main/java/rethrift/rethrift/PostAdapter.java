@@ -18,7 +18,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,8 +60,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       BitmapFactory.Options options = new BitmapFactory.Options();
       options.inJustDecodeBounds = false;
       options.inPreferredConfig = Bitmap.Config.RGB_565;
-      Bitmap bitmap = BitmapFactory.decodeFile(path, options);
-      postHolder.ivImage.setImageBitmap(bitmap);
+      Bitmap bmp = BitmapFactory.decodeFile(path, options);
+      postHolder.ivImage.setImageBitmap(bmp);
+      postHolder.image = ci.getImage();
     }
   }
 
@@ -148,8 +148,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
   public static class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     protected TextView tvTitle, tvPrice, tvLocation;
     protected ImageView ivImage;
-    protected String state, description, category, name, username, user;
-    protected Bitmap bitmap;
+    protected String state, description, category, name, username, user, image;
     private Context context;
     private int postId;
 
@@ -178,12 +177,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       intent.putExtra("CATEGORY", category);
       intent.putExtra("NAME", name);
       intent.putExtra("USERNAME", username);
-
-      ivImage.buildDrawingCache();
-      bitmap = ivImage.getDrawingCache();
-      ByteArrayOutputStream bs = new ByteArrayOutputStream();
-      bitmap.compress(Bitmap.CompressFormat.PNG, 50, bs);
-      intent.putExtra("IMAGE", bs.toByteArray());
+      intent.putExtra("IMAGE", image);
       context.startActivity(intent);
     }
   }
