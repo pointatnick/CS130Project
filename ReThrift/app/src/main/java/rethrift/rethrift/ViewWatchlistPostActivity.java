@@ -68,7 +68,8 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
       tvDescription.setText(extras.getString("DESCRIPTION"));
       tvName.setText(extras.getString("NAME"));
       tvUsername.setText(extras.getString("USERNAME"));
-      if (getIntent().hasExtra("IMAGE")) {
+      if (extras.getString("IMAGE") != null) {
+        Log.d("PATH", extras.getString("IMAGE"));
         String path = extras.getString("IMAGE").substring(5);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = false;

@@ -57,12 +57,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
-
-import java.text.DateFormat;
-import java.util.Date;
 
 
 public class SalesboardActivity extends AppCompatActivity implements
@@ -765,7 +761,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                                          postJson.getDouble("longitude"),
                                          postJson.getString("description"),
                                          postJson.getString("category"),
-                                         userJson.getString("firstname") + userJson.getString("lastname"),
+                                         userJson.getString("firstname") + " " + userJson.getString("lastname"),
                                          userJson.getString("username"),
                                          postJson.getString("image")));
                     }
@@ -948,7 +944,7 @@ public class SalesboardActivity extends AppCompatActivity implements
                                      postJson.getDouble("longitude"),
                                      postJson.getString("description"),
                                      postJson.getString("category"),
-                                     userJson.getString("firstname") + userJson.getString("lastname"),
+                                     userJson.getString("firstname") + " " + userJson.getString("lastname"),
                                      userJson.getString("username"),
                                      postJson.getString("image")));
                 }
