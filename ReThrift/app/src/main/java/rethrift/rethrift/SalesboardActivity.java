@@ -55,7 +55,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
@@ -91,9 +93,10 @@ public class SalesboardActivity extends AppCompatActivity implements
 
     //for watchlist status update
 
-    //get time here
+    //private String prevDateTimeString = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK).format(new Date());
+    // = DateFormat.getDateTimeInstance().format(new Date());
 
-    //String prevDateTimeString = DateFormat.getDateTimeInstance().format(new Date()).setTimeZone(TimeZone.getTimeZone("GMT+0"));
+    private String prevDateTimeString;
 
     private Handler handler = new Handler();
     Runnable runnable = new Runnable() {
@@ -101,10 +104,24 @@ public class SalesboardActivity extends AppCompatActivity implements
         public void run() {
             //check for updates
             try{
+                //get time here
+                //DateFormat df = DateFormat.getDateTimeInstance();
+                //df.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+                //String prevDateTimeString = df.format(new Date());
+
+                SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sTZD");
+                isoFormat.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.SECOND, -10);
+                prevDateTimeString = isoFormat.format(cal.getTime());
+
+
+                //prevDateTimeString = DateFormat.getDateInstance(DateFormat.LONG, Locale.UK).format(new Date());
                 String stringUrl = "http://rethrift-1.herokuapp.com/users/" + user + "/notifications/?timestamp=";
-                stringUrl = stringUrl;// + prevDateTimeString;
+                stringUrl = stringUrl + prevDateTimeString;
                 String watchListUpdates = new GetWListUpdateTask().execute(stringUrl).get();
-                //prevDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                //prevDateTimeString = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK).format(new Date());
+
                 if(watchListUpdates != null){
                     NotificationCompat.Builder builder =
                             new NotificationCompat.Builder(SalesboardActivity.this)
@@ -663,6 +680,13 @@ public class SalesboardActivity extends AppCompatActivity implements
                                         "{" +
                                             "description: {" +
                                             "$like: %" + query + '%' +
+                                            "}" +
+                                        "}" +
+                                        "{" +
+                                            "locationterm: {" +
+                                            "longitude:" + mLongitude +
+                                            "latitude:" + mLatitude +
+                                            "distance:" + 5 +
                                             "}" +
                                         "}" +
                                     "]" +
