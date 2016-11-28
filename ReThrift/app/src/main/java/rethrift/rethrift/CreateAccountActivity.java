@@ -65,6 +65,12 @@ public class CreateAccountActivity extends AppCompatActivity {
     verifyLayout.setTypeface(Typeface.DEFAULT);
   }
 
+  @Override
+  public void onPause() {
+    super.onPause();
+    finish();
+  }
+
   // send user account info
   public void createAcct(View view) {
     String res = checkFields();

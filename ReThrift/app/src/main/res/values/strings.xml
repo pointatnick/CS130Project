@@ -12,7 +12,6 @@
     <string name="phone_hint">Phone number</string>
     <string name="title_hint">Title</string>
     <string name="price_hint">Price ($)</string>
-    <string name="location_hint">Pickup location</string>
     <string name="closeDrawer">Navigation View</string>
     <string name="openDrawer">Navigation View Closed</string>
     <string name="action_settings">Settings</string>
@@ -46,13 +45,6 @@
     <string name="edit_btn">Edit</string>
     <string name="delete_btn">Delete</string>
     <string name="edit_post_btn">Update</string>
-    <string name="camera_btn">camera</string>
 
     <string name="no_geocoder_available">No geocoder available</string>
-    <string name="fetch_address">Fetch address</string>
-    <string name="address_found">Address found</string>
-    <string name="no_address_found">Sorry, no address found</string>
-    <string name="no_location_data_provided">No location data provided</string>
-    <string name="service_not_available">Sorry, the service is not available</string>
-    <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
 </resources>

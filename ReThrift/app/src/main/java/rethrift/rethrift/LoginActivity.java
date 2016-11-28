@@ -43,6 +43,12 @@ public class LoginActivity extends AppCompatActivity {
     password.setTransformationMethod(new PasswordTransformationMethod());
   }
 
+  @Override
+  public void onPause() {
+    super.onPause();
+    finish();
+  }
+
   public void createAcct(View view){
     Intent intent = new Intent(this, CreateAccountActivity.class);
     startActivity(intent);

@@ -33,9 +33,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
   private String user;
   private static final String API_KEY = "AIzaSyCpnQeSQBSuxb_hITDW63AcVzCeLuT5hcg";
 
+  /*
   public PostAdapter(List<Post> postList, String user) {
     this.postList = postList;
     this.user = user;
+  }
+  */
+  public PostAdapter() {};
+
+  public void setInfo(List<Post> postList, String user) {
+    this.postList = postList;
+    this.user = user;
+  }
+
+  public void clear() {
+    postList.clear();
+    notifyDataSetChanged();
   }
 
   @Override

@@ -12,7 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,7 +35,6 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
   private ImageView ivImage;
   private String user;
   private int postId;
-  private Button btnWatchlist, btnContact;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +50,6 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
     tvName = (TextView) findViewById(R.id.name);
     tvUsername = (TextView) findViewById(R.id.username);
     ivImage = (ImageView) findViewById(R.id.imageView);
-
-    btnWatchlist = (Button) findViewById(R.id.watchlist_btn);
-    btnContact = (Button) findViewById(R.id.contact_btn);
 
     Bundle extras = getIntent().getExtras();
     if (extras != null) {
@@ -78,6 +73,12 @@ public class ViewWatchlistPostActivity extends AppCompatActivity {
         ivImage.setImageBitmap(bitmap);
       }
     }
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    finish();
   }
 
   // remove from watchlist

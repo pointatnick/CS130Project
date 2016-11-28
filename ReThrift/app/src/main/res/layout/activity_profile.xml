@@ -6,7 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/header_cover_image"
@@ -45,7 +45,6 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="76dp"
-                android:text="Kook"
                 android:textColor="#fff"
                 android:textSize="24sp"
                 android:textStyle="bold" />

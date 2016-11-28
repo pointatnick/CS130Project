@@ -28,4 +28,10 @@ public class ProfileActivity extends AppCompatActivity {
             tvPhone.setText(extras.getString("PHONE"));
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        finish();
+    }
 }

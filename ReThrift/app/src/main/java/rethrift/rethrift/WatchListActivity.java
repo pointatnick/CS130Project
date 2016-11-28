@@ -50,6 +50,12 @@ public class WatchListActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     public void onResume() {
         retrievePosts(cardList);
         super.onResume();

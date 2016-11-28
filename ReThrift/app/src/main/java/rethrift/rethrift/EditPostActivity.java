@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -25,8 +24,6 @@ import java.net.URL;
 public class EditPostActivity extends AppCompatActivity {
   private TextView tvTitle, tvPrice, tvDescription;
   private Spinner state, category;
-  private String name, username;
-  private Button btnUpdate, btnDelete;
   private int postId;
 
   @Override
@@ -56,9 +53,6 @@ public class EditPostActivity extends AppCompatActivity {
     // Apply the adapter to the spinner
     state.setAdapter(stateAdapter);
 
-    btnUpdate = (Button) findViewById(R.id.update_btn);
-    btnDelete = (Button) findViewById(R.id.delete_btn);
-
     Bundle extras = getIntent().getExtras();
     if (extras != null) {
       postId = extras.getInt("ID");
@@ -66,8 +60,6 @@ public class EditPostActivity extends AppCompatActivity {
       String[] parts = extras.getString("PRICE").split("[$]");
       tvPrice.setText(parts[1]);
       tvDescription.setText(extras.getString("DESCRIPTION"));
-      name = extras.getString("NAME");
-      username = extras.getString("USERNAME");
     }
   }
 

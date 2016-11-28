@@ -52,6 +52,12 @@ public class MyPostsActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     public void onResume() {
         retrievePosts(cardList);
         super.onResume();

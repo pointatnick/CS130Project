@@ -84,6 +84,12 @@ public class CreatePostActivity extends AppCompatActivity {
         category.setAdapter(adapter);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        finish();
+    }
+
     public void camera(View view) {
         // Perform action on click
 

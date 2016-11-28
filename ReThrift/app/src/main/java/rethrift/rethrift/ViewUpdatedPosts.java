@@ -31,6 +31,7 @@ public class ViewUpdatedPosts extends AppCompatActivity {
     private RecyclerView updatedCardRecList;
     private String user;
     private int userLength;
+    private PostAdapter pa;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,18 +59,21 @@ public class ViewUpdatedPosts extends AppCompatActivity {
             updatedCardRecList.setLayoutManager(llm);
 
             try {
-                PostAdapter pa = new PostAdapter(new getPosts().execute(updatedPosts).get(), user);
+                //pa = new PostAdapter(new getPosts().execute(updatedPosts).get(), user);
+                pa.setInfo(new getPosts().execute(updatedPosts).get(), user);
                 updatedCardRecList.setAdapter(pa);
             } catch(ExecutionException e){
-
+                e.printStackTrace();
             } catch(InterruptedException ie){
-
+                ie.printStackTrace();
             }
 
         }
         else{
             Log.d("EMPTY_LIST", "Notifications is not working correctly...");
         }
+
+        pa = new PostAdapter();
     }
 
     private class getPosts extends AsyncTask<String, Void, List<Post>>{

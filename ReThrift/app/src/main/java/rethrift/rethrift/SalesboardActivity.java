@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -33,7 +32,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -63,11 +61,11 @@ import java.util.concurrent.ExecutionException;
 
 public class SalesboardActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    private ListView mDrawerList;
     private String user, firstname, lastname, email, phone;
     private Spinner categorySpinner;
     private Spinner priceSpinner;
     private RecyclerView cardList;
+    private PostAdapter pa;
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
@@ -76,7 +74,6 @@ public class SalesboardActivity extends AppCompatActivity implements
 
     // /*
     //for search input (mc)
-    private TextInputEditText filter;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private SearchView searchView = null;
@@ -90,10 +87,6 @@ public class SalesboardActivity extends AppCompatActivity implements
 
 
     //for watchlist status update
-
-    //private String prevDateTimeString = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK).format(new Date());
-    // = DateFormat.getDateTimeInstance().format(new Date());
-
     private String prevDateTimeString;
 
     private Handler handler = new Handler();
@@ -241,6 +234,7 @@ public class SalesboardActivity extends AppCompatActivity implements
             phone = extras.getString("PHONE");
         }
 
+        pa = new PostAdapter();
 
         cardList = (RecyclerView) findViewById(R.id.card_list);
         cardList.setHasFixedSize(true);
@@ -390,6 +384,7 @@ public class SalesboardActivity extends AppCompatActivity implements
             }
         });
 
+
         // Initializing Drawer Layout and ActionBarToggle
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout, R.string.openDrawer, R.string.closeDrawer){
@@ -412,6 +407,7 @@ public class SalesboardActivity extends AppCompatActivity implements
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
 
+
         //check for watchlist status
         handler.postDelayed(runnable, 100);
     }
@@ -423,10 +419,13 @@ public class SalesboardActivity extends AppCompatActivity implements
         super.onStart();
     }
 
-
+    public void onPause() {
+        pa.clear();
+        super.onPause();
+    }
 
     protected void onResume() {
-        if(doingSearch == false)
+        if(!doingSearch)
             retrievePosts(cardList);
         else
             doingSearch = false;
@@ -497,8 +496,9 @@ public class SalesboardActivity extends AppCompatActivity implements
     public void retrievePosts(RecyclerView recView) {
         try {
             String stringUrl = "http://rethrift-1.herokuapp.com/posts/all";
-            PostAdapter ca = new PostAdapter(new GetPostsTask().execute(stringUrl).get(), user);
-            recView.setAdapter(ca);
+            //pa = new PostAdapter(new GetPostsTask().execute(stringUrl).get(), user);
+            pa.setInfo(new GetPostsTask().execute(stringUrl).get(), user);
+            recView.setAdapter(pa);
         } catch (InterruptedException e) {
             new AlertDialog.Builder(this)
                     .setTitle("Error")
@@ -605,8 +605,9 @@ public class SalesboardActivity extends AppCompatActivity implements
                     retrievePosts(cardList);
                 }
                 else {
-                    PostAdapter ca = new PostAdapter(new CreateSearchFilterTask().execute(stringUrl, query).get(), user);
-                    cardList.setAdapter(ca);
+                    //pa = new PostAdapter(new CreateSearchFilterTask().execute(stringUrl, query).get(), user);
+                    pa.setInfo(new CreateSearchFilterTask().execute(stringUrl, query).get(), user);
+                    cardList.setAdapter(pa);
                 }
             } catch(ExecutionException e) {
                 //TODO
@@ -685,11 +686,11 @@ public class SalesboardActivity extends AppCompatActivity implements
                                             "description: {" +
                                             "$like: %" + query + '%' +
                                             "}" +
-                                        "}" +
+                                        "}," +
                                         "{" +
                                             "locationterm: {" +
-                                            "longitude:" + mLongitude +
-                                            "latitude:" + mLatitude +
+                                            "longitude:" + mLongitude + "," +
+                                            "latitude:" + mLatitude + "," +
                                             "distance:" + 5 +
                                             "}" +
                                         "}" +
