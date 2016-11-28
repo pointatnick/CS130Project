@@ -85,8 +85,8 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 
