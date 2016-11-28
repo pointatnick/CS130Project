@@ -141,7 +141,7 @@ public class MyPostsActivity extends AppCompatActivity {
                                          postJson.getDouble("longitude"),
                                          postJson.getString("description"),
                                          postJson.getString("category"),
-                                         firstname + lastname,
+                                         firstname + " " + lastname,
                                          user,
                                          postJson.getString("image")));
                     }

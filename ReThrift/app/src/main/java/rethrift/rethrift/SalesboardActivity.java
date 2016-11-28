@@ -670,6 +670,11 @@ public class SalesboardActivity extends AppCompatActivity implements
                 Log.d("QUERY", query);
 
                 String json = "";
+                String json2 = "{" +
+                        "longitude:" + mLongitude + "," +
+                        "latitude:" + mLatitude + "," +
+                        "distance:" + 5 +
+                        "}";
 
                 //key term search
                 if (whichSearch == 1) {
@@ -679,19 +684,12 @@ public class SalesboardActivity extends AppCompatActivity implements
                                     "$or:[" +
                                         "{" +
                                             "title: {" +
-                                            "$like: %" + query + '%' +
+                                            "$iLike: %" + query + '%' +
                                             "}" +
                                         "}," +
                                         "{" +
                                             "description: {" +
-                                            "$like: %" + query + '%' +
-                                            "}" +
-                                        "}," +
-                                        "{" +
-                                            "locationterm: {" +
-                                            "longitude:" + mLongitude + "," +
-                                            "latitude:" + mLatitude + "," +
-                                            "distance:" + 5 +
+                                            "$iLike: %" + query + '%' +
                                             "}" +
                                         "}" +
                                     "]" +
@@ -727,7 +725,8 @@ public class SalesboardActivity extends AppCompatActivity implements
 
                 try {
                     JSONObject jQuery = new JSONObject(json);
-                    myURL = myURL + URLEncoder.encode(jQuery.toString(), "utf-8");
+                    JSONObject jQuery2 = new JSONObject(json2);
+                    myURL = myURL + URLEncoder.encode(jQuery.toString(), "utf-8") + "&locationterm=" + URLEncoder.encode(jQuery2.toString(), "utf-8");
                     URL url = new URL(myURL);
                     Log.d("URL", "" + url);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
