@@ -947,7 +947,6 @@ public class SalesboardActivity extends AppCompatActivity implements
                                      userJson.getString("firstname") + " " + userJson.getString("lastname"),
                                      userJson.getString("username"),
                                      postJson.getString("image")));
-                    Log.d("IMAGE", postJson.getString("image"));
                 }
                 return posts;
             } catch (JSONException e) {

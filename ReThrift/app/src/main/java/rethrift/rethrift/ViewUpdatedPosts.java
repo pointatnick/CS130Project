@@ -40,6 +40,7 @@ public class ViewUpdatedPosts extends AppCompatActivity {
 
         // Obtain updated watchlist posts from previous activity
         Bundle extras = getIntent().getExtras();
+        pa = new PostAdapter();
         if (extras != null) {
             updatedPosts = extras.getString("UPDATED_POSTS");
 
