@@ -75,8 +75,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostHolder> {
       options.inPreferredConfig = Bitmap.Config.RGB_565;
       Bitmap bmp = BitmapFactory.decodeFile(path, options);
       postHolder.ivImage.setImageBitmap(bmp);
-      postHolder.image = ci.getImage();
     }
+    postHolder.image = ci.getImage();
   }
 
   public String findAddress(double latitude, double longitude) {
